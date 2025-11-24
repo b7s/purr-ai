@@ -82,8 +82,15 @@
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
         "native:dev": [
+            "@php artisan native:clear",
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -k -c \"#93c5fd,#c4b5fd\" \"php artisan native:run --no-interaction\" \"npm run dev\" --names=app,vite"
+        ],
+        "native:fresh": [
+            "@php artisan native:clear",
+            "npm run build",
+            "Composer\\Config::disableProcessTimeout",
+            "php artisan native:run --no-interaction"
         ]
     },
     "extra": {

@@ -14,6 +14,7 @@
 - **Type hints**: Always use explicit return types and parameter types
 - **PHPStan Level 5**: Code must pass static analysis without errors
 - **No inline validation**: Always use Form Request classes for validation
+- **Documentations and ".md" files**: Never create documentation or ".md" without authorization
 
 ### Code Quality Tools (Run Before Committing)
 

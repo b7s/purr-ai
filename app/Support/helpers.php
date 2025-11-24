@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-if (!function_exists('is_native')) {
+if (! function_exists('is_native')) {
     /**
      * Check if the application is running in native mode (NativePHP/Electron).
      */
     function is_native(): bool
     {
-        if (!class_exists(\Native\Desktop\Facades\Window::class)) {
+        if (! class_exists(\Native\Desktop\Facades\Window::class)) {
             return false;
         }
 
@@ -24,7 +24,7 @@ if (!function_exists('is_native')) {
     }
 }
 
-if (!function_exists('is_mac')) {
+if (! function_exists('is_mac')) {
     /**
      * Check if the application is running on macOS.
      */
@@ -34,7 +34,7 @@ if (!function_exists('is_mac')) {
     }
 }
 
-if (!function_exists('is_windows')) {
+if (! function_exists('is_windows')) {
     /**
      * Check if the application is running on Windows.
      */
@@ -44,7 +44,7 @@ if (!function_exists('is_windows')) {
     }
 }
 
-if (!function_exists('is_linux')) {
+if (! function_exists('is_linux')) {
     /**
      * Check if the application is running on Linux.
      */

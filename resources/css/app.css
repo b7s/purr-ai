@@ -21,6 +21,10 @@
     }
 }
 
+:root {
+    --window-opacity: 0.85;
+}
+
 /* Base Styles */
 body {
     @apply font-sans text-neutral-900 dark:text-neutral-100 h-screen w-screen overflow-hidden transition-colors duration-500;
@@ -31,6 +35,73 @@ body.web-mode {
     @apply bg-neutral-100 dark:bg-neutral-950;
 }
 
+/* Modern Scrollbar Styles */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+}
+
+*:hover,
+*:focus-within,
+*:active {
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.dark *:hover,
+.dark *:focus-within,
+.dark *:active {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Webkit Scrollbar */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    transition: width 0.2s ease;
+}
+
+*::-webkit-scrollbar:hover {
+    width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.3s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb,
+*:focus-within::-webkit-scrollbar-thumb,
+*:active::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+}
+
+.dark *:hover::-webkit-scrollbar-thumb,
+.dark *:focus-within::-webkit-scrollbar-thumb,
+.dark *:active::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35);
+    background-clip: padding-box;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+    background-clip: padding-box;
+}
+
 @layer components {
     
     /* Glass Panel */
@@ -38,7 +109,11 @@ body.web-mode {
         @apply h-full w-full flex flex-col relative overflow-hidden;
         @apply backdrop-blur-3xl shadow-2xl transition-all duration-500;
         @apply border border-white/40 dark:border-white/10;
-        @apply bg-white/85 dark:bg-[#121212]/75;
+        background: rgba(255, 255, 255, var(--window-opacity));
+    }
+    
+    .dark .glass-panel {
+        background: rgba(18, 18, 18, calc(var(--window-opacity) * 0.88));
     }
     
     /* Native mode adjustments */
@@ -73,7 +148,11 @@ body.web-mode {
         @apply h-full w-full flex flex-col relative overflow-hidden;
         @apply backdrop-blur-3xl shadow-2xl transition-all duration-500;
         @apply border border-white/40 dark:border-white/10;
-        @apply bg-white/85 dark:bg-[#121212]/75;
+        background: rgba(255, 255, 255, var(--window-opacity));
+    }
+    
+    .dark .chat-container {
+        background: rgba(18, 18, 18, calc(var(--window-opacity) * 0.88));
     }
 
     .chat-header {
@@ -92,10 +171,6 @@ body.web-mode {
 
     .chat-messages {
         @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-36;
-    }
-    
-    .chat-messages::-webkit-scrollbar {
-        display: none;
     }
 
     /* Chat Rows */
@@ -294,5 +369,90 @@ body.web-mode {
     
     .window-btn.close:hover {
         @apply bg-red-500 text-white;
+    }
+
+    /* Settings Components */
+    .settings-card {
+        @apply p-6 rounded-2xl bg-white/40 dark:bg-white/5 backdrop-blur-md;
+        @apply border border-white/50 dark:border-white/10;
+    }
+
+    .settings-label {
+        @apply block text-sm font-medium text-neutral-900 dark:text-white mb-2;
+    }
+
+    .settings-input {
+        @apply w-full px-4 py-3 rounded-xl text-[15px];
+        @apply bg-white/60 dark:bg-white/10 backdrop-blur-md;
+        @apply border border-white/50 dark:border-white/10;
+        @apply text-neutral-900 dark:text-white placeholder-neutral-500;
+        @apply focus:outline-none focus:ring-2 focus:ring-accent/20 dark:focus:ring-white/20;
+        @apply transition-all;
+    }
+
+    .settings-input option {
+        @apply bg-white dark:bg-neutral-900;
+        @apply text-neutral-900 dark:text-white;
+    }
+
+    .settings-input select option {
+        @apply bg-white dark:bg-neutral-900;
+        @apply text-neutral-900 dark:text-white;
+    }
+
+    .settings-radio-card {
+        @apply flex-1 cursor-pointer;
+    }
+
+    .settings-radio-card input:checked + .settings-radio-label {
+        @apply bg-white dark:bg-white/20 text-neutral-900 dark:text-white shadow-sm;
+    }
+
+    .settings-radio-label {
+        @apply block px-4 py-3 rounded-xl text-center text-sm font-medium;
+        @apply bg-white/40 dark:bg-white/5 text-neutral-600 dark:text-neutral-400;
+        @apply border border-white/50 dark:border-white/10;
+        @apply transition-all;
+    }
+
+    .settings-toggle {
+        @apply relative w-12 h-6 rounded-full transition-colors;
+        @apply bg-neutral-300 dark:bg-neutral-700;
+    }
+
+    .settings-toggle.active {
+        @apply bg-accent dark:bg-white;
+    }
+
+    .settings-toggle-thumb {
+        @apply absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white dark:bg-neutral-900;
+        @apply transition-transform;
+    }
+
+    .settings-toggle.active .settings-toggle-thumb {
+        @apply translate-x-6;
+    }
+
+    .settings-slider {
+        @apply flex-1 h-2 rounded-full appearance-none cursor-pointer;
+        @apply bg-white/40 dark:bg-white/10 backdrop-blur-md;
+        @apply border border-white/50 dark:border-white/10;
+    }
+
+    .settings-slider::-webkit-slider-thumb {
+        @apply appearance-none w-5 h-5 rounded-full;
+        @apply bg-accent dark:bg-white shadow-md;
+        @apply cursor-pointer transition-transform hover:scale-110;
+    }
+
+    .settings-slider::-moz-range-thumb {
+        @apply w-5 h-5 rounded-full border-0;
+        @apply bg-accent dark:bg-white shadow-md;
+        @apply cursor-pointer transition-transform hover:scale-110;
+    }
+
+    /* Help Text */
+    .help-text {
+        @apply text-xs text-neutral-500 dark:text-neutral-500 mt-2;
     }
 }

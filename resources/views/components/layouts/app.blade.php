@@ -26,6 +26,29 @@
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         }
+
+        // Initialize window opacity from settings
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/settings/window-opacity')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.opacity) {
+                        document.documentElement.style.setProperty('--window-opacity', data.opacity / 100);
+                    }
+                })
+                .catch(() => {
+                    // Use default opacity if fetch fails
+                });
+        });
+
+        // Listen for opacity changes
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('opacity-changed', (event) => {
+                const opacity = event.opacity / 100;
+                document.documentElement.style.setProperty('--window-opacity', opacity);
+            });
+        });
+
     </script>
 </body>
 

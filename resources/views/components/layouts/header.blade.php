@@ -22,7 +22,9 @@
 
     <div class="flex items-center gap-1">
         {{ $slot }}
-        <x-ui.icon-button icon="settings" :title="__('ui.tooltips.settings')" />
+        <a href="{{ route('settings') }}" wire:navigate>
+            <x-ui.icon-button icon="settings" :title="__('ui.tooltips.settings')" />
+        </a>
 
         @if(is_native() && !is_mac())
             <x-ui.window-controls />

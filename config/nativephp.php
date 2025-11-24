@@ -166,16 +166,16 @@ return [
      */
     'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
 
-    /**
-     * Application icons configuration.
-     * 
-     * NativePHP automatically looks for these files in the public/ directory:
-     * - icon.png (512x512 recommended) - Main application icon
-     * - icon.ico (Windows) - Generated during build
-     * - icon.icns (macOS) - Generated during build
-     * - IconTemplate.png (16x16) - Menu bar icon for macOS
-     * - IconTemplate@2x.png (32x32) - Retina menu bar icon for macOS
-     * 
-     * Run `php artisan app:generate-icons` to generate icons from source.
-     */
+/**
+ * Application icons configuration.
+ *
+ * NativePHP automatically looks for these files in the public/ directory:
+ * - icon.png (512x512 recommended) - Main application icon
+ * - icon.ico (Windows) - Generated during build
+ * - icon.icns (macOS) - Generated during build
+ * - IconTemplate.png (16x16) - Menu bar icon for macOS
+ * - IconTemplate@2x.png (32x32) - Retina menu bar icon for macOS
+ *
+ * Run `php artisan app:generate-icons` to generate icons from source.
+ */
 ];
