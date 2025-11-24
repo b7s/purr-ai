@@ -9,6 +9,8 @@ use Livewire\Component;
 
 class Settings extends Component
 {
+    private static string $fakeKey = 'show-fake-key-purrai';
+
     public string $mascotName = '';
 
     public string $userName = '';
@@ -23,15 +25,27 @@ class Settings extends Component
 
     public string $openaiKey = '';
 
+    public string $openaiModels = '';
+
     public string $anthropicKey = '';
+
+    public string $anthropicModels = '';
 
     public string $googleKey = '';
 
+    public string $googleModels = '';
+
     public string $ollamaUrl = '';
+
+    public string $ollamaModels = '';
 
     public int $deleteOldMessagesDays = 0;
 
-    public int $windowOpacity = 95;
+    public int $windowOpacity = 90;
+
+    public bool $disableTransparencyMaximized = true;
+
+    public string $themeMode = 'automatic';
 
     public function mount(): void
     {
@@ -42,13 +56,26 @@ class Settings extends Component
         $this->responseTone = Setting::get('response_tone', 'basic');
         $this->respondAsACat = (bool) Setting::get('respond_as_cat', false);
 
-        $this->openaiKey = Setting::getEncrypted('openai_key', '');
-        $this->anthropicKey = Setting::getEncrypted('anthropic_key', '');
-        $this->googleKey = Setting::getEncrypted('google_key', '');
-        $this->ollamaUrl = Setting::get('ollama_url', 'http://localhost:11434');
+        $openaiConfig = Setting::getJsonDecrypted('openai_config', ['key' => '', 'models' => []]);
+        $this->openaiKey = ! empty($openaiConfig['key']) ? self::$fakeKey : '';
+        $this->openaiModels = implode(', ', $openaiConfig['models'] ?? []);
+
+        $anthropicConfig = Setting::getJsonDecrypted('anthropic_config', ['key' => '', 'models' => []]);
+        $this->anthropicKey = ! empty($anthropicConfig['key']) ? self::$fakeKey : '';
+        $this->anthropicModels = implode(', ', $anthropicConfig['models'] ?? []);
+
+        $googleConfig = Setting::getJsonDecrypted('google_config', ['key' => '', 'models' => []]);
+        $this->googleKey = ! empty($googleConfig['key']) ? self::$fakeKey : '';
+        $this->googleModels = implode(', ', $googleConfig['models'] ?? []);
+
+        $ollamaConfig = Setting::getJson('ollama_config', ['url' => 'http://localhost:11434', 'models' => []]);
+        $this->ollamaUrl = $ollamaConfig['url'] ?? 'http://localhost:11434';
+        $this->ollamaModels = implode(', ', $ollamaConfig['models'] ?? []);
 
         $this->deleteOldMessagesDays = (int) Setting::get('delete_old_messages_days', 0);
         $this->windowOpacity = (int) Setting::get('window_opacity', config('purrai.window.opacity'));
+        $this->disableTransparencyMaximized = (bool) Setting::get('disable_transparency_maximized', true);
+        $this->themeMode = Setting::get('theme_mode', 'automatic');
     }
 
     public function save(): void
@@ -60,22 +87,23 @@ class Settings extends Component
         Setting::set('response_tone', $this->responseTone);
         Setting::set('respond_as_cat', $this->respondAsACat);
 
-        if ($this->openaiKey) {
-            Setting::setEncrypted('openai_key', $this->openaiKey);
-        }
-        if ($this->anthropicKey) {
-            Setting::setEncrypted('anthropic_key', $this->anthropicKey);
-        }
-        if ($this->googleKey) {
-            Setting::setEncrypted('google_key', $this->googleKey);
-        }
-        Setting::set('ollama_url', $this->ollamaUrl);
+        $this->saveProviderConfig('openai_config', $this->openaiKey, $this->openaiModels);
+        $this->saveProviderConfig('anthropic_config', $this->anthropicKey, $this->anthropicModels);
+        $this->saveProviderConfig('google_config', $this->googleKey, $this->googleModels);
+
+        Setting::setJson('ollama_config', [
+            'url' => $this->ollamaUrl,
+            'models' => $this->parseModels($this->ollamaModels),
+        ]);
 
         Setting::set('delete_old_messages_days', $this->deleteOldMessagesDays);
         Setting::set('window_opacity', $this->windowOpacity);
+        Setting::set('disable_transparency_maximized', $this->disableTransparencyMaximized);
+        Setting::set('theme_mode', $this->themeMode);
 
         $this->dispatch('settings-saved');
         $this->dispatch('opacity-changed', opacity: $this->windowOpacity);
+        $this->dispatch('theme-changed', theme: $this->themeMode);
     }
 
     public function updatedWindowOpacity(): void
@@ -106,8 +134,108 @@ class Settings extends Component
         $this->save();
     }
 
+    public function updatedDisableTransparencyMaximized(): void
+    {
+        $this->save();
+        $this->dispatch('transparency-setting-changed', enabled: $this->disableTransparencyMaximized);
+    }
+
+    public function updatedThemeMode(): void
+    {
+        $this->save();
+    }
+
+    public function updatedOpenaiKey(): void
+    {
+        $this->save();
+    }
+
+    public function updatedOpenaiModels(): void
+    {
+        $this->save();
+    }
+
+    public function updatedAnthropicKey(): void
+    {
+        $this->save();
+    }
+
+    public function updatedAnthropicModels(): void
+    {
+        $this->save();
+    }
+
+    public function updatedGoogleKey(): void
+    {
+        $this->save();
+    }
+
+    public function updatedGoogleModels(): void
+    {
+        $this->save();
+    }
+
+    public function updatedOllamaUrl(): void
+    {
+        $this->save();
+    }
+
+    public function updatedOllamaModels(): void
+    {
+        $this->save();
+    }
+
+    public function updatedMascotName(): void
+    {
+        $this->save();
+    }
+
+    public function updatedUserName(): void
+    {
+        $this->save();
+    }
+
+    public function updatedUserDescription(): void
+    {
+        $this->save();
+    }
+
+    /**
+     * Save provider configuration with encrypted key
+     */
+    private function saveProviderConfig(string $configKey, string $key, string $models): void
+    {
+        $existingConfig = Setting::getJsonDecrypted($configKey, ['key' => '', 'models' => []]);
+
+        if ($key === self::$fakeKey) {
+            $finalKey = $existingConfig['key'] ?? '';
+        } else {
+            $finalKey = $key;
+        }
+
+        Setting::setJsonEncrypted($configKey, [
+            'key' => $finalKey,
+            'models' => $this->parseModels($models),
+        ]);
+    }
+
+    /**
+     * Parse comma-separated models string into array
+     */
+    private function parseModels(string $models): array
+    {
+        if (empty(trim($models))) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            fn ($model) => trim($model),
+            explode(',', $models)
+        )));
+    }
+
     public function render(): mixed
     {
-        return view('livewire.settings')->layout('components.layouts.app');
+        return view('livewire.settings');
     }
 }

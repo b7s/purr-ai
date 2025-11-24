@@ -22,6 +22,9 @@ class Chat extends Component
     public function mount(?int $conversationId = null): void
     {
         $this->conversationId = $conversationId;
+
+        // Reset window state on first load
+        $this->dispatch('reset-window-state');
     }
 
     public function newConversation(): void
@@ -66,6 +69,6 @@ class Chat extends Component
 
         return view('livewire.chat', [
             'conversation' => $conversation,
-        ])->layout('components.layouts.app');
+        ]);
     }
 }

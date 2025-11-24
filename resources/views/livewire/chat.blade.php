@@ -1,22 +1,36 @@
-<div class="chat-container">
-    <x-layouts.header>
-        @if($conversation)
-            <x-ui.icon-button wire:click="newConversation" icon="plus" :title="__('ui.tooltips.new_chat')" />
-        @endif
+<x-slot name="headerActions">
+    @if($conversation)
+        <x-ui.icon-button wire:click="newConversation" icon="plus" :title="__('ui.tooltips.new_chat')" />
+    @endif
 
-        <div x-data="{ open: false }" class="relative">
-            <x-ui.icon-button @click="open = !open" icon="clock" :title="__('ui.tooltips.history')" />
+    <div x-data="{ open: false }" class="relative">
+        <x-ui.icon-button @click="open = !open" icon="clock" :title="__('ui.tooltips.history')" />
 
-            <div x-show="open" @click.away="open = false" class="dropdown" style="display: none;">
-                <button wire:click="loadConversation(1)" class="dropdown-item">
-                    {{ __('chat.recent_conversation', ['number' => 1]) }}
-                </button>
-                <button wire:click="loadConversation(2)" class="dropdown-item">
-                    {{ __('chat.recent_conversation', ['number' => 2]) }}
-                </button>
-            </div>
+        <div x-show="open" @click.away="open = false" class="dropdown" style="display: none;">
+            <button wire:click="loadConversation(1)" class="dropdown-item">
+                {{ __('chat.recent_conversation', ['number' => 1]) }}
+            </button>
+            <button wire:click="loadConversation(2)" class="dropdown-item">
+                {{ __('chat.recent_conversation', ['number' => 2]) }}
+            </button>
         </div>
-    </x-layouts.header>
+    </div>
+</x-slot>
+
+<div class="h-full flex flex-col" x-data="{ 
+    scrollToBottom() {
+        let container = document.getElementById('messages-container');
+        if (container) {
+            setTimeout(() => container.scrollTop = container.scrollHeight, 100);
+        }
+    },
+    focusInput() {
+        let textarea = document.querySelector('.input-field');
+        if (textarea) {
+            setTimeout(() => textarea.focus(), 100);
+        }
+    }
+}" x-init="focusInput()">
 
     {{-- Messages --}}
     <div class="chat-messages" id="messages-container">
@@ -35,11 +49,11 @@
     </div>
 
     {{-- Input Dock --}}
-    <form wire:submit="sendMessage" class="input-dock">
+    <form wire:submit="sendMessage" class="input-dock" @submit="scrollToBottom(); $nextTick(() => focusInput())">
         <x-ui.button type="button" variant="ghost" icon="plus" :title="__('ui.tooltips.attach_file')" />
 
         <textarea wire:model="message" placeholder="{{ __('chat.placeholder') }}" rows="1"
-            maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field" x-data
+            maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field"
             x-on:input="$el.style.height = 'auto'; $el.style.height = ($el.scrollHeight) + 'px'"
             @keydown.ctrl.enter="$wire.sendMessage()"></textarea>
 
@@ -55,31 +69,3 @@
         @enderror
     </form>
 </div>
-
-@script
-<script>
-    // Auto-focus textarea on load
-    document.addEventListener('DOMContentLoaded', () => {
-        const textarea = document.querySelector('.input-field');
-        if (textarea) {
-            textarea.focus();
-        }
-    });
-
-    // Scroll to bottom when message is sent
-    $wire.on('message-sent', () => {
-        const container = document.getElementById('messages-container');
-        if (container) {
-            setTimeout(() => {
-                container.scrollTop = container.scrollHeight;
-            }, 100);
-        }
-
-        // Re-focus textarea after sending
-        const textarea = document.querySelector('.input-field');
-        if (textarea) {
-            textarea.focus();
-        }
-    });
-</script>
-@endscript

@@ -19,7 +19,7 @@ class NativeAppServiceProvider implements ProvidesPhpIni
         // Set application icon in dock/taskbar
         Dock::icon(public_path('images/logo-PurrAI-256.webp'));
 
-        Window::open()
+        Window::open('main')
             ->width(config('purrai.window.default_width', 800))
             ->height(config('purrai.window.default_height', 600))
             ->minWidth(config('purrai.window.min_width', 480))
@@ -29,7 +29,8 @@ class NativeAppServiceProvider implements ProvidesPhpIni
             ->resizable()
             ->alwaysOnTop(false)
             ->transparent()
-            ->vibrancy('dark');
+            ->vibrancy('dark')
+            ->rememberState();
     }
 
     /**

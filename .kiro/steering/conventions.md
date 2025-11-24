@@ -7,7 +7,7 @@
 - **English**: All code and comments must be in English
 - **Avoid comments**: All code must be commented only with parameters and return with type (follow PHPStan level 5). Use comments only if it is very complete
 - **Locale/Translate**: Never use hardcoded text. Always check the "lang" language folder to see if it already exists, or create it if it doesn't, for all languages ​​in the folder in the corresponding file
-- **Databse**: Never delete or clear the database. Always use migrations to add or remove tables and columns.
+- **Databse**: Never delete, fresh or clear the database. Always use migrations to add or remove tables and columns.
 - **Code formatting**: All code must be formatted with Pint
 - **Strict types**: Every PHP file MUST start with `declare(strict_types=1);`
 - **PSR-12**: All code must follow PSR-12 standards enforced by Pint

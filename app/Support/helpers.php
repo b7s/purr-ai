@@ -53,3 +53,26 @@ if (! function_exists('is_linux')) {
         return PHP_OS_FAMILY === 'Linux';
     }
 }
+
+if (! function_exists('getPreviusChatUrl')) {
+    /**
+     * Get the previous chat URL or chat root.
+     */
+    function getPreviousChatUrl(): string
+    {
+        $previousUrl = url()->previous();
+
+        try {
+            $request = request()->create($previousUrl);
+            $route = app('router')->getRoutes()->match($request);
+
+            if ($route->getName() === 'chat') {
+                return $previousUrl;
+            }
+        } catch (\Throwable) {
+            // If route matching fails, fall through to default
+        }
+
+        return route('chat');
+    }
+}
