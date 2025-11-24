@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="storage/app/public/images/logo-PurrAI-256.webp" width="120" alt="PurrAI">
+<img src="public/images/logo-PurrAI-256.webp" width="120" alt="PurrAI">
 
 # {PurrAI}
 
@@ -151,7 +151,7 @@ For privacy-focused users, configure Ollama to run AI models locally:
 
 ### Frontend
 - **[Alpine.js 3](https://alpinejs.dev)** - Minimal JavaScript framework
-- **[Tailwind CSS 4](https://tailwindcss.com)** - Utility-first CSS
+- **[Tailwind CSS 4](https://tailwindcss.com)** - Utility-first CSS with Glassmorphism style
 - **[Iconoir](https://iconoir.com)** - Beautiful open-source icon library (CSS)
 - **Blade Templates** - Laravel's templating engine
 

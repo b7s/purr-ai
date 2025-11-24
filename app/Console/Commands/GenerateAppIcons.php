@@ -14,7 +14,7 @@ class GenerateAppIcons extends Command
 
     public function handle(): int
     {
-        $sourcePath = storage_path('app/public/images/logo-PurrAI-256.webp');
+        $sourcePath = public_path('images/logo-PurrAI-256.webp');
         
         if (!file_exists($sourcePath)) {
             $this->error('Source icon not found: ' . $sourcePath);

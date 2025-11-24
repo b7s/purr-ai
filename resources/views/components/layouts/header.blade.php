@@ -1,10 +1,9 @@
 <header class="chat-header">
     @if(!is_native())
-        {{-- Web mode: Logo on left --}}
         <div class="flex items-center gap-3">
-            <div class="purr-ai-logo">
-                <img src="/storage/images/logo-PurrAI-64.webp" alt="{{ __('chat.title') }}" class="w-full h-full">
-            </div>
+            <a href="{{ route('chat') }}" class="purr-ai-logo hover:opacity-80 transition-opacity duration-200">
+                <img src="{{ asset('images/logo-PurrAI-64.webp') }}" alt="{{ __('chat.title') }}" class="w-full h-full">
+            </a>
             <span class="text-sm font-medium tracking-wide opacity-80">{{ config('app.name') }}</span>
         </div>
     @else
@@ -13,9 +12,10 @@
             @if(is_mac())
                 <x-ui.window-controls />
             @endif
-            <div class="purr-ai-logo {{ is_mac() ? 'ml-2' : '' }}">
-                <img src="/storage/images/logo-PurrAI-64.webp" alt="{{ __('chat.title') }}" class="w-full h-full">
-            </div>
+            <a href="{{ route('chat') }}"
+                class="purr-ai-logo {{ is_mac() ? 'ml-2' : '' }} hover:opacity-80 transition-opacity duration-200">
+                <img src="{{ asset('images/logo-PurrAI-64.webp') }}" alt="{{ __('chat.title') }}" class="w-full h-full">
+            </a>
             <span class="text-sm font-medium tracking-wide opacity-80">{{ config('app.name') }}</span>
         </div>
     @endif

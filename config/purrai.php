@@ -36,4 +36,11 @@ return [
         'attachments_disk' => env('PURRAI_ATTACHMENTS_DISK', 'local'),
         'attachments_path' => env('PURRAI_ATTACHMENTS_PATH', 'attachments'),
     ],
+
+    'window' => [
+        'default_width' => 800,
+        'default_height' => 600,
+        'min_width' => 480,
+        'min_height' => 550,
+    ],
 ];

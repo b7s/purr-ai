@@ -14,7 +14,7 @@
     @livewireStyles
 </head>
 
-<body class="flex items-center justify-center {{ !is_native() ? 'web-mode' : '' }}">
+<body id="app" class="flex items-center justify-center {{ !is_native() ? 'web-mode' : '' }}">
     <main class="glass-panel">
         {{ $slot }}
     </main>

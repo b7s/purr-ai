@@ -2,7 +2,7 @@
 
 @if($type === 'ai')
     <div class="purr-ai-logo">
-        <img src="/storage/images/logo-PurrAI-256.webp" alt="PurrAI" class="w-full h-full">
+        <img src="{{ asset('images/logo-PurrAI-256.webp') }}" alt="PurrAI" class="w-full h-full">
     </div>
 @else
     <div

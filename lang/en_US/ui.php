@@ -20,4 +20,9 @@ return [
         'send_message' => 'Send message',
         'record_audio' => 'Record audio message',
     ],
+    'window' => [
+        'close' => 'Close',
+        'minimize' => 'Minimize',
+        'maximize' => 'Maximize',
+    ],
 ];

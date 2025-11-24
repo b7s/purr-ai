@@ -2,7 +2,7 @@
 
 <div class="welcome-container">
     <div class="purr-ai-logo welcome-logo">
-        <img src="/storage/images/logo-PurrAI-256.webp" alt="{{ config('app.name') }}" class="w-full h-full">
+        <img src="{{ asset('images/logo-PurrAI-256.webp') }}" alt="{{ config('app.name') }}" class="w-full h-full">
     </div>
     <h2 class="welcome-title">
         {{ $title }}
