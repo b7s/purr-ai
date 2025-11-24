@@ -22,9 +22,9 @@
 
     <div class="flex items-center gap-1">
         {{ $slot }}
+        <x-ui.icon-button icon="settings" :title="__('ui.tooltips.settings')" />
 
         @if(is_native() && !is_mac())
-            {{-- Windows/Linux: controls on right --}}
             <x-ui.window-controls />
         @endif
     </div>

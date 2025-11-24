@@ -16,8 +16,6 @@
                 </button>
             </div>
         </div>
-
-        <x-ui.icon-button icon="settings" :title="__('ui.tooltips.settings')" />
     </x-layouts.header>
 
     {{-- Messages --}}
