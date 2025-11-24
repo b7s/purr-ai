@@ -1,0 +1,198 @@
+<div align="center">
+
+<img src="storage/app/public/images/logo-PurrAI-256.webp" width="120" alt="PurrAI">
+
+# {PurrAI}
+
+**Your adorable AI companion living in your menu bar**
+
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
+[![NativePHP](https://img.shields.io/badge/NativePHP-2.0-6366F1?style=flat)](https://nativephp.com)
+[![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=flat&logo=alpine.js&logoColor=white)](https://alpinejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Configuration](#-configuration) • [Tech Stack](#-tech-stack)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**PurrAI** is a lightweight, cross-platform desktop application that brings the power of AI to your fingertips. With a cute black kitten mascot living in your system's menu bar, you can instantly access AI assistance for any task—from answering questions to analyzing images and documents.
+
+Built with modern web technologies and packaged as a native application, PurrAI runs seamlessly on **Linux**, **Windows**, and **macOS** while maintaining a minimal footprint.
+
+---
+
+## ✨ Features
+
+### 🎯 Core Capabilities
+
+- **🖱️ Menu Bar Integration** - Always accessible from your system tray/menu bar
+- **💬 Intelligent Chat Interface** - Natural conversation with AI powered by PrismPHP
+- **📸 Screenshot Support** - Capture and analyze screen content instantly
+- **🖼️ Image Analysis** - Paste images for AI processing
+- **📎 Document Attachment** - Upload and analyze documents of any type
+- **💾 Conversation History** - All chats saved locally in SQLite with search
+- **🌓 Dark/Light Mode** - Beautiful interface that adapts to your system theme
+- **🔑 Multi-Provider Support** - Configure multiple AI providers (OpenAI, Anthropic, Ollama, etc.)
+- **🔒 Privacy-Focused** - Local Ollama models run in your system without exposing your API keys
+- **🌐 i18n Support** - Available in multiple languages
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- PHP 8.4+
+- Composer
+- Node.js 18+ & npm 10+
+- SQLite
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/purrai.git
+cd purrai
+
+# Install PHP dependencies
+composer install
+
+# Install JavaScript dependencies
+npm install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+
+# Run database migrations
+php artisan migrate
+
+# Build assets
+npm run build
+
+# Build native application
+php artisan native:build
+```
+
+---
+
+## 🎮 Usage
+
+### Starting the Application
+
+```bash
+# Development mode
+php artisan native:serve
+
+# Production build
+php artisan native:build
+```
+
+### First Time Setup
+
+1. Click the kitten icon in your menu bar
+2. Navigate to Settings (⚙️)
+3. Add your AI provider API keys:
+   - OpenAI
+   - Anthropic Claude
+   - Google Gemini
+   - Or configure local Ollama
+
+### Using the Assistant
+
+1. **Start a conversation** - Type your question in the input box
+2. **Attach files** - Click the attachment icon to upload documents
+3. **Paste images** - Use Ctrl+V (Cmd+V on Mac) to paste screenshots
+4. **View history** - Click the history dropdown to browse past conversations
+5. **New chat** - Click the new chat button to start fresh
+
+---
+
+## ⚙️ Configuration
+
+### AI Provider Setup
+
+Navigate to Settings to configure your preferred AI providers:
+
+```php
+// Supported providers via PrismPHP
+- OpenAI (GPT)
+- Anthropic (Claude)
+- Google (Gemini)
+- Ollama (Local models)
+- And more...
+```
+
+### Local Ollama Setup
+
+For privacy-focused users, configure Ollama to run AI models locally:
+
+1. Install [Ollama](https://ollama.ai)
+2. Pull your preferred model: `ollama pull llama2`
+3. Add Ollama endpoint in Settings
+4. Select local model in chat
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **[Laravel 12](https://laravel.com)** - Modern PHP framework
+- **[Livewire 3](https://livewire.laravel.com)** - Reactive components
+- **[SQLite](https://www.sqlite.org)** - Lightweight database
+- **[PrismPHP](https://prismphp.com)** - Multi-provider AI integration
+
+### Frontend
+- **[Alpine.js 3](https://alpinejs.dev)** - Minimal JavaScript framework
+- **[Tailwind CSS 4](https://tailwindcss.com)** - Utility-first CSS
+- **[Iconoir](https://iconoir.com)** - Beautiful open-source icon library (CSS)
+- **Blade Templates** - Laravel's templating engine
+
+### Native Application
+- **[NativePHP 2](https://nativephp.com)** - Cross-platform desktop wrapper
+- **Electron** - Native application runtime
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **[Laravel](https://laravel.com)** - The PHP framework for web artisans
+- **[NativePHP](https://nativephp.com)** - Native desktop applications with PHP
+- **[PrismPHP](https://prismphp.com)** - Unified AI provider interface
+- **[Tailwind CSS](https://tailwindcss.com)** - Beautiful, responsive design
+- **[Alpine.js](https://alpinejs.dev)** - Lightweight JavaScript framework
+
+---
+
+<div align="center">
+
+**Made with ❤️ and 🐱 by the PurrAI Team**
+
+[Report Bug](https://github.com/yourusername/purrai/issues) • [Request Feature](https://github.com/yourusername/purrai/issues)
+
+</div>

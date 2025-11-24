@@ -1,0 +1,304 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@import "./iconoir.css";
+
+@theme {
+    --font-sans: 'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-accent: #000000;
+    --color-accent-fg: #ffffff;
+    
+    --animate-slide-up: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+    @keyframes slide-up {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+}
+
+/* Base Styles */
+body {
+    @apply font-sans text-neutral-900 dark:text-neutral-100 h-screen w-screen overflow-hidden transition-colors duration-500;
+    background: transparent;
+}
+
+body.web-mode {
+    @apply bg-neutral-100 dark:bg-neutral-950;
+}
+
+@layer components {
+    
+    /* Glass Panel */
+    .glass-panel {
+        @apply h-full w-full flex flex-col relative overflow-hidden;
+        @apply backdrop-blur-3xl shadow-2xl transition-all duration-500;
+        @apply border border-white/40 dark:border-white/10;
+        @apply bg-white/85 dark:bg-[#121212]/75;
+    }
+    
+    /* Native mode adjustments */
+    body:not(.web-mode) .glass-panel {
+        @apply border-0 shadow-none rounded-2xl overflow-hidden;
+    }
+    
+    body:not(.web-mode) .chat-header {
+        @apply rounded-t-2xl bg-white/95 dark:bg-[#1e1e1e]/95;
+    }
+    
+    body:not(.web-mode) .chat-container {
+        @apply bg-white/95 dark:bg-[#121212]/95;
+    }
+
+    .glass-header {
+        @apply h-12 px-6 flex items-center justify-between shrink-0 z-20;
+        @apply border-b border-black/5 dark:border-white/5;
+        @apply bg-white/40 dark:bg-white/5 backdrop-blur-md;
+        -webkit-app-region: drag;
+    }
+    
+    .glass-header button,
+    .glass-header a,
+    .glass-header input,
+    .glass-header select {
+        -webkit-app-region: no-drag;
+    }
+
+    /* Chat Container */
+    .chat-container {
+        @apply h-full w-full flex flex-col relative overflow-hidden;
+        @apply backdrop-blur-3xl shadow-2xl transition-all duration-500;
+        @apply border border-white/40 dark:border-white/10;
+        @apply bg-white/85 dark:bg-[#121212]/75;
+    }
+
+    .chat-header {
+        @apply h-12 px-6 flex items-center justify-between shrink-0 z-20;
+        @apply border-b border-black/5 dark:border-white/5;
+        @apply bg-white/40 dark:bg-white/5 backdrop-blur-md;
+        -webkit-app-region: drag;
+    }
+    
+    .chat-header button,
+    .chat-header a,
+    .chat-header input,
+    .chat-header select {
+        -webkit-app-region: no-drag;
+    }
+
+    .chat-messages {
+        @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-36;
+    }
+    
+    .chat-messages::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Chat Rows */
+    .chat-row {
+        @apply flex gap-4 max-w-3xl w-full animate-slide-up;
+    }
+    
+    .chat-row.user { 
+        @apply ml-auto justify-end; 
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        @apply px-5 py-3 text-[15px] leading-relaxed shadow-sm relative max-w-full break-words;
+    }
+    
+    .chat-bubble.primary {
+        @apply bg-accent text-accent-fg rounded-[20px] rounded-tr-[4px] dark:bg-white dark:text-black;
+    }
+    
+    .chat-bubble.secondary {
+        @apply bg-white/60 dark:bg-white/10 backdrop-blur-md border border-white/50 dark:border-white/5;
+        @apply text-neutral-800 dark:text-neutral-200 rounded-[20px] rounded-tl-[4px];
+    }
+
+    /* Avatar */
+    .purr-ai-logo {
+        @apply w-8 h-8;
+        @apply flex items-center justify-center shadow-inner shrink-0;
+    }
+
+    /* Buttons */
+    .circle-btn {
+        @apply w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center cursor-pointer;
+        @apply transition-transform active:scale-95;
+    }
+    
+    .circle-btn.ghost {
+        @apply text-neutral-500 hover:text-neutral-900 dark:hover:text-white;
+        @apply hover:bg-black/5 dark:hover:bg-white/10;
+    }
+
+    .circle-btn.primary {
+        @apply bg-accent text-accent-fg dark:bg-white dark:text-black shadow-md hover:scale-105;
+    }
+
+    .btn-icon {
+        @apply w-9 h-9 rounded-full flex items-center justify-center cursor-pointer;
+        @apply text-neutral-500 hover:text-neutral-900 dark:hover:text-white;
+        @apply hover:bg-black/5 dark:hover:bg-white/10 transition-all;
+    }
+
+    /* File Cards */
+    .file-card {
+        @apply flex items-center gap-3 p-2 pr-4 rounded-xl cursor-pointer transition-all;
+        @apply bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10;
+    }
+    
+    .file-card:hover {
+        @apply bg-white/80 dark:bg-white/15;
+    }
+    
+    .file-icon {
+        @apply w-10 h-10 rounded-lg flex items-center justify-center text-lg;
+        @apply bg-neutral-100 dark:bg-white/10 text-neutral-600 dark:text-neutral-300;
+    }
+
+    /* Image Thumbnails */
+    .attachment-grid {
+        @apply grid grid-cols-3 gap-1.5 mt-2 w-full max-w-[320px];
+    }
+
+    .attachment-thumbnail {
+        @apply aspect-square rounded-2xl overflow-hidden border border-white/20 relative cursor-pointer;
+    }
+
+    .attachment-thumbnail img {
+        @apply w-full h-full object-cover transition-transform duration-500;
+    }
+    
+    .attachment-thumbnail:hover img {
+        @apply scale-110;
+    }
+
+    /* Input Dock */
+    .input-dock {
+        @apply absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-3xl z-30;
+        @apply bg-white/70 dark:bg-[#1e1e1e]/80 backdrop-blur-2xl;
+        @apply border border-white/50 dark:border-white/10;
+        @apply rounded-[32px] shadow-lg ring-1 ring-black/5 dark:ring-white/5;
+        @apply flex items-end gap-2 p-2 transition-shadow focus-within:shadow-xl;
+    }
+
+    .input-field {
+        @apply w-full bg-transparent text-[15px] text-neutral-900 dark:text-white;
+        @apply placeholder-neutral-500 focus:outline-none resize-none max-h-32;
+        @apply py-2.5 px-2;
+    }
+
+    /* Dropdown */
+    .dropdown {
+        @apply absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden;
+        @apply bg-white/80 dark:bg-[#1e1e1e]/80 backdrop-blur-2xl;
+        @apply border border-white/50 dark:border-white/10 shadow-xl;
+        @apply z-50;
+    }
+
+    .dropdown-item {
+        @apply w-full px-4 py-3 text-left text-sm transition-colors;
+        @apply text-neutral-700 dark:text-neutral-300;
+        @apply hover:bg-black/5 dark:hover:bg-white/10;
+    }
+
+    /* Message Timestamp */
+    .message-timestamp {
+        @apply text-[10px] opacity-40 mt-1 font-medium;
+    }
+
+    /* Welcome Screen */
+    .welcome-container {
+        @apply flex flex-col items-center justify-center h-full text-center px-4;
+    }
+
+    .welcome-logo {
+        @apply w-24 h-24 mb-4 opacity-50;
+    }
+
+    .welcome-title {
+        @apply text-2xl font-semibold text-gray-900 dark:text-white mb-2;
+    }
+
+    .welcome-message {
+        @apply text-gray-600 dark:text-gray-400 max-w-md;
+    }
+
+    /* Window Controls */
+    .window-controls {
+        @apply flex items-center gap-2;
+        -webkit-app-region: no-drag;
+    }
+    
+    .window-controls-mac {
+        @apply gap-2;
+    }
+    
+    .window-controls-default {
+        @apply gap-0;
+    }
+    
+    /* macOS Style Buttons */
+    .window-btn-close-mac,
+    .window-btn-minimize-mac,
+    .window-btn-maximize-mac {
+        @apply w-3 h-3 rounded-full flex items-center justify-center;
+        @apply transition-all cursor-pointer;
+    }
+    
+    .window-btn-close-mac {
+        @apply bg-[#FF5F57];
+    }
+    
+    .window-btn-minimize-mac {
+        @apply bg-[#FEBC2E];
+    }
+    
+    .window-btn-maximize-mac {
+        @apply bg-[#28C840];
+    }
+    
+    .window-btn-close-mac:hover,
+    .window-btn-minimize-mac:hover,
+    .window-btn-maximize-mac:hover {
+        @apply opacity-80;
+    }
+    
+    .window-btn-dot {
+        @apply hidden;
+    }
+    
+    .window-btn-close-mac:hover .window-btn-dot,
+    .window-btn-minimize-mac:hover .window-btn-dot,
+    .window-btn-maximize-mac:hover .window-btn-dot {
+        @apply block w-1.5 h-1.5 bg-black/50 rounded-full;
+    }
+    
+    /* Windows/Linux Style Buttons */
+    .window-controls-default {
+        @apply -mr-2;
+    }
+    
+    .window-btn-minimize,
+    .window-btn-maximize,
+    .window-btn-close {
+        @apply w-11 h-11 flex items-center justify-center cursor-pointer;
+        @apply text-neutral-600 dark:text-neutral-400 transition-all;
+    }
+    
+    .window-btn-minimize:hover,
+    .window-btn-maximize:hover {
+        @apply bg-black/5 dark:bg-white/10 rounded-lg;
+    }
+    
+    .window-btn-close:hover {
+        @apply bg-red-500 text-white rounded-lg;
+    }
+}

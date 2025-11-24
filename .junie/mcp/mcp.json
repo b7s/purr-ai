@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "laravel-boost": {
+            "command": "/usr/bin/php8.4",
+            "args": [
+                "/home/bruno/Documents/projects/b7s/blackcat-ai/artisan",
+                "boost:mcp"
+            ]
+        }
+    }
+}
