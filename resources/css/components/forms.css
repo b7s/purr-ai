@@ -1,0 +1,77 @@
+/*!
+ * Form Components for PurrAI
+ */
+
+@layer components {
+    /* Input Dock */
+    .input-dock {
+        @apply absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-3xl z-30;
+        @apply rounded-[32px] shadow-lg flex items-end gap-2 p-2 transition-shadow focus-within:shadow-xl;
+        @apply border ring-1;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(255 255 255);
+        border-color: rgb(229 229 229);
+        --tw-ring-color: rgb(245 245 245);
+    }
+
+    .dark .input-dock {
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(15 23 42 / 0.95);
+        border-color: rgb(51 65 85 / 0.6);
+        --tw-ring-color: rgb(51 65 85 / 0.4);
+    }
+
+    .input-field {
+        @apply w-full bg-transparent text-[15px] focus:outline-none resize-none max-h-32 py-2.5 px-2;
+        color: rgb(23 23 23);
+    }
+
+    .input-field::placeholder {
+        color: rgb(115 115 115);
+    }
+
+    .dark .input-field {
+        color: rgb(255 255 255);
+    }
+
+    .dark .input-field::placeholder {
+        color: rgb(115 115 115);
+    }
+
+    /* Dropdown */
+    .dropdown {
+        @apply absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden shadow-xl z-50 border;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(255 255 255);
+        border-color: rgb(229 229 229);
+    }
+
+    .dark .dropdown {
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(30 30 30 / 0.8);
+        border-color: rgb(255 255 255 / 0.1);
+    }
+
+    .dropdown-item {
+        @apply w-full px-4 py-3 text-left text-sm transition-colors;
+        color: rgb(64 64 64);
+    }
+
+    .dropdown-item:hover {
+        background-color: rgb(245 245 245);
+    }
+
+    .dark .dropdown-item {
+        color: rgb(212 212 212);
+    }
+
+    .dark .dropdown-item:hover {
+        background-color: rgb(255 255 255 / 0.1);
+    }
+
+    /* Help Text */
+    .help-text {
+        @apply text-xs mt-2;
+        color: rgb(115 115 115);
+    }
+}

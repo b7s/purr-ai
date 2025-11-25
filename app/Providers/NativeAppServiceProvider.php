@@ -16,8 +16,7 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
-        // Set application icon in dock/taskbar
-        Dock::icon(public_path('images/logo-PurrAI-256.webp'));
+        Dock::icon(public_path('icon.png'));
 
         Window::open('main')
             ->width(config('purrai.window.default_width', 800))

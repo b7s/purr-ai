@@ -26,3 +26,9 @@ Thumbs.db
 # Database
 /database/*.sqlite
 /database/*.sqlite-journal
+
+# NativePHP build artifacts
+/build/*.png
+/build/*.ico
+/build/*.icns
+/nativephp/

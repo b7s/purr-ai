@@ -3,16 +3,111 @@
         <x-ui.icon-button wire:click="newConversation" icon="plus" :title="__('ui.tooltips.new_chat')" />
     @endif
 
-    <div x-data="{ open: false }" class="relative">
+    <div x-data="{ 
+        open: false,
+        editModalOpen: false,
+        editingId: null,
+        editingTitle: '',
+        loadConv(id) {
+            @this.call('loadConversation', id);
+        },
+        startEdit(id, title) {
+            this.editingId = id;
+            this.editingTitle = title;
+            this.editModalOpen = true;
+            this.$nextTick(() => {
+                this.$refs.editInput?.select();
+            });
+        },
+        saveEdit() {
+            if (!this.editingTitle.trim()) {
+                return;
+            }
+            
+            @this.call('saveTitleDirect', this.editingId, this.editingTitle).then(() => {
+                document.querySelector(`[data-history-item-id='${this.editingId}'] .history-item-title`).textContent = this.editingTitle;
+                document.querySelector(`[data-history-item-id='${this.editingId}'] .history-item-edit[data-title]`).dataset.title = this.editingTitle;
+                this.editModalOpen = false;
+                this.editingId = null;
+                this.editingTitle = '';
+            });
+        },
+        cancelEdit() {
+            this.editModalOpen = false;
+            this.editingId = null;
+            this.editingTitle = '';
+        },
+        loadMoreConv() {
+            @this.call('nextPage');
+        }
+    }" class="relative">
         <x-ui.icon-button @click="open = !open" icon="clock" :title="__('ui.tooltips.history')" />
 
-        <div x-show="open" @click.away="open = false" class="dropdown" style="display: none;">
-            <button wire:click="loadConversation(1)" class="dropdown-item">
-                {{ __('chat.recent_conversation', ['number' => 1]) }}
-            </button>
-            <button wire:click="loadConversation(2)" class="dropdown-item">
-                {{ __('chat.recent_conversation', ['number' => 2]) }}
-            </button>
+        {{-- History Dropdown/Modal --}}
+        <div x-show="open" x-transition @click.away="open = false" class="history-dropdown">
+            {{-- Mobile Header --}}
+            <div class="history-mobile-header">
+                <h3 class="history-mobile-title">{{ __('chat.history_title') }}</h3>
+                <button type="button" @click="open = false" class="history-mobile-close">
+                    <i class="iconoir-xmark"></i>
+                </button>
+            </div>
+
+            <div class="history-list">
+                @forelse($conversations as $conv)
+                    <div class="history-item" data-history-item-id="{{ $conv->id }}"
+                        wire:key="conversation-{{ $conv->id }}">
+                        <button type="button" @click="loadConv({{ $conv->id }})" class="history-item-content">
+                            <div class="history-item-title">{{ $conv->title }}</div>
+                            <div class="history-item-meta">
+                                <span>
+                                    {{ __('chat.created') }}:
+                                    {{ $conv->updated_at->format(__('chat.date_format')) }}
+                                    &middot;
+                                    {{ __('chat.updated') }}:
+                                    {{ $conv->updated_at->diffForHumans() }}
+                                </span>
+                            </div>
+                        </button>
+                        <button type="button" @click.stop="startEdit({{ $conv->id }}, $el.dataset.title)"
+                            data-title="{{ $conv->title }}" class="history-item-edit">
+                            <i class="iconoir-edit-pencil"></i>
+                        </button>
+                    </div>
+                @empty
+                    <div class="history-empty">
+                        {{ __('chat.no_conversations') }}
+                    </div>
+                @endforelse
+            </div>
+
+            @if($conversations->hasMorePages())
+                <div class="history-load-more">
+                    <button type="button" @click="loadMoreConv()" class="history-load-more-btn">
+                        {{ __('chat.load_more') }}
+                    </button>
+                </div>
+            @endif
+        </div>
+
+        {{-- Edit Title Modal --}}
+        <div x-show="editModalOpen" x-transition.opacity @click="cancelEdit()" class="edit-modal-overlay">
+            <div @click.stop class="edit-modal-content" x-transition>
+                <h3 class="edit-modal-title">{{ __('chat.edit_title') }}</h3>
+
+                <input type="text" x-model="editingTitle" x-ref="editInput" class="edit-modal-input"
+                    @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()"
+                    placeholder="{{ __('chat.title_placeholder') }}">
+
+                <div class="edit-modal-actions">
+                    <button type="button" @click="cancelEdit()" class="edit-modal-btn edit-modal-btn-cancel">
+                        {{ __('ui.cancel') }}
+                    </button>
+                    <button type="button" @click="saveEdit()" class="edit-modal-btn edit-modal-btn-confirm">
+                        {{ __('ui.confirm') }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </x-slot>
@@ -52,7 +147,8 @@
     <form wire:submit="sendMessage" class="input-dock" @submit="scrollToBottom(); $nextTick(() => focusInput())">
         <x-ui.button type="button" variant="ghost" icon="plus" :title="__('ui.tooltips.attach_file')" />
 
-        <textarea wire:model="message" placeholder="{{ __('chat.placeholder') }}" rows="1"
+        <textarea wire:model.live.debounce.1000ms="message" wire:change="saveDraft"
+            placeholder="{{ __('chat.placeholder') }}" rows="1"
             maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field"
             x-on:input="$el.style.height = 'auto'; $el.style.height = ($el.scrollHeight) + 'px'"
             @keydown.ctrl.enter="$wire.sendMessage()"></textarea>

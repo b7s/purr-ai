@@ -6,7 +6,11 @@
     </div>
 @else
     <div
-        class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-200 to-blue-400 dark:from-blue-700 dark:to-blue-500 flex items-center justify-center shadow-inner shrink-0">
-        <i class="iconoir-user text-sm text-white"></i>
+        class="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-200 to-slate-400 dark:from-slate-700 dark:to-slate-500 flex items-center justify-center shadow-inner shrink-0 select-none">
+        @if (getUserName())
+            <span class="text-white font-medium text-sm cursor-default uppercase">{{ getUserName()[0] }}</span>
+        @else
+            <i class="iconoir-user text-sm text-white"></i>
+        @endif
     </div>
 @endif

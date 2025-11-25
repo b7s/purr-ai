@@ -1,0 +1,75 @@
+/*!
+ * Glass Panel Components for PurrAI
+ */
+
+@layer components {
+    /* Glass Panel */
+    .glass-panel {
+        @apply h-full w-full flex flex-col relative overflow-hidden shadow-2xl transition-all duration-500;
+        @apply border border-white/40 dark:border-white/10;
+        background: rgb(255 255 255 / var(--window-opacity));
+    }
+
+    .dark .glass-panel {
+        background: rgb(15 23 42 / var(--window-opacity));
+    }
+
+    .window-title {
+        @apply text-sm font-medium text-neutral-900 tracking-wide opacity-80;
+    }
+
+    .dark .window-title {
+        color: rgb(241 245 249);
+    }
+
+    /* Apply backdrop blur only when opacity is less than 1 */
+    body:not(.web-mode) .glass-panel {
+        backdrop-filter: blur(var(--window-blur));
+    }
+
+    body.web-mode .glass-panel {
+        backdrop-filter: none;
+    }
+
+    /* Additional native mode adjustments */
+    body:not(.web-mode) .glass-panel {
+        @apply border-0 shadow-none rounded-2xl;
+    }
+
+    body:not(.web-mode) .top-header {
+        @apply rounded-t-2xl;
+    }
+
+    .glass-header {
+        @apply h-12 px-6 flex items-center justify-between shrink-0 z-20;
+        @apply border-b;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(250 250 250 / 0.8);
+        border-color: rgb(229 229 229);
+        -webkit-app-region: drag;
+    }
+
+    .dark .glass-header {
+        background-color: rgb(15 23 42 / 0.9);
+        border-color: rgb(51 65 85 / 0.7);
+    }
+
+    .glass-header button,
+    .glass-header a,
+    .glass-header input,
+    .glass-header select {
+        -webkit-app-region: no-drag;
+    }
+
+    .top-header {
+        @apply h-12 px-6 flex items-center justify-between shrink-0 z-20;
+        -webkit-app-region: drag;
+    }
+
+    .top-header button,
+    .top-header a,
+    .top-header input,
+    .top-header select {
+        -webkit-app-region: no-drag;
+    }
+}

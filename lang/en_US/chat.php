@@ -14,4 +14,12 @@ return [
     'attach_file' => 'Attach file',
     'take_screenshot' => 'Take screenshot',
     'recent_conversation' => 'Recent conversation :number',
+    'created' => 'Created',
+    'updated' => 'Updated',
+    'no_conversations' => 'No conversations yet',
+    'load_more' => 'Load more',
+    'date_format' => 'm/d/Y H:i',
+    'edit_title' => 'Edit Conversation Title',
+    'title_placeholder' => 'Enter conversation title...',
+    'history_title' => 'Chat History',
 ];

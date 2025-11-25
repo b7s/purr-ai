@@ -241,6 +241,25 @@
                 </p>
             </div>
 
+            @if(!is_linux())
+                <div class="settings-card">
+                    <label class="flex items-center justify-between cursor-pointer">
+                        <div>
+                            <span class="settings-label mb-0">
+                                {{ __('settings.other.open_at_login') }}
+                            </span>
+                            <p class="settings-description mt-1">
+                                {{ __('settings.other.open_at_login_description') }}
+                            </p>
+                        </div>
+                        <button type="button" wire:click="$toggle('openAtLogin')"
+                            class="settings-toggle {{ $openAtLogin ? 'active' : '' }}">
+                            <span class="settings-toggle-thumb"></span>
+                        </button>
+                    </label>
+                </div>
+            @endif
+
             <div class="settings-card">
                 <label class="settings-label">
                     {{ __('settings.other.window_opacity') }}
@@ -255,6 +274,23 @@
                         {{ $windowOpacity }}%
                     </span>
                 </div>
+
+                <label class="settings-label mt-6">
+                    {{ __('settings.other.window_blur') }}
+                </label>
+                <p class="settings-description mb-3">
+                    {{ __('settings.other.window_blur_description') }}
+                </p>
+                <div class="flex items-center gap-4">
+                    <input type="range" wire:model.live.debounce.300ms="windowBlur" min="0" max="100"
+                        class="settings-slider">
+                    <span class="settings-value">
+                        {{ $windowBlur }}px
+                    </span>
+                </div>
+                <p class="help-text">
+                    {{ __('settings.other.window_blur_helper') }}
+                </p>
 
                 <label class="flex items-center justify-between cursor-pointer mt-4">
                     <div>

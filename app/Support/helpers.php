@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\Setting;
+
 if (! function_exists('is_native')) {
     /**
      * Check if the application is running in native mode (NativePHP/Electron).
@@ -55,9 +57,6 @@ if (! function_exists('is_linux')) {
 }
 
 if (! function_exists('getPreviusChatUrl')) {
-    /**
-     * Get the previous chat URL or chat root.
-     */
     function getPreviousChatUrl(): string
     {
         $previousUrl = url()->previous();
@@ -70,9 +69,15 @@ if (! function_exists('getPreviusChatUrl')) {
                 return $previousUrl;
             }
         } catch (\Throwable) {
-            // If route matching fails, fall through to default
         }
 
         return route('chat');
+    }
+}
+
+if (! function_exists('getUserName')) {
+    function getUserName(): ?string
+    {
+        return Setting::get('user_name');
     }
 }

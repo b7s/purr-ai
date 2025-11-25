@@ -9,6 +9,7 @@
 - **Locale/Translate**: Never use hardcoded text. Always check the "lang" language folder to see if it already exists, or create it if it doesn't, for all languages ​​in the folder in the corresponding file
 - **Databse**: Never delete, fresh or clear the database. Always use migrations to add or remove tables and columns.
 - **Code formatting**: All code must be formatted with Pint
+- **Code consistency**: Follow the equivalent file format to maintain consistency
 - **Strict types**: Every PHP file MUST start with `declare(strict_types=1);`
 - **PSR-12**: All code must follow PSR-12 standards enforced by Pint
 - **Type hints**: Always use explicit return types and parameter types

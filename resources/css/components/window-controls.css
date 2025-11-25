@@ -1,0 +1,84 @@
+/*!
+ * Window Controls Components for PurrAI
+ */
+
+@layer components {
+    /* Window Controls */
+    .window-controls {
+        @apply flex items-center gap-2;
+        -webkit-app-region: no-drag;
+    }
+
+    .window-controls-mac {
+        @apply gap-2;
+    }
+
+    .window-controls-default {
+        @apply gap-0;
+    }
+
+    /* macOS Style Buttons */
+    .window-btn-close-mac,
+    .window-btn-minimize-mac,
+    .window-btn-maximize-mac {
+        @apply w-3 h-3 rounded-full flex items-center justify-center;
+        @apply transition-all cursor-pointer;
+    }
+
+    .window-btn-close-mac {
+        @apply bg-[#FF5F57];
+    }
+
+    .window-btn-minimize-mac {
+        @apply bg-[#FEBC2E];
+    }
+
+    .window-btn-maximize-mac {
+        @apply bg-[#28C840];
+    }
+
+    .window-btn-close-mac:hover,
+    .window-btn-minimize-mac:hover,
+    .window-btn-maximize-mac:hover {
+        @apply opacity-80;
+    }
+
+    .window-btn-dot {
+        @apply hidden;
+    }
+
+    .window-btn-close-mac:hover .window-btn-dot,
+    .window-btn-minimize-mac:hover .window-btn-dot,
+    .window-btn-maximize-mac:hover .window-btn-dot {
+        @apply block w-1.5 h-1.5 bg-black/50 rounded-full;
+    }
+
+    /* Windows/Linux Style Buttons */
+    .window-controls-default {
+        @apply flex items-center gap-1;
+    }
+
+    .window-btn {
+        @apply w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all;
+        color: rgb(82 82 82);
+    }
+
+    .window-btn:hover {
+        color: rgb(23 23 23);
+        background-color: rgb(229 229 229);
+    }
+
+    .dark .window-btn {
+        color: rgb(148 163 184);
+    }
+
+    .dark .window-btn:hover {
+        color: rgb(248 250 252);
+        background-color: rgb(51 65 85 / 0.6);
+    }
+
+    .window-btn.close:hover {
+        background-color: rgb(239 68 68);
+        color: rgb(255 255 255);
+    }
+}

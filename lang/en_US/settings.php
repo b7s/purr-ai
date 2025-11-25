@@ -31,7 +31,7 @@ return [
     ],
 
     'tones' => [
-        'basic' => 'Basic',
+        'basic' => 'Common',
         'basic_description' => 'Balanced',
         'professional' => 'Professional',
         'professional_description' => 'Precise and refined',
@@ -76,8 +76,13 @@ return [
         'delete_old_messages' => 'Delete Old Messages (Days)',
         'delete_old_messages_description' => 'Automatically delete messages older than the specified number of days',
         'delete_old_messages_helper' => 'Enter 0 to disable automatic deletion',
+        'open_at_login' => 'Open at Login',
+        'open_at_login_description' => 'Automatically start PurrAI when you log in to your computer',
         'window_opacity' => 'Window Opacity',
         'window_opacity_description' => 'Adjust the transparency of the application window',
+        'window_blur' => 'Window Blur',
+        'window_blur_description' => 'Adjust the background blur effect',
+        'window_blur_helper' => 'Blur is only applied when opacity is less than 100%',
         'disable_transparency_maximized' => 'Disable Transparency When Maximized',
         'disable_transparency_maximized_description' => 'Set window to 100% opacity when maximized',
         'theme_mode' => 'Theme Mode',

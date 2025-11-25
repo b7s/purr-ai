@@ -1,0 +1,70 @@
+/*!
+ * Scrollbar Styles for PurrAI
+ */
+
+/* Modern Scrollbar Styles */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.3s ease;
+}
+
+*:hover,
+*:focus-within,
+*:active {
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.dark *:hover,
+.dark *:focus-within,
+.dark *:active {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* Webkit Scrollbar */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    transition: width 0.2s ease;
+}
+
+*::-webkit-scrollbar:hover {
+    width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.3s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb,
+*:focus-within::-webkit-scrollbar-thumb,
+*:active::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+}
+
+.dark *:hover::-webkit-scrollbar-thumb,
+.dark *:focus-within::-webkit-scrollbar-thumb,
+.dark *:active::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35);
+    background-clip: padding-box;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+    background-clip: padding-box;
+}

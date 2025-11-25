@@ -1,0 +1,345 @@
+/*!
+ * History Components for PurrAI
+ */
+
+@layer components {
+    /* History Dropdown */
+    .history-dropdown {
+        @apply absolute top-full mt-2 w-96 rounded-2xl overflow-hidden;
+        @apply shadow-xl z-50 border max-h-[500px] flex flex-col;
+        @apply bg-white/80 backdrop-blur-md;
+        border-color: rgb(229 229 229);
+        right: 0;
+    }
+
+    /* Adjust position if too close to left edge */
+    @media (max-width: 480px) {
+        .history-dropdown {
+            right: auto;
+            left: 0;
+        }
+    }
+
+    /* Mobile: Full screen modal */
+    @media (max-width: 640px) {
+        .history-dropdown {
+            @apply fixed inset-0 w-full h-full max-h-full rounded-none mt-0;
+        }
+    }
+
+    .dark .history-dropdown {
+        @apply bg-gray-800/75 backdrop-blur-md;
+        border-color: rgb(255 255 255 / 0.1);
+    }
+
+    @media (max-width: 640px) {
+        .dark .history-dropdown {
+            @apply bg-gray-900/95;
+        }
+    }
+
+    /* Mobile Header */
+    .history-mobile-header {
+        @apply hidden;
+    }
+
+    @media (max-width: 640px) {
+        .history-mobile-header {
+            @apply flex items-center justify-between px-4 py-3 border-b;
+            border-color: rgb(229 229 229);
+        }
+
+        .dark .history-mobile-header {
+            border-color: rgb(51 65 85 / 0.5);
+        }
+    }
+
+    .history-mobile-title {
+        @apply text-lg font-semibold;
+        color: rgb(23 23 23);
+    }
+
+    .dark .history-mobile-title {
+        color: rgb(248 250 252);
+    }
+
+    .history-mobile-close {
+        @apply w-9 h-9 flex items-center justify-center rounded-lg transition-colors;
+        color: rgb(115 115 115);
+    }
+
+    .history-mobile-close:hover {
+        background-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+    }
+
+    .dark .history-mobile-close:hover {
+        background-color: rgb(51 65 85 / 0.5);
+        color: rgb(248 250 252);
+    }
+
+    .history-list {
+        @apply overflow-y-auto flex-1;
+    }
+
+    .history-item {
+        @apply flex items-center gap-2 border-b transition-colors;
+        border-color: rgb(229 229 229);
+    }
+
+    .dark .history-item {
+        border-color: rgb(255 255 255 / 0.1);
+    }
+
+    .history-item:last-child {
+        @apply border-b-0;
+    }
+
+    .history-item:hover {
+        @apply bg-gray-100/30;
+    }
+
+    .dark .history-item:hover {
+        background-color: rgb(255 255 255 / 0.05);
+    }
+
+    .history-item-content {
+        @apply flex-1 px-4 py-3 text-left cursor-pointer min-w-0;
+    }
+
+    .history-item-title {
+        @apply text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap;
+        color: rgb(23 23 23);
+        max-width: 100%;
+    }
+
+    .dark .history-item-title {
+        color: rgb(255 255 255);
+    }
+
+    .history-item-meta {
+        @apply text-[10px] mt-1 space-y-0.5;
+        color: rgb(115 115 115);
+    }
+
+    .dark .history-item-meta {
+        color: rgb(148 163 184);
+    }
+
+    .history-item-meta span {
+        @apply block;
+    }
+
+    .history-item-edit {
+        @apply w-9 h-9 shrink-0 flex items-center justify-center rounded-lg transition-colors mr-2 cursor-pointer;
+        color: rgb(115 115 115);
+    }
+
+    .history-item-edit:hover {
+        background-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+    }
+
+    .dark .history-item-edit:hover {
+        background-color: rgb(51 65 85 / 0.5);
+        color: rgb(248 250 252);
+    }
+
+    .history-item-editing {
+        @apply flex items-center gap-2 px-4 py-3 w-full;
+    }
+
+    .history-edit-input {
+        @apply flex-1 px-3 py-2 rounded-lg text-sm border;
+        @apply focus:outline-none focus:ring-2 cursor-pointer;
+        background-color: rgb(255 255 255);
+        border-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+        --tw-ring-color: rgb(23 23 23 / 0.2);
+    }
+
+    .dark .history-edit-input {
+        background-color: rgb(30 41 59 / 0.8);
+        border-color: rgb(51 65 85 / 0.5);
+        color: rgb(226 232 240);
+        --tw-ring-color: rgb(148 163 184 / 0.3);
+    }
+
+    .history-edit-actions {
+        @apply flex gap-1;
+    }
+
+    .history-edit-btn {
+        @apply w-8 h-8 shrink-0 flex items-center justify-center rounded-lg transition-colors;
+    }
+
+    .history-edit-btn-save {
+        background-color: rgb(23 23 23);
+        color: rgb(255 255 255);
+    }
+
+    .history-edit-btn-save:hover {
+        background-color: rgb(64 64 64);
+    }
+
+    .dark .history-edit-btn-save {
+        background-color: rgb(226 232 240);
+        color: rgb(15 23 42);
+    }
+
+    .dark .history-edit-btn-save:hover {
+        background-color: rgb(203 213 225);
+    }
+
+    .history-edit-btn-cancel {
+        background-color: rgb(229 229 229);
+        color: rgb(64 64 64);
+    }
+
+    .history-edit-btn-cancel:hover {
+        background-color: rgb(212 212 212);
+    }
+
+    .dark .history-edit-btn-cancel {
+        background-color: rgb(51 65 85 / 0.5);
+        color: rgb(148 163 184);
+    }
+
+    .dark .history-edit-btn-cancel:hover {
+        background-color: rgb(51 65 85 / 0.7);
+    }
+
+    .history-empty {
+        @apply px-4 py-8 text-center text-sm;
+        color: rgb(115 115 115);
+    }
+
+    .dark .history-empty {
+        color: rgb(148 163 184);
+    }
+
+    .history-load-more {
+        @apply p-2 border-t;
+        border-color: rgb(229 229 229);
+    }
+
+    .dark .history-load-more {
+        border-color: rgb(51 65 85 / 0.5);
+    }
+
+    .history-load-more-btn {
+        @apply w-full px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer;
+        background-color: rgb(245 245 245);
+        color: rgb(64 64 64);
+    }
+
+    .history-load-more-btn:hover {
+        background-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+    }
+
+    .dark .history-load-more-btn {
+        background-color: rgb(30 41 59 / 0.6);
+        color: rgb(203 213 225);
+    }
+
+    .dark .history-load-more-btn:hover {
+        background-color: rgb(30 41 59 / 0.8);
+        color: rgb(248 250 252);
+    }
+
+    /* Edit Title Modal */
+    .edit-modal-overlay {
+        @apply fixed inset-0 z-[100] flex items-center justify-center;
+        background-color: rgb(0 0 0 / 0.5);
+    }
+
+    .dark .edit-modal-overlay {
+        background-color: rgb(0 0 0 / 0.7);
+    }
+
+    .edit-modal-content {
+        @apply w-full max-w-md mx-4 rounded-2xl shadow-2xl p-6 border;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(255 255 255);
+        border-color: rgb(229 229 229);
+    }
+
+    .dark .edit-modal-content {
+        background-color: rgb(15 23 42 / 0.95);
+        border-color: rgb(51 65 85 / 0.6);
+    }
+
+    .edit-modal-title {
+        @apply text-lg font-semibold mb-4;
+        color: rgb(23 23 23);
+    }
+
+    .dark .edit-modal-title {
+        color: rgb(248 250 252);
+    }
+
+    .edit-modal-input {
+        @apply w-full px-4 py-2.5 rounded-lg text-[15px] border mb-6;
+        @apply focus:outline-none focus:ring-2;
+        background-color: rgb(255 255 255);
+        border-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+        --tw-ring-color: rgb(23 23 23 / 0.2);
+    }
+
+    .dark .edit-modal-input {
+        background-color: rgb(30 41 59 / 0.8);
+        border-color: rgb(51 65 85 / 0.5);
+        color: rgb(226 232 240);
+        --tw-ring-color: rgb(148 163 184 / 0.3);
+    }
+
+    .edit-modal-input::placeholder {
+        color: rgb(115 115 115);
+    }
+
+    .edit-modal-actions {
+        @apply flex gap-3 justify-end;
+    }
+
+    .edit-modal-btn {
+        @apply px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200;
+    }
+
+    .edit-modal-btn-cancel {
+        background-color: rgb(245 245 245);
+        color: rgb(64 64 64);
+    }
+
+    .edit-modal-btn-cancel:hover {
+        background-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+    }
+
+    .dark .edit-modal-btn-cancel {
+        background-color: rgb(51 65 85 / 0.5);
+        color: rgb(203 213 225);
+    }
+
+    .dark .edit-modal-btn-cancel:hover {
+        background-color: rgb(51 65 85 / 0.7);
+        color: rgb(248 250 252);
+    }
+
+    .edit-modal-btn-confirm {
+        @apply bg-gradient-to-br from-gray-900 to-gray-800 text-white;
+    }
+
+    .edit-modal-btn-confirm:hover {
+        @apply from-gray-800 to-gray-700;
+    }
+
+    .dark .edit-modal-btn-confirm {
+        @apply from-gray-700 to-gray-600;
+    }
+
+    .dark .edit-modal-btn-confirm:hover {
+        @apply from-gray-600 to-gray-500;
+    }
+}

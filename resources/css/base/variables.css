@@ -1,0 +1,8 @@
+/*!
+ * CSS Variables for PurrAI
+ */
+
+:root {
+    --window-opacity: 0.85;
+    --window-blur: 48px;
+}

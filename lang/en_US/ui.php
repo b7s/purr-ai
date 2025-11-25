@@ -25,4 +25,10 @@ return [
         'minimize' => 'Minimize',
         'maximize' => 'Maximize',
     ],
+    'messages' => [
+        'see_more' => 'see more',
+        'see_less' => 'see less',
+    ],
+    'cancel' => 'Cancel',
+    'confirm' => 'Confirm',
 ];

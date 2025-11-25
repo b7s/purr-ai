@@ -6,12 +6,14 @@ namespace App\Livewire;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\MessageDraft;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Chat extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public ?int $conversationId = null;
 
@@ -19,16 +21,22 @@ class Chat extends Component
 
     public array $attachments = [];
 
+    public ?int $editingConversationId = null;
+
+    public string $editingTitle = '';
+
     public function mount(?int $conversationId = null): void
     {
         $this->conversationId = $conversationId;
 
-        // Reset window state on first load
+        $this->loadDraft();
+
         $this->dispatch('reset-window-state');
     }
 
     public function newConversation(): void
     {
+        $this->clearDraft();
         $this->conversationId = null;
         $this->message = '';
     }
@@ -36,10 +44,60 @@ class Chat extends Component
     public function loadConversation(int $conversationId): void
     {
         $this->conversationId = $conversationId;
+        $this->loadDraft();
+        $this->redirect(route('chat', ['conversationId' => $conversationId]));
+    }
+
+    public function saveTitleDirect(int $conversationId, string $title): bool
+    {
+        try {
+            $title = trim($title);
+
+            if (empty($title) || strlen($title) > 255) {
+                return false;
+            }
+
+            $conversation = Conversation::find($conversationId);
+
+            if (! $conversation) {
+                return false;
+            }
+
+            $conversation->timestamps = false;
+            $conversation->update(['title' => $title]);
+            $conversation->timestamps = true;
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function loadMore(): void
+    {
+        $this->dispatch('load-more');
+    }
+
+    public function saveDraft(): void
+    {
+        $content = trim($this->message);
+
+        if (empty($content)) {
+            $this->clearDraft();
+
+            return;
+        }
+
+        MessageDraft::updateOrCreate(
+            ['conversation_id' => $this->conversationId],
+            ['content' => $content]
+        );
     }
 
     public function sendMessage(): void
     {
+        $this->message = trim($this->message);
+
         $this->validate([
             'message' => 'required|string|max:'.config('purrai.limits.max_message_length'),
         ]);
@@ -57,6 +115,7 @@ class Chat extends Component
             'content' => $this->message,
         ]);
 
+        $this->clearDraft();
         $this->message = '';
         $this->dispatch('message-sent');
     }
@@ -67,8 +126,28 @@ class Chat extends Component
             ? Conversation::with('messages.attachments')->find($this->conversationId)
             : null;
 
+        $conversations = Conversation::query()
+            ->selectRaw('id, SUBSTR(title, 1, 60) as title, created_at, updated_at')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(config('purrai.limits.conversations_per_page'));
+
         return view('livewire.chat', [
             'conversation' => $conversation,
+            'conversations' => $conversations,
         ]);
+    }
+
+    private function loadDraft(): void
+    {
+        $draft = MessageDraft::where('conversation_id', $this->conversationId)->first();
+
+        if ($draft) {
+            $this->message = $draft->content;
+        }
+    }
+
+    private function clearDraft(): void
+    {
+        MessageDraft::where('conversation_id', $this->conversationId)->delete();
     }
 }

@@ -1,0 +1,90 @@
+/*!
+ * Chat Components for PurrAI
+ */
+
+@layer components {
+    .chat-messages {
+        @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-36;
+    }
+
+    /* Chat Rows */
+    .chat-row {
+        @apply flex gap-4 max-w-3xl w-full animate-slide-up;
+    }
+
+    .chat-row.user {
+        @apply ml-auto justify-end;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        @apply px-5 py-3 text-[15px] leading-relaxed shadow-sm relative max-w-full wrap-break-word;
+    }
+
+    .chat-bubble.primary {
+        @apply rounded-[20px] rounded-br-[4px];
+        background-color: rgb(23 23 23);
+        color: rgb(255 255 255);
+    }
+
+    .dark .chat-bubble.primary {
+        background-color: rgb(226 232 240);
+        color: rgb(15 23 42);
+    }
+
+    .chat-bubble.secondary {
+        @apply rounded-[20px] rounded-tl-[4px] border;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(245 245 245);
+        border-color: rgb(229 229 229);
+        color: rgb(23 23 23);
+    }
+
+    .dark .chat-bubble.secondary {
+        background-color: rgb(30 41 59 / 0.9);
+        border-color: rgb(51 65 85 / 0.6);
+        color: rgb(226 232 240);
+    }
+
+    /* Avatar */
+    .purr-ai-logo {
+        @apply w-8 h-8;
+        @apply flex items-center justify-center shrink-0;
+    }
+
+    /* Message Timestamp */
+    .message-timestamp {
+        @apply text-[10px] opacity-40 mt-1 font-medium;
+    }
+
+    /* Welcome Screen */
+    .welcome-container {
+        @apply flex flex-col items-center justify-center h-full text-center px-4;
+    }
+
+    .welcome-logo {
+        @apply w-38 h-38 mb-4;
+    }
+
+    .animate-welcome-logo {
+        animation: var(--animate-welcome-logo);
+        animation-fill-mode: both;
+    }
+    .welcome-title {
+        @apply text-2xl font-semibold mb-2;
+        color: rgb(23 23 23);
+    }
+
+    .dark .welcome-title {
+        color: rgb(248 250 252);
+    }
+
+    .welcome-message {
+        @apply max-w-md;
+        color: rgb(82 82 82);
+    }
+
+    .dark .welcome-message {
+        color: rgb(148 163 184);
+    }
+}

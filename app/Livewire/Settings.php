@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Setting;
 use Livewire\Component;
+use Native\Desktop\Facades\App;
 
 class Settings extends Component
 {
@@ -43,9 +44,13 @@ class Settings extends Component
 
     public int $windowOpacity = 90;
 
+    public int $windowBlur = 48;
+
     public bool $disableTransparencyMaximized = true;
 
     public string $themeMode = 'automatic';
+
+    public bool $openAtLogin = false;
 
     public function mount(): void
     {
@@ -74,8 +79,10 @@ class Settings extends Component
 
         $this->deleteOldMessagesDays = (int) Setting::get('delete_old_messages_days', 0);
         $this->windowOpacity = (int) Setting::get('window_opacity', config('purrai.window.opacity'));
+        $this->windowBlur = (int) Setting::get('window_blur', config('purrai.window.blur', 48));
         $this->disableTransparencyMaximized = (bool) Setting::get('disable_transparency_maximized', true);
         $this->themeMode = Setting::get('theme_mode', 'automatic');
+        $this->openAtLogin = (bool) Setting::get('open_at_login', false);
     }
 
     public function save(): void
@@ -98,15 +105,23 @@ class Settings extends Component
 
         Setting::set('delete_old_messages_days', $this->deleteOldMessagesDays);
         Setting::set('window_opacity', $this->windowOpacity);
+        Setting::set('window_blur', $this->windowBlur);
         Setting::set('disable_transparency_maximized', $this->disableTransparencyMaximized);
         Setting::set('theme_mode', $this->themeMode);
+        Setting::set('open_at_login', $this->openAtLogin);
 
         $this->dispatch('settings-saved');
         $this->dispatch('opacity-changed', opacity: $this->windowOpacity);
+        $this->dispatch('blur-changed', blur: $this->windowBlur);
         $this->dispatch('theme-changed', theme: $this->themeMode);
     }
 
     public function updatedWindowOpacity(): void
+    {
+        $this->save();
+    }
+
+    public function updatedWindowBlur(): void
     {
         $this->save();
     }
@@ -198,6 +213,17 @@ class Settings extends Component
     public function updatedUserDescription(): void
     {
         $this->save();
+    }
+
+    public function updatedOpenAtLogin(): void
+    {
+        if (! is_linux()) {
+            $this->save();
+
+            if (class_exists(App::class)) {
+                App::openAtLogin($this->openAtLogin);
+            }
+        }
     }
 
     /**

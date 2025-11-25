@@ -5,17 +5,20 @@ declare(strict_types=1);
 return [
     'limits' => [
         'max_message_length' => env('PURRAI_MAX_MESSAGE_LENGTH', 10000),
+        'truncate_words' => 45,
+        'conversations_per_page' => 10,
     ],
 
     'window' => [
-        'default_width' => 800,
-        'default_height' => 600,
+        'default_width' => 1100,
+        'default_height' => 618,
         'min_width' => 480,
         'min_height' => 550,
 
         'default_x' => 10,
         'default_y' => 10,
         'opacity' => 90,
+        'blur' => 48,
     ],
 
     'response_tones' => [

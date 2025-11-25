@@ -1,0 +1,30 @@
+/*!
+ * Base Styles for PurrAI
+ */
+
+/* Page transition animation */
+.page-transition {
+    @apply flex-1 overflow-y-auto;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Base Styles */
+body {
+    @apply font-sans text-neutral-900 dark:text-slate-100 h-screen w-screen overflow-hidden transition-colors duration-500;
+    background: transparent;
+}
+
+body.web-mode {
+    @apply bg-neutral-100 dark:bg-slate-950;
+}

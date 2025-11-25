@@ -1,0 +1,59 @@
+/*!
+ * Button Components for PurrAI
+ */
+
+@layer components {
+    /* Buttons */
+    .circle-btn {
+        @apply w-10 h-10 rounded-full shrink-0 flex items-center justify-center cursor-pointer;
+        @apply transition-transform active:scale-95;
+    }
+
+    .circle-btn.ghost {
+        color: rgb(82 82 82);
+    }
+
+    .circle-btn.ghost:hover {
+        color: rgb(23 23 23);
+        background-color: rgb(229 229 229);
+    }
+
+    .dark .circle-btn.ghost {
+        color: rgb(115 115 115);
+    }
+
+    .dark .circle-btn.ghost:hover {
+        color: rgb(248 250 252);
+        background-color: rgb(51 65 85 / 0.5);
+    }
+
+    .circle-btn.primary {
+        @apply shadow-md hover:scale-105;
+        background-color: rgb(23 23 23);
+        color: rgb(255 255 255);
+    }
+
+    .dark .circle-btn.primary {
+        background-color: rgb(255 255 255);
+        color: rgb(0 0 0);
+    }
+
+    .btn-icon {
+        @apply w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all;
+        color: rgb(82 82 82);
+    }
+
+    .btn-icon:hover {
+        color: rgb(23 23 23);
+        background-color: rgb(229 229 229);
+    }
+
+    .dark .btn-icon {
+        color: rgb(148 163 184);
+    }
+
+    .dark .btn-icon:hover {
+        color: rgb(248 250 252);
+        background-color: rgb(51 65 85 / 0.6);
+    }
+}
