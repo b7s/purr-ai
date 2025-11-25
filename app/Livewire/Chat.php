@@ -9,11 +9,10 @@ use App\Models\Message;
 use App\Models\MessageDraft;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\WithPagination;
 
 class Chat extends Component
 {
-    use WithFileUploads, WithPagination;
+    use WithFileUploads;
 
     public ?int $conversationId = null;
 
@@ -21,13 +20,18 @@ class Chat extends Component
 
     public array $attachments = [];
 
+    public array $conversations = [];
+
     public ?int $editingConversationId = null;
 
     public string $editingTitle = '';
 
+    public int $currentPage = 1;
+
     public function mount(?int $conversationId = null): void
     {
         $this->conversationId = $conversationId;
+        $this->conversations = $this->getConversationsHistory();
 
         $this->loadDraft();
 
@@ -48,6 +52,15 @@ class Chat extends Component
         $this->redirect(route('chat', ['conversationId' => $conversationId]));
     }
 
+    public function loadMoreHistoryConversations(): array
+    {
+        $this->currentPage++;
+        $newConversations = $this->getConversationsHistory();
+        $this->conversations = [...$this->conversations, ...$newConversations];
+
+        return $newConversations;
+    }
+
     public function saveTitleDirect(int $conversationId, string $title): bool
     {
         try {
@@ -57,7 +70,7 @@ class Chat extends Component
                 return false;
             }
 
-            $conversation = Conversation::find($conversationId);
+            $conversation = Conversation::query()->find($conversationId);
 
             if (! $conversation) {
                 return false;
@@ -73,11 +86,6 @@ class Chat extends Component
         }
     }
 
-    public function loadMore(): void
-    {
-        $this->dispatch('load-more');
-    }
-
     public function saveDraft(): void
     {
         $content = trim($this->message);
@@ -88,7 +96,7 @@ class Chat extends Component
             return;
         }
 
-        MessageDraft::updateOrCreate(
+        MessageDraft::query()->updateOrCreate(
             ['conversation_id' => $this->conversationId],
             ['content' => $content]
         );
@@ -99,13 +107,14 @@ class Chat extends Component
         $this->message = trim($this->message);
 
         $this->validate([
-            'message' => 'required|string|max:'.config('purrai.limits.max_message_length'),
+            'message' => 'required|string|max:' . config('purrai.limits.max_message_length'),
         ]);
 
         if (! $this->conversationId) {
             $conversation = Conversation::create([
-                'title' => substr($this->message, 0, 50),
+                'title' => substr($this->message, 0, 100),
             ]);
+
             $this->conversationId = $conversation->id;
         }
 
@@ -126,15 +135,35 @@ class Chat extends Component
             ? Conversation::with('messages.attachments')->find($this->conversationId)
             : null;
 
-        $conversations = Conversation::query()
-            ->selectRaw('id, SUBSTR(title, 1, 60) as title, created_at, updated_at')
-            ->orderBy('updated_at', 'desc')
-            ->paginate(config('purrai.limits.conversations_per_page'));
+        $totalConversations = Conversation::query()->count();
+        $hasMorePages = \count($this->conversations) < $totalConversations;
 
         return view('livewire.chat', [
             'conversation' => $conversation,
-            'conversations' => $conversations,
+            'hasMorePages' => $hasMorePages,
         ]);
+    }
+
+    private function getConversationsHistory(?int $limit = null): array
+    {
+        $limit ??= config('purrai.limits.conversations_per_page');
+        $currentPage = max(1, $this->currentPage);
+        $offset = ($currentPage - 1) * $limit;
+
+        return Conversation::query()
+            ->selectRaw('id, SUBSTR(title, 1, 60) as title, created_at, updated_at')
+            ->orderByDesc('updated_at')
+            ->skip($offset)
+            ->take($limit)
+            ->get()
+            ->map(fn($conv) => [
+                'id' => $conv->id,
+                'title' => $conv->title,
+                'created_at' => $conv->created_at->format(__('chat.date_format')),
+                'updated_at' => $conv->updated_at->format(__('chat.date_format')),
+                'updated_at_human' => $conv->updated_at->diffForHumans(),
+            ])
+            ->toArray();
     }
 
     private function loadDraft(): void

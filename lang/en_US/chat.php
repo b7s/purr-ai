@@ -22,4 +22,5 @@ return [
     'edit_title' => 'Edit Conversation Title',
     'title_placeholder' => 'Enter conversation title...',
     'history_title' => 'Chat History',
+    'loading' => 'Loading...',
 ];

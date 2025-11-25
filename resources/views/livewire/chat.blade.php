@@ -3,48 +3,12 @@
         <x-ui.icon-button wire:click="newConversation" icon="plus" :title="__('ui.tooltips.new_chat')" />
     @endif
 
-    <div x-data="{ 
-        open: false,
-        editModalOpen: false,
-        editingId: null,
-        editingTitle: '',
-        loadConv(id) {
-            @this.call('loadConversation', id);
-        },
-        startEdit(id, title) {
-            this.editingId = id;
-            this.editingTitle = title;
-            this.editModalOpen = true;
-            this.$nextTick(() => {
-                this.$refs.editInput?.select();
-            });
-        },
-        saveEdit() {
-            if (!this.editingTitle.trim()) {
-                return;
-            }
-            
-            @this.call('saveTitleDirect', this.editingId, this.editingTitle).then(() => {
-                document.querySelector(`[data-history-item-id='${this.editingId}'] .history-item-title`).textContent = this.editingTitle;
-                document.querySelector(`[data-history-item-id='${this.editingId}'] .history-item-edit[data-title]`).dataset.title = this.editingTitle;
-                this.editModalOpen = false;
-                this.editingId = null;
-                this.editingTitle = '';
-            });
-        },
-        cancelEdit() {
-            this.editModalOpen = false;
-            this.editingId = null;
-            this.editingTitle = '';
-        },
-        loadMoreConv() {
-            @this.call('nextPage');
-        }
-    }" class="relative">
-        <x-ui.icon-button @click="open = !open" icon="clock" :title="__('ui.tooltips.history')" />
+    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }})" class="relative">
+        <x-ui.icon-button @click="open = !open" icon="clock-rotate-right" :title="__('ui.tooltips.history')" />
 
         {{-- History Dropdown/Modal --}}
-        <div x-show="open" x-transition @click.away="open = false" class="history-dropdown">
+        <div x-show="open" x-transition @click.away="open = false" @keydown.window.escape="open ? open = false : null"
+            class="history-dropdown">
             {{-- Mobile Header --}}
             <div class="history-mobile-header">
                 <h3 class="history-mobile-title">{{ __('chat.history_title') }}</h3>
@@ -54,40 +18,43 @@
             </div>
 
             <div class="history-list">
-                @forelse($conversations as $conv)
-                    <div class="history-item" data-history-item-id="{{ $conv->id }}"
-                        wire:key="conversation-{{ $conv->id }}">
-                        <button type="button" @click="loadConv({{ $conv->id }})" class="history-item-content">
-                            <div class="history-item-title">{{ $conv->title }}</div>
+                <template x-if="conversations.length === 0">
+                    <div class="history-empty">
+                        <i class="iconoir-chat-bubble-empty text-xl mb-4"></i>
+                        <div>{{ __('chat.no_conversations') }}</div>
+                    </div>
+                </template>
+
+                <template x-for="conv in conversations" :key="conv.id">
+                    <div class="history-item" :data-history-item-id="conv.id">
+                        <button type="button" @click="loadConv(conv.id)" class="history-item-content">
+                            <div class="history-item-title" x-text="conv.title"></div>
                             <div class="history-item-meta">
-                                <span>
-                                    {{ __('chat.created') }}:
-                                    {{ $conv->updated_at->format(__('chat.date_format')) }}
-                                    &middot;
-                                    {{ __('chat.updated') }}:
-                                    {{ $conv->updated_at->diffForHumans() }}
-                                </span>
+                                <span x-text="conv.created_at"></span>
+                                <span>&middot;</span>
+                                {{ __('chat.updated') }}:
+                                <span x-text="conv.updated_at_human"></span>
                             </div>
                         </button>
-                        <button type="button" @click.stop="startEdit({{ $conv->id }}, $el.dataset.title)"
-                            data-title="{{ $conv->title }}" class="history-item-edit">
+                        <button type="button" @click.stop="startEdit(conv.id, conv.title)" :data-title="conv.title"
+                            class="history-item-edit">
                             <i class="iconoir-edit-pencil"></i>
                         </button>
                     </div>
-                @empty
-                    <div class="history-empty">
-                        {{ __('chat.no_conversations') }}
-                    </div>
-                @endforelse
+                </template>
             </div>
 
-            @if($conversations->hasMorePages())
+            <template x-if="hasMorePages">
                 <div class="history-load-more">
-                    <button type="button" @click="loadMoreConv()" class="history-load-more-btn">
-                        {{ __('chat.load_more') }}
+                    <button type="button" @click="loadMore()" :disabled="loadingMore" class="history-load-more-btn"
+                        :class="{ 'opacity-50 cursor-not-allowed': loadingMore }">
+                        <span x-show="!loadingMore">{{ __('chat.load_more') }}</span>
+                        <span x-show="loadingMore" x-cloak>
+                            <x-ui.loading-icon />
+                        </span>
                     </button>
                 </div>
-            @endif
+            </template>
         </div>
 
         {{-- Edit Title Modal --}}
