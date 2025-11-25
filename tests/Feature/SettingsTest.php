@@ -30,11 +30,12 @@ test('encrypted settings can be saved and retrieved', function () {
     expect($retrieved)->toBe($apiKey);
 });
 
-test('window opacity api returns correct value', function () {
-    Setting::set('window_opacity', 75);
+test('json settings can be saved and retrieved', function () {
+    $config = ['key' => 'test-key', 'models' => ['model1', 'model2']];
 
-    $response = $this->get('/api/settings/window-opacity');
+    Setting::setJson('test_config', $config);
 
-    $response->assertSuccessful();
-    $response->assertJson(['opacity' => 75]);
+    $retrieved = Setting::getJson('test_config');
+
+    expect($retrieved)->toBe($config);
 });

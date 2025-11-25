@@ -9,16 +9,20 @@ return [
         'conversations_per_page' => 10,
     ],
 
+    'ui' => [
+        'show_timestamps' => true,
+    ],
+
     'window' => [
         'default_width' => 1100,
         'default_height' => 618,
         'min_width' => 480,
-        'min_height' => 550,
+        'min_height' => 690,
 
         'default_x' => 10,
         'default_y' => 10,
         'opacity' => 90,
-        'blur' => 48,
+        'blur' => 8,
     ],
 
     'response_tones' => [
@@ -69,6 +73,93 @@ return [
             'label' => 'settings.tones.cynical',
             'description' => 'settings.tones.cynical_description',
             'icon' => 'emoji-think-left',
+        ],
+    ],
+
+    'ai_providers' => [
+        [
+            'key' => 'openai',
+            'name' => 'settings.ai_providers.openai',
+            'config_key' => 'openai_config',
+            'encrypted' => true,
+            'fields' => [
+                [
+                    'name' => 'key',
+                    'type' => 'password',
+                    'label' => 'settings.ai_providers.openai',
+                    'placeholder' => 'settings.ai_providers.openai_placeholder',
+                ],
+                [
+                    'name' => 'models',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.openai_models',
+                    'placeholder' => 'settings.ai_providers.openai_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
+        ],
+        [
+            'key' => 'anthropic',
+            'name' => 'settings.ai_providers.anthropic',
+            'config_key' => 'anthropic_config',
+            'encrypted' => true,
+            'fields' => [
+                [
+                    'name' => 'key',
+                    'type' => 'password',
+                    'label' => 'settings.ai_providers.anthropic',
+                    'placeholder' => 'settings.ai_providers.anthropic_placeholder',
+                ],
+                [
+                    'name' => 'models',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.anthropic_models',
+                    'placeholder' => 'settings.ai_providers.anthropic_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
+        ],
+        [
+            'key' => 'google',
+            'name' => 'settings.ai_providers.google',
+            'config_key' => 'google_config',
+            'encrypted' => true,
+            'fields' => [
+                [
+                    'name' => 'key',
+                    'type' => 'password',
+                    'label' => 'settings.ai_providers.google',
+                    'placeholder' => 'settings.ai_providers.google_placeholder',
+                ],
+                [
+                    'name' => 'models',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.google_models',
+                    'placeholder' => 'settings.ai_providers.google_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
+        ],
+        [
+            'key' => 'ollama',
+            'name' => 'settings.ai_providers.ollama',
+            'config_key' => 'ollama_config',
+            'encrypted' => false,
+            'fields' => [
+                [
+                    'name' => 'url',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.ollama',
+                    'placeholder' => 'settings.ai_providers.ollama_placeholder',
+                ],
+                [
+                    'name' => 'models',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.ollama_models',
+                    'placeholder' => 'settings.ai_providers.ollama_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
         ],
     ],
 ];

@@ -24,27 +24,13 @@ class Settings extends Component
 
     public bool $respondAsACat = false;
 
-    public string $openaiKey = '';
-
-    public string $openaiModels = '';
-
-    public string $anthropicKey = '';
-
-    public string $anthropicModels = '';
-
-    public string $googleKey = '';
-
-    public string $googleModels = '';
-
-    public string $ollamaUrl = '';
-
-    public string $ollamaModels = '';
+    public array $providers = [];
 
     public int $deleteOldMessagesDays = 0;
 
     public int $windowOpacity = 90;
 
-    public int $windowBlur = 48;
+    public int $windowBlur = 8;
 
     public bool $disableTransparencyMaximized = true;
 
@@ -61,21 +47,7 @@ class Settings extends Component
         $this->responseTone = Setting::get('response_tone', 'basic');
         $this->respondAsACat = (bool) Setting::get('respond_as_cat', false);
 
-        $openaiConfig = Setting::getJsonDecrypted('openai_config', ['key' => '', 'models' => []]);
-        $this->openaiKey = ! empty($openaiConfig['key']) ? self::$fakeKey : '';
-        $this->openaiModels = implode(', ', $openaiConfig['models'] ?? []);
-
-        $anthropicConfig = Setting::getJsonDecrypted('anthropic_config', ['key' => '', 'models' => []]);
-        $this->anthropicKey = ! empty($anthropicConfig['key']) ? self::$fakeKey : '';
-        $this->anthropicModels = implode(', ', $anthropicConfig['models'] ?? []);
-
-        $googleConfig = Setting::getJsonDecrypted('google_config', ['key' => '', 'models' => []]);
-        $this->googleKey = ! empty($googleConfig['key']) ? self::$fakeKey : '';
-        $this->googleModels = implode(', ', $googleConfig['models'] ?? []);
-
-        $ollamaConfig = Setting::getJson('ollama_config', ['url' => 'http://localhost:11434', 'models' => []]);
-        $this->ollamaUrl = $ollamaConfig['url'] ?? 'http://localhost:11434';
-        $this->ollamaModels = implode(', ', $ollamaConfig['models'] ?? []);
+        $this->loadProviders();
 
         $this->deleteOldMessagesDays = (int) Setting::get('delete_old_messages_days', 0);
         $this->windowOpacity = (int) Setting::get('window_opacity', config('purrai.window.opacity'));
@@ -94,14 +66,7 @@ class Settings extends Component
         Setting::set('response_tone', $this->responseTone);
         Setting::set('respond_as_cat', $this->respondAsACat);
 
-        $this->saveProviderConfig('openai_config', $this->openaiKey, $this->openaiModels);
-        $this->saveProviderConfig('anthropic_config', $this->anthropicKey, $this->anthropicModels);
-        $this->saveProviderConfig('google_config', $this->googleKey, $this->googleModels);
-
-        Setting::setJson('ollama_config', [
-            'url' => $this->ollamaUrl,
-            'models' => $this->parseModels($this->ollamaModels),
-        ]);
+        $this->saveProviders();
 
         Setting::set('delete_old_messages_days', $this->deleteOldMessagesDays);
         Setting::set('window_opacity', $this->windowOpacity);
@@ -160,42 +125,7 @@ class Settings extends Component
         $this->save();
     }
 
-    public function updatedOpenaiKey(): void
-    {
-        $this->save();
-    }
-
-    public function updatedOpenaiModels(): void
-    {
-        $this->save();
-    }
-
-    public function updatedAnthropicKey(): void
-    {
-        $this->save();
-    }
-
-    public function updatedAnthropicModels(): void
-    {
-        $this->save();
-    }
-
-    public function updatedGoogleKey(): void
-    {
-        $this->save();
-    }
-
-    public function updatedGoogleModels(): void
-    {
-        $this->save();
-    }
-
-    public function updatedOllamaUrl(): void
-    {
-        $this->save();
-    }
-
-    public function updatedOllamaModels(): void
+    public function updatedProviders(): void
     {
         $this->save();
     }
@@ -226,23 +156,73 @@ class Settings extends Component
         }
     }
 
-    /**
-     * Save provider configuration with encrypted key
-     */
-    private function saveProviderConfig(string $configKey, string $key, string $models): void
+    private function loadProviders(): void
     {
-        $existingConfig = Setting::getJsonDecrypted($configKey, ['key' => '', 'models' => []]);
+        $providersConfig = config('purrai.ai_providers', []);
 
-        if ($key === self::$fakeKey) {
-            $finalKey = $existingConfig['key'] ?? '';
-        } else {
-            $finalKey = $key;
+        foreach ($providersConfig as $providerConfig) {
+            $configKey = $providerConfig['config_key'];
+            $encrypted = $providerConfig['encrypted'];
+
+            $data = $encrypted
+                ? Setting::getJsonDecrypted($configKey, [])
+                : Setting::getJson($configKey, []);
+
+            $this->providers[$providerConfig['key']] = [];
+
+            foreach ($providerConfig['fields'] as $field) {
+                $fieldName = $field['name'];
+                $value = $data[$fieldName] ?? '';
+
+                if ($fieldName === 'models' && is_array($value)) {
+                    $value = implode(', ', $value);
+                } elseif ($fieldName === 'key' && ! empty($value)) {
+                    $value = self::$fakeKey;
+                }
+
+                $this->providers[$providerConfig['key']][$fieldName] = $value;
+            }
         }
+    }
 
-        Setting::setJsonEncrypted($configKey, [
-            'key' => $finalKey,
-            'models' => $this->parseModels($models),
-        ]);
+    private function saveProviders(): void
+    {
+        $providersConfig = config('purrai.ai_providers', []);
+
+        foreach ($providersConfig as $providerConfig) {
+            $configKey = $providerConfig['config_key'];
+            $encrypted = $providerConfig['encrypted'];
+            $providerKey = $providerConfig['key'];
+
+            $data = [];
+
+            foreach ($providerConfig['fields'] as $field) {
+                $fieldName = $field['name'];
+                $value = $this->providers[$providerKey][$fieldName] ?? '';
+
+                if ($fieldName === 'key') {
+                    if ($value === self::$fakeKey) {
+                        $existingConfig = $encrypted
+                            ? Setting::getJsonDecrypted($configKey, [])
+                            : Setting::getJson($configKey, []);
+                        $value = $existingConfig['key'] ?? '';
+                    }
+                    $data[$fieldName] = $value;
+                } elseif ($fieldName === 'models') {
+                    $data[$fieldName] = $this->parseModels($value);
+                } else {
+                    $data[$fieldName] = $value;
+                }
+            }
+
+            if ($encrypted) {
+                Setting::setJsonEncrypted($configKey, $data);
+            } else {
+                Setting::setJson($configKey, $data);
+            }
+
+            Setting::query()->where('key', $configKey)->update(['is_ai_provider' => true]);
+        }
     }
 
     /**
@@ -255,7 +235,7 @@ class Settings extends Component
         }
 
         return array_values(array_filter(array_map(
-            fn ($model) => trim($model),
+            fn($model) => trim($model),
             explode(',', $models)
         )));
     }

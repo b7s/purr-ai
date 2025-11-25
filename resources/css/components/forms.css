@@ -5,25 +5,18 @@
 @layer components {
     /* Input Dock */
     .input-dock {
-        @apply absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-3xl z-30;
-        @apply rounded-[32px] shadow-lg flex items-end gap-2 p-2 transition-shadow focus-within:shadow-xl;
+        @apply w-full rounded-4xl! flex gap-2 p-2 focus-within:shadow-xl;
         @apply border ring-1;
-        backdrop-filter: blur(var(--window-blur));
-        background-color: rgb(255 255 255);
-        border-color: rgb(229 229 229);
         --tw-ring-color: rgb(245 245 245);
     }
 
     .dark .input-dock {
-        backdrop-filter: blur(var(--window-blur));
-        background-color: rgb(15 23 42 / 0.95);
-        border-color: rgb(51 65 85 / 0.6);
         --tw-ring-color: rgb(51 65 85 / 0.4);
     }
 
     .input-field {
-        @apply w-full bg-transparent text-[15px] focus:outline-none resize-none max-h-32 py-2.5 px-2;
-        color: rgb(23 23 23);
+        @apply w-full bg-transparent focus:outline-none text-slate-800;
+        @apply resize-none max-h-32 py-2.5 px-2 placeholder-slate-300 focus:placeholder-slate-600;
     }
 
     .input-field::placeholder {
@@ -31,7 +24,7 @@
     }
 
     .dark .input-field {
-        color: rgb(255 255 255);
+        @apply placeholder-slate-600 focus:placeholder-slate-400 text-white;
     }
 
     .dark .input-field::placeholder {

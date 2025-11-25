@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\MessageDraft;
+use App\Models\Setting;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -18,8 +19,10 @@ class Chat extends Component
 
     public string $message = '';
 
+    /** @var array<int, mixed> */
     public array $attachments = [];
 
+    /** @var array<int, array<string, mixed>> */
     public array $conversations = [];
 
     public ?int $editingConversationId = null;
@@ -28,10 +31,13 @@ class Chat extends Component
 
     public int $currentPage = 1;
 
+    public string $selectedModel = '';
+
     public function mount(?int $conversationId = null): void
     {
         $this->conversationId = $conversationId;
         $this->conversations = $this->getConversationsHistory();
+        $this->selectedModel = Setting::getSelectedModel() ?? '';
 
         $this->loadDraft();
 
@@ -43,6 +49,7 @@ class Chat extends Component
         $this->clearDraft();
         $this->conversationId = null;
         $this->message = '';
+        response()->redirectToRoute('chat');
     }
 
     public function loadConversation(int $conversationId): void
@@ -107,7 +114,7 @@ class Chat extends Component
         $this->message = trim($this->message);
 
         $this->validate([
-            'message' => 'required|string|max:' . config('purrai.limits.max_message_length'),
+            'message' => 'required|string|max:'.config('purrai.limits.max_message_length'),
         ]);
 
         if (! $this->conversationId) {
@@ -127,6 +134,22 @@ class Chat extends Component
         $this->clearDraft();
         $this->message = '';
         $this->dispatch('message-sent');
+        $this->dispatch('scroll-to-user-message');
+    }
+
+    public function updatedSelectedModel(): void
+    {
+        if (! empty($this->selectedModel)) {
+            Setting::setSelectedModel($this->selectedModel);
+        }
+    }
+
+    /**
+     * @return array<string, array{provider: string, models: array<string>}>
+     */
+    public function getAvailableModels(): array
+    {
+        return Setting::getAvailableModels();
     }
 
     public function render(): mixed
@@ -137,10 +160,12 @@ class Chat extends Component
 
         $totalConversations = Conversation::query()->count();
         $hasMorePages = \count($this->conversations) < $totalConversations;
+        $availableModels = $this->getAvailableModels();
 
         return view('livewire.chat', [
             'conversation' => $conversation,
             'hasMorePages' => $hasMorePages,
+            'availableModels' => $availableModels,
         ]);
     }
 
@@ -156,7 +181,7 @@ class Chat extends Component
             ->skip($offset)
             ->take($limit)
             ->get()
-            ->map(fn($conv) => [
+            ->map(fn ($conv) => [
                 'id' => $conv->id,
                 'title' => $conv->title,
                 'created_at' => $conv->created_at->format(__('chat.date_format')),

@@ -78,7 +78,7 @@
             {{ $headerActions ?? '' }}
         </x-app-header>
 
-        <div class="page-transition">
+        <div class="page-content">
             {{ $slot }}
         </div>
     </main>

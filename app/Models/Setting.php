@@ -12,7 +12,72 @@ class Setting extends Model
     protected $fillable = [
         'key',
         'value',
+        'is_ai_provider',
     ];
+
+    /**
+     * @return array<string, array{provider: string, models: array<string>}>
+     */
+    public static function getAvailableModels(): array
+    {
+        $providers = static::where('is_ai_provider', true)->get();
+        $result = [];
+
+        foreach ($providers as $provider) {
+            $config = static::getProviderConfig($provider->key);
+
+            if (empty($config['models'])) {
+                continue;
+            }
+
+            $hasKey = ! empty($config['key']) || ! empty($config['url']);
+
+            if (! $hasKey) {
+                continue;
+            }
+
+            $providerName = static::getProviderDisplayName($provider->key);
+            $result[$provider->key] = [
+                'provider' => $providerName,
+                'models' => $config['models'],
+            ];
+        }
+
+        return $result;
+    }
+
+    public static function getSelectedModel(): ?string
+    {
+        return static::get('selected_model');
+    }
+
+    public static function setSelectedModel(string $model): void
+    {
+        static::set('selected_model', $model);
+    }
+
+    /**
+     * @return array{key?: string, url?: string, models: array<string>}
+     */
+    private static function getProviderConfig(string $key): array
+    {
+        if ($key === 'ollama_config') {
+            return static::getJson($key, ['url' => '', 'models' => []]);
+        }
+
+        return static::getJsonDecrypted($key, ['key' => '', 'models' => []]);
+    }
+
+    private static function getProviderDisplayName(string $key): string
+    {
+        return match ($key) {
+            'openai_config' => 'OpenAI',
+            'anthropic_config' => 'Anthropic',
+            'google_config' => 'Google',
+            'ollama_config' => 'Ollama',
+            default => ucfirst(str_replace('_config', '', $key)),
+        };
+    }
 
     public static function get(string $key, mixed $default = null): mixed
     {

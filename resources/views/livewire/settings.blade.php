@@ -4,7 +4,8 @@
     </a>
 </x-slot>
 
-<div class="h-full flex flex-col overflow-y-auto" x-data="{ activeTab: 'chat' }"
+<div class="h-full flex flex-col overflow-y-auto"
+    x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'chat' }"
     @keydown.escape.window="window.location.href = '{{ getPreviousChatUrl() }}'" tabindex="-1">
     <div class="w-full max-w-4xl mx-auto px-6 md:px-10 py-6 md:py-10 pb-24 space-y-8">
         {{-- Header --}}
@@ -26,6 +27,7 @@
             <button type="button" @click="activeTab = 'ai_providers'"
                 :class="activeTab === 'ai_providers' ? 'settings-tab-active' : 'settings-tab-inactive'"
                 class="settings-tab">
+                <i class="iconoir-sparks"></i>
                 {{ __('settings.tabs.ai_providers') }}
             </button>
             <button type="button" @click="activeTab = 'other'"
@@ -116,81 +118,24 @@
                 {{ __('settings.ai_providers.description') }}
             </p>
 
-            <div class="settings-card">
-                <label class="settings-label">
-                    {{ __('settings.ai_providers.openai') }}
-                </label>
-                <input type="password" wire:model.blur="openaiKey"
-                    placeholder="{{ __('settings.ai_providers.openai_placeholder') }}"
-                    class="settings-input font-mono text-sm">
+            @foreach (config('purrai.ai_providers', []) as $provider)
+                <div class="settings-card">
+                    @foreach ($provider['fields'] as $index => $field)
+                        <label class="settings-label @if($index > 0) mt-4 @endif" @class([
+                            $index > 0 => 'mt-4',
+                        ])>
+                            {{ __($field['label']) }}
+                        </label>
+                        <input type="{{ $field['type'] }}"
+                            wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
+                            placeholder="{{ __($field['placeholder']) }}" class="settings-input font-mono text-sm">
 
-                <label class="settings-label mt-4">
-                    {{ __('settings.ai_providers.openai_models') }}
-                </label>
-                <input type="text" wire:model.blur="openaiModels"
-                    placeholder="{{ __('settings.ai_providers.openai_models_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-                <p class="help-text">
-                    {{ __('settings.ai_providers.models_helper') }}
-                </p>
-            </div>
-
-            <div class="settings-card">
-                <label class="settings-label">
-                    {{ __('settings.ai_providers.anthropic') }}
-                </label>
-                <input type="password" wire:model.blur="anthropicKey"
-                    placeholder="{{ __('settings.ai_providers.anthropic_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-
-                <label class="settings-label mt-4">
-                    {{ __('settings.ai_providers.anthropic_models') }}
-                </label>
-                <input type="text" wire:model.blur="anthropicModels"
-                    placeholder="{{ __('settings.ai_providers.anthropic_models_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-                <p class="help-text">
-                    {{ __('settings.ai_providers.models_helper') }}
-                </p>
-            </div>
-
-            <div class="settings-card">
-                <label class="settings-label">
-                    {{ __('settings.ai_providers.google') }}
-                </label>
-                <input type="password" wire:model.blur="googleKey"
-                    placeholder="{{ __('settings.ai_providers.google_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-
-                <label class="settings-label mt-4">
-                    {{ __('settings.ai_providers.google_models') }}
-                </label>
-                <input type="text" wire:model.blur="googleModels"
-                    placeholder="{{ __('settings.ai_providers.google_models_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-                <p class="help-text">
-                    {{ __('settings.ai_providers.models_helper') }}
-                </p>
-            </div>
-
-            <div class="settings-card">
-                <label class="settings-label">
-                    {{ __('settings.ai_providers.ollama') }}
-                </label>
-                <input type="text" wire:model.blur="ollamaUrl"
-                    placeholder="{{ __('settings.ai_providers.ollama_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-
-                <label class="settings-label mt-4">
-                    {{ __('settings.ai_providers.ollama_models') }}
-                </label>
-                <input type="text" wire:model.blur="ollamaModels"
-                    placeholder="{{ __('settings.ai_providers.ollama_models_placeholder') }}"
-                    class="settings-input font-mono text-sm">
-                <p class="help-text">
-                    {{ __('settings.ai_providers.models_helper') }}
-                </p>
-            </div>
+                        @if (isset($field['helper']))
+                            <p class="help-text">{{ __($field['helper']) }}</p>
+                        @endif
+                    @endforeach
+                </div>
+            @endforeach
         </div>
 
         {{-- Other Settings Tab --}}

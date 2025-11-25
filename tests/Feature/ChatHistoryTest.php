@@ -15,8 +15,8 @@ it('displays conversation history with pagination', function () {
     Conversation::factory()->count(15)->create();
 
     Livewire::test(Chat::class)
-        ->assertViewHas('conversations', function ($paginatedConversations) {
-            return $paginatedConversations->count() === 10;
+        ->assertSet('conversations', function (array $conversations) {
+            return \count($conversations) === 10;
         });
 });
 
@@ -25,9 +25,9 @@ it('loads all conversations ordered by updated_at desc', function () {
     $recent = Conversation::factory()->create(['updated_at' => now()]);
 
     Livewire::test(Chat::class)
-        ->assertViewHas('conversations', function ($conversations) use ($recent, $old) {
-            return $conversations->first()->id === $recent->id
-                && $conversations->last()->id === $old->id;
+        ->assertSet('conversations', function (array $conversations) use ($recent, $old) {
+            return $conversations[0]['id'] === $recent->id
+                && $conversations[1]['id'] === $old->id;
         });
 });
 
@@ -39,15 +39,11 @@ it('can load a conversation from history', function () {
         ->assertRedirect(route('chat', ['conversationId' => $conversation->id]));
 });
 
-it('can edit conversation title', function () {
+it('can edit conversation title via saveTitleDirect', function () {
     $conversation = Conversation::factory()->create(['title' => 'Old Title']);
 
     Livewire::test(Chat::class)
-        ->call('startEditingTitle', $conversation->id)
-        ->assertSet('editingConversationId', $conversation->id)
-        ->assertSet('editingTitle', '')
-        ->set('editingTitle', 'New Title')
-        ->call('saveTitle');
+        ->call('saveTitleDirect', $conversation->id, 'New Title');
 
     assertDatabaseHas('conversations', [
         'id' => $conversation->id,
@@ -55,34 +51,23 @@ it('can edit conversation title', function () {
     ]);
 });
 
-it('can cancel editing conversation title', function () {
-    $conversation = Conversation::factory()->create(['title' => 'Original Title']);
+it('validates title when editing via saveTitleDirect', function () {
+    $conversation = Conversation::factory()->create(['title' => 'Original']);
 
     Livewire::test(Chat::class)
-        ->call('startEditingTitle', $conversation->id)
-        ->assertSet('editingConversationId', $conversation->id)
-        ->call('cancelEditingTitle')
-        ->assertSet('editingConversationId', null)
-        ->assertSet('editingTitle', '');
-});
+        ->call('saveTitleDirect', $conversation->id, '');
 
-it('validates title when editing', function () {
-    $conversation = Conversation::factory()->create();
-
-    Livewire::test(Chat::class)
-        ->call('startEditingTitle', $conversation->id)
-        ->set('editingTitle', '')
-        ->call('saveTitle')
-        ->assertHasErrors(['editingTitle' => 'required']);
+    assertDatabaseHas('conversations', [
+        'id' => $conversation->id,
+        'title' => 'Original',
+    ]);
 });
 
 it('paginates conversations correctly', function () {
     Conversation::factory()->count(15)->create();
 
     Livewire::test(Chat::class)
-        ->assertViewHas('conversations', function ($conversations) {
-            return $conversations->hasMorePages() === true;
-        });
+        ->assertViewHas('hasMorePages', true);
 });
 
 it('respects configured conversations per page limit', function () {
@@ -90,7 +75,7 @@ it('respects configured conversations per page limit', function () {
     Conversation::factory()->count($limit + 5)->create();
 
     Livewire::test(Chat::class)
-        ->assertViewHas('conversations', function ($conversations) use ($limit) {
-            return $conversations->count() === $limit;
+        ->assertSet('conversations', function (array $conversations) use ($limit) {
+            return \count($conversations) === $limit;
         });
 });

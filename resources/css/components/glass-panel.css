@@ -62,7 +62,8 @@
     }
 
     .top-header {
-        @apply h-12 px-6 flex items-center justify-between shrink-0 z-20;
+        @apply h-12 px-6 flex items-center justify-between shrink-0 z-20 relative;
+        @apply rounded-b-none! border-b-0! bg-transparent! shadow-none!;
         -webkit-app-region: drag;
     }
 

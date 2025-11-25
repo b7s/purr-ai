@@ -2,10 +2,18 @@
  * Base Styles for PurrAI
  */
 
-/* Page transition animation */
-.page-transition {
+.page-content {
     @apply flex-1 overflow-y-auto;
     animation: fadeIn 0.3s ease-in-out;
+}
+
+.purrai-dropdown {
+    @apply backdrop-blur-xl backdrop-saturate-150 border rounded-xl;
+    @apply bg-white/80 border-white/20 shadow-lg;
+}
+
+.dark .purrai-dropdown {
+    @apply bg-gray-900/80 border-white/10 shadow-2xl;
 }
 
 @keyframes fadeIn {
@@ -21,7 +29,8 @@
 
 /* Base Styles */
 body {
-    @apply font-sans text-neutral-900 dark:text-slate-100 h-screen w-screen overflow-hidden transition-colors duration-500;
+    @apply font-sans text-neutral-900 dark:text-slate-100 h-screen;
+    @apply w-screen overflow-hidden transition-colors duration-500;
     background: transparent;
 }
 

@@ -40,7 +40,7 @@
     .window-btn-close-mac:hover,
     .window-btn-minimize-mac:hover,
     .window-btn-maximize-mac:hover {
-        @apply opacity-80;
+        @apply opacity-90;
     }
 
     .window-btn-dot {
@@ -59,13 +59,13 @@
     }
 
     .window-btn {
-        @apply w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all;
+        @apply w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-all;
         color: rgb(82 82 82);
     }
 
     .window-btn:hover {
         color: rgb(23 23 23);
-        background-color: rgb(229 229 229);
+        background-color: rgb(216, 216, 216);
     }
 
     .dark .window-btn {

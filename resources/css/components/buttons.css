@@ -6,35 +6,38 @@
     /* Buttons */
     .circle-btn {
         @apply w-10 h-10 rounded-full shrink-0 flex items-center justify-center cursor-pointer;
-        @apply transition-transform active:scale-95;
     }
 
     .circle-btn.ghost {
-        color: rgb(82 82 82);
+        color: var(--color-slate-600);
     }
 
     .circle-btn.ghost:hover {
-        color: rgb(23 23 23);
-        background-color: rgb(229 229 229);
+        color: var(--color-slate-800);
+        background-color: var(--color-slate-100);
     }
 
     .dark .circle-btn.ghost {
-        color: rgb(115 115 115);
+        color: var(--color-slate-300);
     }
 
     .dark .circle-btn.ghost:hover {
-        color: rgb(248 250 252);
-        background-color: rgb(51 65 85 / 0.5);
+        color: var(--color-slate-100);
+        background-color: var(--color-slate-700);
     }
 
     .circle-btn.primary {
-        @apply shadow-md hover:scale-105;
-        background-color: rgb(23 23 23);
+        @apply shadow-md bg-linear-to-tr from-slate-900 to-slate-600;
+        @apply transition-transform duration-200 ease-in-out;
         color: rgb(255 255 255);
     }
 
+    .circle-btn.primary:hover {
+        transform: scale(1.05) rotate(20deg);
+    }
+
     .dark .circle-btn.primary {
-        background-color: rgb(255 255 255);
+        @apply bg-linear-to-tr from-slate-400 to-white;
         color: rgb(0 0 0);
     }
 

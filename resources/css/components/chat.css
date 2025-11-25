@@ -4,12 +4,137 @@
 
 @layer components {
     .chat-messages {
-        @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-36;
+        @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-44!;
+        scroll-behavior: smooth;
+    }
+
+    /* Input Dock Wrapper */
+    .input-dock-wrapper {
+        @apply absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-3xl z-10;
+        @apply flex flex-col gap-2;
+    }
+
+    /* Model Selector */
+    .model-selector-container {
+        @apply flex justify-center;
+    }
+
+    .model-selector {
+        @apply relative;
+    }
+
+    .model-selector-trigger {
+        @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
+        @apply transition-all cursor-pointer border;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(255 255 255 / 0.8);
+        border-color: rgb(229 229 229 / 0.8);
+        color: rgb(64 64 64);
+    }
+
+    .model-selector-trigger:hover {
+        background-color: rgb(255 255 255 / 0.95);
+        border-color: rgb(212 212 212);
+    }
+
+    .dark .model-selector-trigger {
+        background-color: rgb(30 41 59 / 0.8);
+        border-color: rgb(51 65 85 / 0.6);
+        color: rgb(203 213 225);
+    }
+
+    .dark .model-selector-trigger:hover {
+        background-color: rgb(30 41 59 / 0.95);
+        border-color: rgb(71 85 105);
+    }
+
+    .model-selector-value {
+        @apply max-w-32 truncate;
+    }
+
+    .model-selector-dropdown {
+        @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-48 max-w-64 select-none;
+    }
+
+    .model-selector-group {
+        @apply py-1;
+    }
+
+    .model-selector-group:not(:last-child) {
+        @apply border-b;
+        border-color: rgb(229 229 229 / 0.5);
+    }
+
+    .dark .model-selector-group:not(:last-child) {
+        border-color: rgb(51 65 85 / 0.5);
+    }
+
+    .model-selector-group-label {
+        @apply px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider;
+        color: rgb(115 115 115);
+    }
+
+    .dark .model-selector-group-label {
+        color: rgb(148 163 184);
+    }
+
+    .model-selector-option {
+        @apply w-full flex items-center justify-between gap-2 px-3 pl-5 py-2 text-xs;
+        @apply transition-colors cursor-pointer text-left;
+        color: rgb(64 64 64);
+    }
+
+    .model-selector-option:hover {
+        background-color: rgb(245 245 245);
+    }
+
+    .model-selector-option.active {
+        background-color: rgb(245 245 245);
+        color: rgb(23 23 23);
+        font-weight: 500;
+    }
+
+    .dark .model-selector-option {
+        color: rgb(203 213 225);
+    }
+
+    .dark .model-selector-option:hover {
+        background-color: rgb(51 65 85 / 0.5);
+    }
+
+    .dark .model-selector-option.active {
+        background-color: rgb(51 65 85 / 0.5);
+        color: rgb(248 250 252);
+    }
+
+    .model-selector-empty {
+        @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
+        @apply transition-all cursor-pointer border;
+        backdrop-filter: blur(var(--window-blur));
+        background-color: rgb(254 243 199 / 0.8);
+        border-color: rgb(253 224 71 / 0.5);
+        color: rgb(161 98 7);
+    }
+
+    .model-selector-empty:hover {
+        background-color: rgb(254 243 199 / 0.95);
+        border-color: rgb(253 224 71);
+    }
+
+    .dark .model-selector-empty {
+        background-color: rgb(161 98 7 / 0.2);
+        border-color: rgb(161 98 7 / 0.3);
+        color: rgb(253 224 71);
+    }
+
+    .dark .model-selector-empty:hover {
+        background-color: rgb(161 98 7 / 0.3);
+        border-color: rgb(161 98 7 / 0.5);
     }
 
     /* Chat Rows */
     .chat-row {
-        @apply flex gap-4 max-w-3xl w-full animate-slide-up;
+        @apply flex gap-2 max-w-3xl w-full animate-slide-up;
     }
 
     .chat-row.user {
@@ -49,12 +174,25 @@
     /* Avatar */
     .purr-ai-logo {
         @apply w-8 h-8;
-        @apply flex items-center justify-center shrink-0;
+        @apply flex items-center justify-center shrink-0 select-none;
     }
 
     /* Message Timestamp */
     .message-timestamp {
-        @apply text-[10px] opacity-40 mt-1 font-medium;
+        @apply text-xs mt-1 font-medium;
+        @apply text-slate-400/70;
+    }
+
+    .message-timestamp:hover {
+        @apply text-slate-400;
+    }
+
+    .dark .message-timestamp {
+        @apply text-slate-600;
+    }
+
+    .dark .message-timestamp:hover {
+        @apply text-slate-500;
     }
 
     /* Welcome Screen */
@@ -70,6 +208,7 @@
         animation: var(--animate-welcome-logo);
         animation-fill-mode: both;
     }
+
     .welcome-title {
         @apply text-2xl font-semibold mb-2;
         color: rgb(23 23 23);

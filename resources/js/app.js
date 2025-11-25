@@ -26,6 +26,40 @@ document.addEventListener("alpine:init", () => {
                 return null;
             },
 
+            startNewConversation() {
+                const component = this.getLivewireComponent();
+                if (component) {
+                    component.call("newConversation");
+                }
+            },
+
+            deleteConversation(id) {
+                const component = this.getLivewireComponent();
+                if (component) {
+                    component.call("deleteConversation", id).then(() => {
+                        this.conversations = this.conversations.filter(
+                            (c) => c.id !== id
+                        );
+                    });
+                }
+            },
+
+            deleteAllConversations() {
+                const component = this.getLivewireComponent();
+                if (component) {
+                    component.call("deleteAllConversations").then(() => {
+                        this.conversations = [];
+                    });
+                }
+            },
+
+            renameConversation(id) {
+                const component = this.getLivewireComponent();
+                if (component) {
+                    component.call("renameConversation", id);
+                }
+            },
+
             loadConv(id) {
                 const component = this.getLivewireComponent();
                 if (component) {

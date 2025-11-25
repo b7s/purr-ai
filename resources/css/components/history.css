@@ -7,8 +7,6 @@
     .history-dropdown {
         @apply absolute top-full mt-2 w-96 rounded-2xl overflow-hidden;
         @apply shadow-xl z-50 border max-h-[500px] flex flex-col;
-        @apply bg-white/80 backdrop-blur-md;
-        border-color: rgb(229 229 229);
         right: 0;
     }
 
@@ -25,11 +23,6 @@
         .history-dropdown {
             @apply fixed inset-0 w-full h-full max-h-full rounded-none mt-0;
         }
-    }
-
-    .dark .history-dropdown {
-        @apply bg-gray-800/75 backdrop-blur-md;
-        border-color: rgb(255 255 255 / 0.1);
     }
 
     @media (max-width: 640px) {
@@ -250,7 +243,7 @@
 
     /* Edit Title Modal */
     .edit-modal-overlay {
-        @apply fixed inset-0 z-[100] flex items-center justify-center;
+        @apply fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-md;
         background-color: rgb(0 0 0 / 0.5);
     }
 
