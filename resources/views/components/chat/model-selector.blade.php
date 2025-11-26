@@ -4,8 +4,28 @@
     $hasModels = !empty($availableModels) && collect($availableModels)->pluck('models')->flatten()->isNotEmpty();
 @endphp
 
-<div class="model-selector-container" x-data="{ open: false }">
-    @if($hasModels)
+<div class="model-selector-container" x-data="{ 
+        open: false, 
+        filterOpen: false, 
+        filterText: '',
+        toggleFilter() {
+            this.filterOpen = !this.filterOpen;
+            if (this.filterOpen) {
+                this.$nextTick(() => this.$refs.filterInput.focus());
+            } else {
+                this.filterText = '';
+            }
+        },
+        closeFilter() {
+            this.filterOpen = false;
+            this.filterText = '';
+        },
+        matchesFilter(text) {
+            if (!this.filterText) return true;
+            return text.toLowerCase().includes(this.filterText.toLowerCase());
+        }
+    }">
+    @if ($hasModels)
         <div class="model-selector" @click.away="open = false">
             <button type="button" @click="open = !open" class="model-selector-trigger">
                 <i class="iconoir-sparks text-sm"></i>
@@ -19,25 +39,41 @@
                 x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
                 x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 -translate-y-1" class="model-selector-dropdown purrai-dropdown" x-cloak>
-                @foreach($availableModels as $providerKey => $providerData)
-                    <div class="model-selector-group">
+                @foreach ($availableModels as $providerKey => $providerData)
+                    <div class="model-selector-group"
+                        x-show="[{{ implode(',', array_map(fn($m) => "'$m'", $providerData['models'])) }}].some(model => matchesFilter(model.replace(/[-_]/g, ' ')))">
                         <div class="model-selector-group-label">{{ $providerData['provider'] }}</div>
-                        @foreach($providerData['models'] as $model)
+                        @foreach ($providerData['models'] as $model)
                             <button type="button" wire:click="$set('selectedModel', '{{ $model }}')" @click="open = false"
-                                class="model-selector-option {{ $selectedModel === $model ? 'active' : '' }}">
+                                class="model-selector-option {{ $selectedModel === $model ? 'active' : '' }}"
+                                x-show="matchesFilter('{{ str_replace(['-', '_'], ' ', $model) }}')">
                                 <span>{{ str_replace(['-', '_'], ' ', $model) }}</span>
-                                @if($selectedModel === $model)
+                                @if ($selectedModel === $model)
                                     <i class="iconoir-check text-xs"></i>
                                 @endif
                             </button>
                         @endforeach
                     </div>
                 @endforeach
-                <div class="text-xs text-center bg-transparent">
+                <div class="model-selector-footer">
+                    <button type="button" @click="toggleFilter()" class="py-3 pr-2 hover:opacity-75 shrink-0 cursor-pointer"
+                        :class="{ 'opacity-100': filterOpen, 'opacity-75': !filterOpen }"
+                        title="{{ __('chat.model_selector.filter_models') }}">
+                        <i class="iconoir-search"></i>
+                    </button>
+                    <div x-show="filterOpen" x-transition:enter="transition ease-out duration-150"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                        class="flex-1" x-cloak>
+                        <x-ui.input x-ref="filterInput" x-model="filterText" @keydown.escape="closeFilter()" type="text"
+                            placeholder="{{ __('chat.model_selector.filter_placeholder') }}"
+                            class="py-1! px-2! text-xs w-full ring-0" />
+                    </div>
                     <a href="{{ route('settings') }}?tab=ai_providers" wire:navigate
-                        class="flex justify-between text-gray-500 hover:opacity-75 py-2 px-3">
-                        <span>{{ __('chat.model_selector.configure_providers') }}</span>
-                        <i class="iconoir-arrow-right text-xs"></i>
+                        class="py-3 pl-2 hover:opacity-75 shrink-0"
+                        title="{{ __('chat.model_selector.configure_providers') }}">
+                        <i class="iconoir-plus-circle"></i>
                     </a>
                 </div>
             </div>

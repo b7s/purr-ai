@@ -4,8 +4,56 @@
     </a>
 </x-slot>
 
+@php
+    $tabs = [
+        'chat' => ['label' => __('settings.tabs.chat')],
+        'ai_providers' => ['label' => __('settings.tabs.ai_providers'), 'icon' => 'sparks'],
+        'other' => ['label' => __('settings.tabs.other')],
+    ];
+
+    $responseDetailOptions = [
+        'detailed' => ['label' => __('settings.chat.response_detail_detailed')],
+        'short' => ['label' => __('settings.chat.response_detail_short')],
+    ];
+
+    $responseToneOptions = collect(config('purrai.response_tones'))
+        ->mapWithKeys(function ($tone) {
+            return [
+                $tone['value'] => [
+                    'icon' => $tone['icon'],
+                    'label' => __($tone['label']),
+                    'description' => __($tone['description']),
+                    'height' => 'h-24',
+                    'class' => 'flex flex-col items-center justify-center gap-1.5 h-full px-2',
+                    'labelClass' => 'text-sm font-medium',
+                ],
+            ];
+        })
+        ->toArray();
+
+    $themeModeOptions = [
+        'light' => [
+            'icon' => 'sun-light',
+            'iconClass' => 'text-lg mr-1.5',
+            'label' => __('settings.other.theme_light'),
+            'class' => 'flex items-center justify-center',
+        ],
+        'dark' => [
+            'icon' => 'half-moon',
+            'iconClass' => 'text-lg mr-1.5',
+            'label' => __('settings.other.theme_dark'),
+            'class' => 'flex items-center justify-center',
+        ],
+        'automatic' => [
+            'icon' => 'settings',
+            'iconClass' => 'text-lg mr-1.5',
+            'label' => __('settings.other.theme_automatic'),
+            'class' => 'flex items-center justify-center',
+        ],
+    ];
+@endphp
+
 <div class="h-full flex flex-col overflow-y-auto"
-    x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'chat' }"
     @keydown.escape.window="window.location.href = '{{ getPreviousChatUrl() }}'" tabindex="-1">
     <div class="w-full max-w-4xl mx-auto px-6 md:px-10 py-6 md:py-10 pb-24 space-y-8">
         {{-- Header --}}
@@ -19,245 +67,103 @@
         </div>
 
         {{-- Tabs --}}
-        <div class="settings-tabs card">
-            <button type="button" @click="activeTab = 'chat'"
-                :class="activeTab === 'chat' ? 'settings-tab-active' : 'settings-tab-inactive'" class="settings-tab">
-                {{ __('settings.tabs.chat') }}
-            </button>
-            <button type="button" @click="activeTab = 'ai_providers'"
-                :class="activeTab === 'ai_providers' ? 'settings-tab-active' : 'settings-tab-inactive'"
-                class="settings-tab">
-                <i class="iconoir-sparks"></i>
-                {{ __('settings.tabs.ai_providers') }}
-            </button>
-            <button type="button" @click="activeTab = 'other'"
-                :class="activeTab === 'other' ? 'settings-tab-active' : 'settings-tab-inactive'" class="settings-tab">
-                {{ __('settings.tabs.other') }}
-            </button>
-        </div>
-
-        {{-- Chat Settings Tab --}}
-        <div x-show="activeTab === 'chat'" x-transition class="space-y-6">
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.chat.mascot_name') }}
-                </label>
-                <input type="text" wire:model.blur="mascotName"
-                    placeholder="{{ __('settings.chat.mascot_name_placeholder') }}" class="settings-input">
-            </div>
-
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.chat.response_detail') }}
-                </label>
-                <div class="flex gap-3">
-                    <label class="settings-radio-card">
-                        <input type="radio" wire:model.live="responseDetail" value="detailed" class="sr-only">
-                        <span class="settings-radio-label">
-                            {{ __('settings.chat.response_detail_detailed') }}
-                        </span>
-                    </label>
-                    <label class="settings-radio-card">
-                        <input type="radio" wire:model.live="responseDetail" value="short" class="sr-only">
-                        <span class="settings-radio-label">
-                            {{ __('settings.chat.response_detail_short') }}
-                        </span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.chat.response_tone') }}
-                </label>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    @foreach (config('purrai.response_tones') as $tone)
-                        <label class="settings-radio-card h-24">
-                            <input type="radio" wire:model.live="responseTone" value="{{ $tone['value'] }}" class="sr-only">
-                            <span
-                                class="settings-radio-label flex flex-col items-center justify-center gap-1.5 h-full px-2">
-                                <i class="iconoir-{{ $tone['icon'] }} text-xl"></i>
-                                <span class="text-sm font-medium">{{ __($tone['label']) }}</span>
-                                <span
-                                    class="text-xs opacity-70 text-center leading-tight">{{ __($tone['description']) }}</span>
-                            </span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="card">
-                <label class="flex items-center justify-between cursor-pointer">
-                    <span class="settings-label mb-0">
-                        <img src="{{ asset('images/logo-PurrAI-64.webp') }}" class="w-6 h-6 inline-block mr-2">
-                        {{ __('settings.chat.respond_as_cat') }}
-                    </span>
-                    <button type="button" wire:click="$toggle('respondAsACat')"
-                        class="settings-toggle {{ $respondAsACat ? 'active' : '' }}">
-                        <span class="settings-toggle-thumb"></span>
-                    </button>
-                </label>
-            </div>
-
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.chat.user_description') }}
-                </label>
-                <input type="text" wire:model.blur="userName"
-                    placeholder="{{ __('settings.chat.user_name_placeholder') }}" class="settings-input">
-
-                <textarea wire:model.blur="userDescription"
-                    placeholder="{{ __('settings.chat.user_description_placeholder') }}" rows="3"
-                    class="settings-input resize-none mt-4"></textarea>
-            </div>
-        </div>
-
-        {{-- AI Providers Tab --}}
-        <div x-show="activeTab === 'ai_providers'" x-transition class="space-y-6">
-            <p class="settings-description">
-                {{ __('settings.ai_providers.description') }}
-            </p>
-
-            @foreach (config('purrai.ai_providers', []) as $provider)
+        <x-ui.tabs :tabs="$tabs" :active="request()->input('tab')">
+            {{-- Chat Settings Tab --}}
+            <x-ui.tab-content name="chat">
                 <div class="card">
-                    @foreach ($provider['fields'] as $index => $field)
-                        <label class="settings-label @if($index > 0) mt-4 @endif" @class([
-                            $index > 0 => 'mt-4',
-                        ])>
-                            {{ __($field['label']) }}
-                        </label>
-                        <input type="{{ $field['type'] }}"
-                            wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
-                            placeholder="{{ __($field['placeholder']) }}" class="settings-input font-mono text-sm">
-
-                        @if (isset($field['helper']))
-                            <p class="help-text">{{ __($field['helper']) }}</p>
-                        @endif
-                    @endforeach
+                    <x-ui.input :label="__('settings.chat.mascot_name')" model="mascotName"
+                        :placeholder="__('settings.chat.mascot_name_placeholder')" />
                 </div>
-            @endforeach
-        </div>
 
-        {{-- Other Settings Tab --}}
-        <div x-show="activeTab === 'other'" x-transition class="space-y-6">
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.other.theme_mode') }}
-                </label>
-                <p class="settings-description">
-                    {{ __('settings.other.theme_mode_description') }}
-                </p>
-                <div class="flex gap-3">
-                    <label class="settings-radio-card">
-                        <input type="radio" wire:model.live="themeMode" value="light" class="sr-only">
-                        <span class="settings-radio-label flex items-center justify-center">
-                            <i class="iconoir-sun-light text-lg mr-1.5"></i>
-                            {{ __('settings.other.theme_light') }}
-                        </span>
-                    </label>
-                    <label class="settings-radio-card">
-                        <input type="radio" wire:model.live="themeMode" value="dark" class="sr-only">
-                        <span class="settings-radio-label flex items-center justify-center">
-                            <i class="iconoir-half-moon text-lg mr-1.5"></i>
-                            {{ __('settings.other.theme_dark') }}
-                        </span>
-                    </label>
-                    <label class="settings-radio-card">
-                        <input type="radio" wire:model.live="themeMode" value="automatic" class="sr-only">
-                        <span class="settings-radio-label flex items-center justify-center">
-                            <i class="iconoir-settings text-lg mr-1.5"></i>
-                            {{ __('settings.other.theme_automatic') }}
-                        </span>
-                    </label>
-                </div>
-            </div>
+                <x-ui.radio-group :label="__('settings.chat.response_detail')" :options="$responseDetailOptions"
+                    model="responseDetail" />
 
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.other.delete_old_messages') }}
-                </label>
-                <p class="settings-description">
-                    {{ __('settings.other.delete_old_messages_description') }}
-                </p>
-                <input type="number" wire:model.blur="deleteOldMessagesDays" class="settings-input w-full sm:w-40"
-                    min="0" step="1" placeholder="0" />
-                <p class="help-text">
-                    {{ __('settings.other.delete_old_messages_helper') }}
-                </p>
-            </div>
+                <x-ui.radio-group :label="__('settings.chat.response_tone')" :options="$responseToneOptions"
+                    model="responseTone" columns="2 sm:grid-cols-3 md:grid-cols-4" />
 
-            @if(!is_linux())
                 <div class="card">
-                    <label class="flex items-center justify-between cursor-pointer">
-                        <div>
-                            <span class="settings-label mb-0">
-                                {{ __('settings.other.open_at_login') }}
-                            </span>
-                            <p class="settings-description mt-1">
-                                {{ __('settings.other.open_at_login_description') }}
-                            </p>
-                        </div>
-                        <button type="button" wire:click="$toggle('openAtLogin')"
-                            class="settings-toggle {{ $openAtLogin ? 'active' : '' }}">
-                            <span class="settings-toggle-thumb"></span>
-                        </button>
+                    <x-ui.toggle :label="__('settings.chat.respond_as_cat')" :model="'respondAsACat'"
+                        :checked="$respondAsACat"></x-ui.toggle>
+                </div>
+
+                <div class="card">
+                    <label class="settings-label">
+                        {{ __('settings.chat.user_description') }}
                     </label>
-                </div>
-            @endif
+                    <x-ui.input type="text" wire:model.blur="userName"
+                        placeholder="{{ __('settings.chat.user_name_placeholder') }}"
+                        class="settings-input"></x-ui.input>
 
-            <div class="card">
-                <label class="settings-label">
-                    {{ __('settings.other.window_opacity') }}
-                </label>
+                    <x-ui.textarea wire:model.blur="userDescription"
+                        placeholder="{{ __('settings.chat.user_description_placeholder') }}" rows="3"
+                        class="settings-input resize-none mt-4"></x-ui.textarea>
+                </div>
+            </x-ui.tab-content>
+
+            {{-- AI Providers Tab --}}
+            <x-ui.tab-content name="ai_providers">
                 <p class="settings-description">
-                    {{ __('settings.other.window_opacity_description') }}
-                </p>
-                <div class="flex items-center gap-4">
-                    <input type="range" wire:model.live.debounce.300ms="windowOpacity" min="50" max="100"
-                        class="settings-slider">
-                    <span class="settings-value">
-                        {{ $windowOpacity }}%
-                    </span>
-                </div>
-
-                <label class="settings-label mt-6">
-                    {{ __('settings.other.window_blur') }}
-                </label>
-                <p class="settings-description">
-                    {{ __('settings.other.window_blur_description') }}
-                </p>
-                <div class="flex items-center gap-4">
-                    <input type="range" wire:model.live.debounce.300ms="windowBlur" min="0" max="100"
-                        class="settings-slider">
-                    <span class="settings-value">
-                        {{ $windowBlur }}px
-                    </span>
-                </div>
-                <p class="help-text">
-                    {{ __('settings.other.window_blur_helper') }}
+                    {{ __('settings.ai_providers.description') }}
                 </p>
 
-                <label class="flex items-center justify-between cursor-pointer mt-4">
-                    <div>
-                        <span class="settings-label mb-0">
-                            {{ __('settings.other.disable_transparency_maximized') }}
-                        </span>
-                        <p class="settings-description mt-1">
-                            {{ __('settings.other.disable_transparency_maximized_description') }}
-                        </p>
+                @foreach (config('purrai.ai_providers', []) as $provider)
+                    <div class="card">
+                        @foreach ($provider['fields'] as $index => $field)
+                            <label class="settings-label @if ($index > 0) mt-4 @endif">
+                                {{ __($field['label']) }}
+                            </label>
+                            <x-ui.input type="{{ $field['type'] }}"
+                                wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
+                                placeholder="{{ __($field['placeholder']) }}"
+                                class="settings-input font-mono text-sm"></x-ui.input>
+
+                            @if (isset($field['helper']))
+                                <p class="help-text">{{ __($field['helper']) }}</p>
+                            @endif
+                        @endforeach
                     </div>
-                    <button type="button" wire:click="$toggle('disableTransparencyMaximized')"
-                        class="settings-toggle {{ $disableTransparencyMaximized ? 'active' : '' }}">
-                        <span class="settings-toggle-thumb"></span>
-                    </button>
-                </label>
-            </div>
-        </div>
+                @endforeach
+            </x-ui.tab-content>
+
+            {{-- Other Settings Tab --}}
+            <x-ui.tab-content name="other">
+                <x-ui.radio-group :label="__('settings.other.theme_mode')"
+                    :description="__('settings.other.theme_mode_description')" :options="$themeModeOptions"
+                    model="themeMode" />
+
+                <div class="card">
+                    <x-ui.input type="number" :label="__('settings.other.delete_old_messages')"
+                        :description="__('settings.other.delete_old_messages_description')"
+                        :helpText="__('settings.other.delete_old_messages_helper')" model="deleteOldMessagesDays"
+                        class="w-full sm:w-40" min="0" step="1" placeholder="0" />
+                </div>
+
+                @if (!is_linux())
+                    <x-ui.toggle :label="__('settings.other.open_at_login')"
+                        :description="__('settings.other.open_at_login_description')" model="openAtLogin"
+                        :checked="$openAtLogin" />
+                @endif
+
+                <x-ui.slider :label="__('settings.other.window_opacity')"
+                    :description="__('settings.other.window_opacity_description')" model="windowOpacity" min="50"
+                    max="100" :value="$windowOpacity" suffix="%" />
+
+                <x-ui.slider :label="__('settings.other.window_blur')"
+                    :description="__('settings.other.window_blur_description')"
+                    :helpText="__('settings.other.window_blur_helper')" model="windowBlur" min="0" max="100"
+                    :value="$windowBlur" suffix="px">
+                    <x-ui.toggle :label="__('settings.other.disable_transparency_maximized')"
+                        :description="__('settings.other.disable_transparency_maximized_description')"
+                        model="disableTransparencyMaximized" :checked="$disableTransparencyMaximized" class="mt-4" />
+                </x-ui.slider>
+            </x-ui.tab-content>
+        </x-ui.tabs>
     </div>
 
     {{-- Saving Indicator --}}
     <div wire:loading
-        class="fixed bottom-6 right-6 px-4 py-2 rounded-full bg-green-500 text-white text-sm font-medium shadow-lg z-50">
-        {{ __('settings.saving') }}
+        class="fixed bottom-6 right-6 z-50 flex items-center gap-2 text-xs bg-slate-500/50 p-1 px-2 text-slate-50 text-center rounded-xl">
+        <x-ui.loading-icon></x-ui.loading-icon>
+        <span>{{ __('settings.saving') }}</span>
     </div>
 </div>

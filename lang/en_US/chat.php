@@ -23,7 +23,7 @@ return [
     'load_more' => 'Load more',
     'edit_title' => 'Edit Conversation Title',
     'title_placeholder' => 'Enter conversation title...',
-    'history_title' => 'Chat History',
+    'history_title' => 'History',
     'search_history' => 'Search history',
     'search_placeholder' => 'Search conversations...',
     'loading' => 'Loading...',
@@ -31,5 +31,7 @@ return [
         'select_model' => 'Select a model',
         'no_models' => 'No AI models configured',
         'configure_providers' => 'Configure AI Providers',
+        'filter_models' => 'Filter models',
+        'filter_placeholder' => 'Filter...',
     ],
 ];

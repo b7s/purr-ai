@@ -1,7 +1,6 @@
 <x-slot name="headerActions">
-    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }}, @js($searchQuery))"
-        class="flex items-center gap-2">
-        @if($conversation && $conversation->messages->count() > 0)
+    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }}, @js($searchQuery))" class="flex items-center gap-2">
+        @if ($conversation && $conversation->messages->count() > 0)
             <span @click="startNewConversation()" x-transition>
                 <x-ui.icon-button icon="plus" :title="__('ui.tooltips.new_chat')" />
             </span>
@@ -19,10 +18,9 @@
                     <div class="history-mobile-actions flex items-center gap-2">
                         <div x-show="searchOpen" x-transition x-cloak
                             class="history-search-field flex items-center gap-2">
-                            <input type="search" x-ref="historySearchInput" x-model="searchTerm"
-                                @keydown.escape.stop.prevent="closeSearch()" autocomplete="off"
-                                placeholder="{{ __('chat.search_placeholder') }}"
-                                class="settings-input rounded-lg px-2 py-1" />
+                            <x-ui.input type="search" @keydown.escape.stop.prevent="closeSearch()" autocomplete="off"
+                                placeholder="{{ __('chat.search_placeholder') }}" x-ref="historySearchInput"
+                                x-model="searchTerm" class="rounded-lg px-2 py-1"></x-ui.input>
                         </div>
 
                         <button type="button" @click="toggleSearch()" :class="{ 'text-primary-500': searchOpen }"
@@ -101,8 +99,8 @@
     </div>
 </x-slot>
 
-<div class="h-full flex flex-col" x-data="{ 
-        scrollToBottom() {
+<div class="h-full flex flex-col" x-data="{
+    scrollToBottom() {
             let container = document.getElementById('messages-container');
             if (container) {
                 setTimeout(() => {
@@ -122,20 +120,20 @@
                 }, 150);
             }
         }
-    }" x-init="focusInput()" @scroll-to-user-message.window="scrollToBottom()">
+}" x-init="focusInput()"
+    @scroll-to-user-message.window="scrollToBottom()">
 
     {{-- Messages --}}
     <div class="chat-messages" id="messages-container">
-        @if($conversation && $conversation->messages->count() > 0)
-            @foreach($conversation->messages as $message)
-                <x-chat.message :role="$message->role" :content="$message->content" :time="$message->created_at"
-                    :attachments="$message->attachments" />
+        @if ($conversation && $conversation->messages->count() > 0)
+            @foreach ($conversation->messages as $message)
+                <x-chat.message :role="$message->role" :content="$message->content" :time="$message->created_at" :attachments="$message->attachments" />
             @endforeach
         @else
             <x-chat.welcome :title="__('chat.welcome_title')" :message="__('chat.welcome_message')" />
         @endif
 
-        @if($isProcessing ?? false)
+        @if ($isProcessing ?? false)
             <x-chat.loading />
         @endif
     </div>
@@ -149,9 +147,8 @@
         <form wire:submit="sendMessage" class="purrai-dropdown input-dock">
             <x-ui.button type="button" variant="ghost" icon="plus" :title="__('ui.tooltips.attach_file')" />
 
-            <textarea wire:model.live.debounce.500ms="message" wire:change="saveDraft"
-                placeholder="{{ __('chat.placeholder') }}" rows="1"
-                maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field"
+            <textarea wire:model.live.debounce.500ms="message" wire:change="saveDraft" placeholder="{{ __('chat.placeholder') }}"
+                rows="1" maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field"
                 x-on:input="$el.style.height = 'auto'; $el.style.height = ($el.scrollHeight) + 'px'"
                 @keydown.ctrl.enter="$wire.sendMessage()"></textarea>
 

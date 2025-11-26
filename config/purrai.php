@@ -17,7 +17,7 @@ return [
         'main_id' => 'main',
         'default_width' => 1100,
         'default_height' => 618,
-        'min_width' => 480,
+        'min_width' => 500,
         'min_height' => 690,
 
         'default_x' => 10,
