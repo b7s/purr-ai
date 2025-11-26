@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Setting;
+use App\Services\ChatService;
+use Native\Desktop\Facades\Window;
 
 if (! function_exists('is_native')) {
     /**
@@ -56,6 +58,27 @@ if (! function_exists('is_linux')) {
     }
 }
 
+if (! function_exists('is_menubar')) {
+    /**
+     * Check if the current request is from the menubar window.
+     */
+    function is_menubar(): bool
+    {
+        try {
+            // @todo Is there any way to identify if you are in a menubar window?
+            Window::current();
+
+            return false;
+        } catch (\Exception $e) {
+            if (request()->input('_windowId') === config('purrai.window.main_id', 'main')) {
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
 if (! function_exists('getPreviusChatUrl')) {
     function getPreviousChatUrl(): string
     {
@@ -65,10 +88,16 @@ if (! function_exists('getPreviusChatUrl')) {
             $request = request()->create($previousUrl);
             $route = app('router')->getRoutes()->match($request);
 
-            if ($route->getName() === 'chat') {
+            if ($route->getName() === 'chat' || $route->getName() === 'menubar.chat') {
                 return $previousUrl;
             }
         } catch (\Throwable) {
+            try {
+                $typeRoute = is_menubar() ? 'menubar' : 'chat';
+
+                return app(ChatService::class)->getInitialRoute($typeRoute);
+            } catch (\Throwable) {
+            }
         }
 
         return route('chat');

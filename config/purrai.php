@@ -14,6 +14,7 @@ return [
     ],
 
     'window' => [
+        'main_id' => 'main',
         'default_width' => 1100,
         'default_height' => 618,
         'min_width' => 480,

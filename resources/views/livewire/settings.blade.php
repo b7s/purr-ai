@@ -19,7 +19,7 @@
         </div>
 
         {{-- Tabs --}}
-        <div class="settings-tabs">
+        <div class="settings-tabs card">
             <button type="button" @click="activeTab = 'chat'"
                 :class="activeTab === 'chat' ? 'settings-tab-active' : 'settings-tab-inactive'" class="settings-tab">
                 {{ __('settings.tabs.chat') }}
@@ -38,7 +38,7 @@
 
         {{-- Chat Settings Tab --}}
         <div x-show="activeTab === 'chat'" x-transition class="space-y-6">
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.chat.mascot_name') }}
                 </label>
@@ -46,7 +46,7 @@
                     placeholder="{{ __('settings.chat.mascot_name_placeholder') }}" class="settings-input">
             </div>
 
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.chat.response_detail') }}
                 </label>
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.chat.response_tone') }}
                 </label>
@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <div class="settings-card">
+            <div class="card">
                 <label class="flex items-center justify-between cursor-pointer">
                     <span class="settings-label mb-0">
                         <img src="{{ asset('images/logo-PurrAI-64.webp') }}" class="w-6 h-6 inline-block mr-2">
@@ -99,7 +99,7 @@
                 </label>
             </div>
 
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.chat.user_description') }}
                 </label>
@@ -119,7 +119,7 @@
             </p>
 
             @foreach (config('purrai.ai_providers', []) as $provider)
-                <div class="settings-card">
+                <div class="card">
                     @foreach ($provider['fields'] as $index => $field)
                         <label class="settings-label @if($index > 0) mt-4 @endif" @class([
                             $index > 0 => 'mt-4',
@@ -140,11 +140,11 @@
 
         {{-- Other Settings Tab --}}
         <div x-show="activeTab === 'other'" x-transition class="space-y-6">
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.other.theme_mode') }}
                 </label>
-                <p class="settings-description mb-3">
+                <p class="settings-description">
                     {{ __('settings.other.theme_mode_description') }}
                 </p>
                 <div class="flex gap-3">
@@ -172,11 +172,11 @@
                 </div>
             </div>
 
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.other.delete_old_messages') }}
                 </label>
-                <p class="settings-description mb-3">
+                <p class="settings-description">
                     {{ __('settings.other.delete_old_messages_description') }}
                 </p>
                 <input type="number" wire:model.blur="deleteOldMessagesDays" class="settings-input w-full sm:w-40"
@@ -187,7 +187,7 @@
             </div>
 
             @if(!is_linux())
-                <div class="settings-card">
+                <div class="card">
                     <label class="flex items-center justify-between cursor-pointer">
                         <div>
                             <span class="settings-label mb-0">
@@ -205,11 +205,11 @@
                 </div>
             @endif
 
-            <div class="settings-card">
+            <div class="card">
                 <label class="settings-label">
                     {{ __('settings.other.window_opacity') }}
                 </label>
-                <p class="settings-description mb-3">
+                <p class="settings-description">
                     {{ __('settings.other.window_opacity_description') }}
                 </p>
                 <div class="flex items-center gap-4">
@@ -223,7 +223,7 @@
                 <label class="settings-label mt-6">
                     {{ __('settings.other.window_blur') }}
                 </label>
-                <p class="settings-description mb-3">
+                <p class="settings-description">
                     {{ __('settings.other.window_blur_description') }}
                 </p>
                 <div class="flex items-center gap-4">

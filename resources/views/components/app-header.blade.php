@@ -1,6 +1,6 @@
 <header class="top-header">
     <div class="flex items-center gap-3">
-        @if(is_native() && is_mac())
+        @if(is_native() && is_mac() && !is_menubar())
             <livewire:window-controls :key="'window-controls-mac'" />
         @endif
 
@@ -19,7 +19,7 @@
             <x-ui.icon-button icon="settings" :title="__('ui.tooltips.settings')" />
         </a>
 
-        @if(is_native() && !is_mac())
+        @if(is_native() && !is_mac() && !is_menubar())
             <livewire:window-controls :key="'window-controls'" />
         @endif
     </div>

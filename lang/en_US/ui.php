@@ -29,6 +29,11 @@ return [
         'see_more' => 'see more',
         'see_less' => 'see less',
     ],
+    'menu' => [
+        'open_chat' => 'Open Chat',
+        'settings' => 'Settings',
+        'quit' => 'Quit',
+    ],
     'cancel' => 'Cancel',
     'confirm' => 'Confirm',
 ];

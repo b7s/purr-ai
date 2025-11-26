@@ -27,7 +27,7 @@ class WindowControls extends Component
 
     public function minimize(): void
     {
-        Window::minimize('main');
+        Window::minimize(config('purrai.window.main_id', 'main'));
     }
 
     public function toggleMaximize(
@@ -47,8 +47,8 @@ class WindowControls extends Component
             $x = $this->previousX ?? 100;
             $y = $this->previousY ?? 100;
 
-            Window::resize($width, $height, 'main');
-            Window::position($x, $y, false, 'main');
+            Window::resize($width, $height, config('purrai.window.main_id', 'main'));
+            Window::position($x, $y, false, config('purrai.window.main_id', 'main'));
 
             $this->isMaximized = false;
 
@@ -68,8 +68,8 @@ class WindowControls extends Component
             $maxWidth = $screenWidth ?? 1280;
             $maxHeight = $screenHeight ?? 720;
 
-            Window::position(0, 0, false, 'main');
-            Window::resize($maxWidth, $maxHeight, 'main');
+            Window::position(0, 0, false, config('purrai.window.main_id', 'main'));
+            Window::resize($maxWidth, $maxHeight, config('purrai.window.main_id', 'main'));
 
             $this->isMaximized = true;
 
@@ -87,7 +87,7 @@ class WindowControls extends Component
 
     public function close(): void
     {
-        Window::close('main');
+        Window::close(config('purrai.window.main_id', 'main'));
     }
 
     public function render()

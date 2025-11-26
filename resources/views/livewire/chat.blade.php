@@ -99,7 +99,10 @@
         focusInput() {
             let textarea = document.querySelector('.input-field');
             if (textarea) {
-                setTimeout(() => textarea.focus(), 100);
+                setTimeout(() => {
+                    textarea.focus();
+                    this.scrollToBottom();
+                }, 150);
             }
         }
     }" x-init="focusInput()" @scroll-to-user-message.window="scrollToBottom()">

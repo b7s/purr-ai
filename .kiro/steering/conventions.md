@@ -16,6 +16,7 @@
 - **PHPStan Level 5**: Code must pass static analysis without errors
 - **No inline validation**: Always use Form Request classes for validation
 - **Documentations and ".md" files**: Never create documentation or ".md" without authorization
+- **Services**: Use services pattern when Business logic and domain services on "app/services"
 
 ### Code Quality Tools (Run Before Committing)
 

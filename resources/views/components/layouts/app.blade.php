@@ -17,7 +17,7 @@
 <body id="app" class="flex items-center justify-center {{ !is_native() ? 'web-mode' : '' }}">
     <script>
         function checkMaximized() {
-            const tolerance = 4;
+            const tolerance = 5;
             return Math.abs(window.innerWidth - screen.availWidth) < tolerance &&
                 Math.abs(window.innerHeight - screen.availHeight) < tolerance;
         }

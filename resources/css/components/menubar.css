@@ -1,0 +1,56 @@
+/* MenuBar specific styles */
+
+.menubar-mode {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.menubar-panel {
+    @apply w-full h-screen flex flex-col;
+    @apply bg-white/95 dark:bg-gray-900/95;
+    @apply backdrop-blur-xl;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.menubar-chat-container {
+    @apply flex flex-col h-full;
+}
+
+.menubar-messages {
+    @apply flex-1 overflow-y-auto p-4;
+    @apply space-y-4;
+}
+
+.menubar-input-wrapper {
+    @apply p-3 border-t border-gray-200/50 dark:border-gray-700/50;
+    @apply bg-white/80 dark:bg-gray-900/80;
+}
+
+.menubar-input-dock {
+    @apply flex items-end gap-2;
+    @apply bg-gray-100/80 dark:bg-gray-800/80;
+    @apply rounded-xl p-2;
+    @apply border border-gray-200/50 dark:border-gray-700/50;
+}
+
+.menubar-input-field {
+    @apply flex-1 resize-none;
+    @apply bg-transparent;
+    @apply text-gray-900 dark:text-white;
+    @apply placeholder-gray-500 dark:placeholder-gray-400;
+    @apply text-sm leading-relaxed;
+    @apply outline-none;
+    @apply max-h-[120px];
+    @apply py-1.5 px-2;
+}
+
+/* Adjust model selector for menubar */
+.menubar-input-wrapper .model-selector {
+    @apply mb-2;
+}
+
+.menubar-input-wrapper .model-selector-btn {
+    @apply text-xs py-1 px-2;
+}

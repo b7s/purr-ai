@@ -16,6 +16,14 @@
     @apply bg-gray-900/80 border-white/10 shadow-2xl;
 }
 
+.card {
+    @apply p-6 rounded-2xl border bg-slate-100 border-slate-200;
+}
+
+.dark .card {
+    @apply bg-slate-800 border-slate-700;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

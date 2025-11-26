@@ -162,11 +162,13 @@ class Chat extends Component
         $hasMorePages = \count($this->conversations) < $totalConversations;
         $availableModels = $this->getAvailableModels();
 
-        return view('livewire.chat', [
+        $viewData = [
             'conversation' => $conversation,
             'hasMorePages' => $hasMorePages,
             'availableModels' => $availableModels,
-        ]);
+        ];
+
+        return view('livewire.chat', $viewData);
     }
 
     private function getConversationsHistory(?int $limit = null): array

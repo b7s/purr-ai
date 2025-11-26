@@ -18,6 +18,7 @@
 @import "./components/history.css";
 @import "./components/settings.css";
 @import "./components/window-controls.css";
+@import "./components/menubar.css";
 
 /* Vendor */
 @import "./iconoir.css";

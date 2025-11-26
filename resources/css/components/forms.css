@@ -64,7 +64,9 @@
 
     /* Help Text */
     .help-text {
-        @apply text-xs mt-2;
-        color: rgb(115 115 115);
+        @apply text-xs mt-2 text-slate-400;
+    }
+    .dark .help-text {
+        @apply text-xs mt-2 text-slate-400/70;
     }
 }
