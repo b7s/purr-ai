@@ -1,5 +1,5 @@
 <x-slot name="headerActions">
-    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }})"
+    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }}, @js($searchQuery))"
         class="flex items-center gap-2">
         @if($conversation && $conversation->messages->count() > 0)
             <span @click="startNewConversation()" x-transition>
@@ -13,12 +13,29 @@
             {{-- History Dropdown/Modal --}}
             <div x-show="open" x-transition @click.away="open = false"
                 @keydown.window.escape="open ? open = false : null" class="history-dropdown purrai-dropdown">
-                {{-- Mobile Header --}}
-                <div class="history-mobile-header">
-                    <h3 class="history-mobile-title">{{ __('chat.history_title') }}</h3>
-                    <button type="button" @click="open = false" class="history-mobile-close">
-                        <i class="iconoir-xmark"></i>
-                    </button>
+                {{-- Header --}}
+                <div class="history-mobile-header flex items-center justify-between gap-3">
+                    <h3 class="history-mobile-title flex-1">{{ __('chat.history_title') }}</h3>
+                    <div class="history-mobile-actions flex items-center gap-2">
+                        <div x-show="searchOpen" x-transition x-cloak
+                            class="history-search-field flex items-center gap-2">
+                            <input type="search" x-ref="historySearchInput" x-model="searchTerm"
+                                @keydown.escape.stop.prevent="closeSearch()" autocomplete="off"
+                                placeholder="{{ __('chat.search_placeholder') }}"
+                                class="settings-input rounded-lg px-2 py-1" />
+                        </div>
+
+                        <button type="button" @click="toggleSearch()" :class="{ 'text-primary-500': searchOpen }"
+                            class="history-mobile-btn">
+                            <span class="sr-only">{{ __('chat.search_history') }}</span>
+                            <i class="iconoir-search text-lg"></i>
+                        </button>
+
+                        <button type="button" @click="open = false" class="history-mobile-btn">
+                            <span class="sr-only">{{ __('ui.cancel') }}</span>
+                            <i class="iconoir-xmark"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="history-list">

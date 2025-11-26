@@ -73,11 +73,12 @@ class ChatService
     private function buildRoute(?int $conversationId, string $type = 'chat'): string
     {
         $routeName = $type === 'chat' ? 'chat' : 'menubar.chat';
+        $windowId = $type === 'chat' ? config('purrai.window.main_id', 'main') : 'menubar';
 
         if ($conversationId) {
-            return route($routeName, ['conversationId' => $conversationId, 'is_menubar' => '1']);
+            return route($routeName, ['conversationId' => $conversationId, '_windowId' => $windowId]);
         }
 
-        return route($routeName);
+        return route($routeName, ['_windowId' => $windowId]);
     }
 }

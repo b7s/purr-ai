@@ -33,18 +33,12 @@
 
     /* Mobile Header */
     .history-mobile-header {
-        @apply hidden;
+        @apply flex items-center justify-between px-4 py-3 border-b;
+        border-color: rgb(229 229 229);
     }
 
-    @media (max-width: 640px) {
-        .history-mobile-header {
-            @apply flex items-center justify-between px-4 py-3 border-b;
-            border-color: rgb(229 229 229);
-        }
-
-        .dark .history-mobile-header {
-            border-color: rgb(51 65 85 / 0.5);
-        }
+    .dark .history-mobile-header {
+        border-color: rgb(51 65 85 / 0.5);
     }
 
     .history-mobile-title {
@@ -56,19 +50,16 @@
         color: rgb(248 250 252);
     }
 
-    .history-mobile-close {
-        @apply w-9 h-9 flex items-center justify-center rounded-lg transition-colors;
-        color: rgb(115 115 115);
+    .history-mobile-btn {
+        @apply w-9 h-9 flex items-center justify-center rounded-lg transition-colors text-slate-500 cursor-pointer;
     }
 
-    .history-mobile-close:hover {
-        background-color: rgb(229 229 229);
-        color: rgb(23 23 23);
+    .history-mobile-btn:hover {
+        @apply bg-slate-200 text-slate-800;
     }
 
-    .dark .history-mobile-close:hover {
-        background-color: rgb(51 65 85 / 0.5);
-        color: rgb(248 250 252);
+    .dark .history-mobile-btn:hover {
+        @apply bg-slate-800 text-slate-200;
     }
 
     .history-list {

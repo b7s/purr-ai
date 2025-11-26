@@ -3,7 +3,11 @@ import "./bootstrap";
 document.addEventListener("alpine:init", () => {
     Alpine.data(
         "historyDropdown",
-        (initialConversations, initialHasMorePages) => ({
+        (
+            initialConversations,
+            initialHasMorePages,
+            initialSearchQuery = ""
+        ) => ({
             open: false,
             editModalOpen: false,
             editingId: null,
@@ -11,6 +15,25 @@ document.addEventListener("alpine:init", () => {
             loadingMore: false,
             conversations: initialConversations,
             hasMorePages: initialHasMorePages,
+            searchOpen: Boolean(initialSearchQuery),
+            searchTerm: initialSearchQuery,
+            searchDebounceTimer: null,
+
+            init() {
+                this.$watch("searchTerm", (value) => {
+                    this.handleSearchTermChange(value);
+                });
+
+                if (this.searchOpen) {
+                    this.$nextTick(() => this.focusSearchInput());
+                }
+
+                window.addEventListener("conversations-updated", (event) => {
+                    if (event.detail && event.detail.conversations) {
+                        this.conversations = event.detail.conversations;
+                    }
+                });
+            },
 
             getLivewireComponent() {
                 // Find the Chat component specifically (it has the messages-container)
@@ -64,6 +87,42 @@ document.addEventListener("alpine:init", () => {
                 const component = this.getLivewireComponent();
                 if (component) {
                     component.call("loadConversation", id);
+                }
+            },
+
+            focusSearchInput() {
+                this.$refs.historySearchInput?.focus();
+                this.$refs.historySearchInput?.select?.();
+            },
+
+            toggleSearch() {
+                if (this.searchOpen) {
+                    this.closeSearch();
+
+                    return;
+                }
+
+                this.searchOpen = true;
+                this.$nextTick(() => this.focusSearchInput());
+            },
+
+            closeSearch() {
+                this.searchOpen = false;
+                this.searchTerm = "";
+                this.syncSearchQuery("");
+            },
+
+            handleSearchTermChange(value) {
+                clearTimeout(this.searchDebounceTimer);
+                this.searchDebounceTimer = setTimeout(() => {
+                    this.syncSearchQuery(value);
+                }, 300);
+            },
+
+            syncSearchQuery(value) {
+                const component = this.getLivewireComponent();
+                if (component) {
+                    component.set("searchQuery", (value ?? "").trim());
                 }
             },
 

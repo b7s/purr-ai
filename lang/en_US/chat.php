@@ -24,6 +24,8 @@ return [
     'edit_title' => 'Edit Conversation Title',
     'title_placeholder' => 'Enter conversation title...',
     'history_title' => 'Chat History',
+    'search_history' => 'Search history',
+    'search_placeholder' => 'Search conversations...',
     'loading' => 'Loading...',
     'model_selector' => [
         'select_model' => 'Select a model',

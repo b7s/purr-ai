@@ -33,6 +33,8 @@ class Chat extends Component
 
     public string $selectedModel = '';
 
+    public string $searchQuery = '';
+
     public function mount(?int $conversationId = null): void
     {
         $this->conversationId = $conversationId;
@@ -42,6 +44,13 @@ class Chat extends Component
         $this->loadDraft();
 
         $this->dispatch('reset-window-state');
+    }
+
+    public function updatedSearchQuery(): void
+    {
+        $this->currentPage = 1;
+        $this->conversations = $this->getConversationsHistory();
+        $this->dispatch('conversations-updated', conversations: $this->conversations);
     }
 
     public function newConversation(): void
@@ -177,8 +186,14 @@ class Chat extends Component
         $currentPage = max(1, $this->currentPage);
         $offset = ($currentPage - 1) * $limit;
 
-        return Conversation::query()
-            ->selectRaw('id, SUBSTR(title, 1, 60) as title, created_at, updated_at')
+        $query = Conversation::query()
+            ->selectRaw('id, SUBSTR(title, 1, 60) as title, created_at, updated_at');
+
+        if (! empty($this->searchQuery)) {
+            $query->where('title', 'like', '%'.$this->searchQuery.'%');
+        }
+
+        return $query
             ->orderByDesc('updated_at')
             ->skip($offset)
             ->take($limit)
