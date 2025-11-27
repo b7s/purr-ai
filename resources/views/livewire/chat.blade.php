@@ -1,5 +1,6 @@
 <x-slot name="headerActions">
-    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }}, @js($searchQuery))" class="flex items-center gap-2">
+    <div x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }}, @js($searchQuery))"
+        class="flex items-center gap-2">
         @if ($conversation && $conversation->messages->count() > 0)
             <span @click="startNewConversation()" x-transition>
                 <x-ui.icon-button icon="plus" :title="__('ui.tooltips.new_chat')" />
@@ -11,7 +12,7 @@
 
             {{-- History Dropdown/Modal --}}
             <div x-show="open" x-transition @click.away="open = false"
-                @keydown.window.escape="open ? open = false : null" class="history-dropdown purrai-dropdown">
+                @keydown.window.escape="open ? open = false : null" class="history-dropdown purrai-opacity-box">
                 {{-- Header --}}
                 <div class="history-mobile-header flex items-center justify-between gap-3">
                     <h3 class="history-mobile-title flex-1">{{ __('chat.history_title') }}</h3>
@@ -120,14 +121,14 @@
                 }, 150);
             }
         }
-}" x-init="focusInput()"
-    @scroll-to-user-message.window="scrollToBottom()">
+}" x-init="focusInput()" @scroll-to-user-message.window="scrollToBottom()">
 
     {{-- Messages --}}
     <div class="chat-messages" id="messages-container">
         @if ($conversation && $conversation->messages->count() > 0)
             @foreach ($conversation->messages as $message)
-                <x-chat.message :role="$message->role" :content="$message->content" :time="$message->created_at" :attachments="$message->attachments" />
+                <x-chat.message :role="$message->role" :content="$message->content" :time="$message->created_at"
+                    :attachments="$message->attachments" />
             @endforeach
         @else
             <x-chat.welcome :title="__('chat.welcome_title')" :message="__('chat.welcome_message')" />
@@ -144,20 +145,61 @@
         <x-chat.model-selector :available-models="$availableModels" :selected-model="$selectedModel" />
 
         {{-- Input Form --}}
-        <form wire:submit="sendMessage" class="purrai-dropdown input-dock">
+        <form wire:submit="sendMessage" class="purrai-opacity-box input-dock">
             <x-ui.button type="button" variant="ghost" icon="plus" :title="__('ui.tooltips.attach_file')" />
 
-            <textarea wire:model.live.debounce.500ms="message" wire:change="saveDraft" placeholder="{{ __('chat.placeholder') }}"
-                rows="1" maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field"
-                x-on:input="$el.style.height = 'auto'; $el.style.height = ($el.scrollHeight) + 'px'"
-                @keydown.ctrl.enter="$wire.sendMessage()"></textarea>
+            <div x-data="{
+                maxHeight: 100,
+                adjustHeight() {
+                    const textarea = $refs.messageInput;
+                    const container = $refs.textareaContainer;
+                    if (!textarea || !container) return;
+                    textarea.style.height = 'auto';
+                    const newHeight = Math.min(textarea.scrollHeight, this.maxHeight);
+                    textarea.style.height = newHeight + 'px';
+                    container.style.height = newHeight + 'px';
+                    textarea.style.overflowY = textarea.scrollHeight > this.maxHeight ? 'auto' : 'hidden';
+                },
+                syncValue() {
+                    const textarea = $refs.messageInput;
+                    if (!textarea) return;
+                    $wire.set('message', textarea.value);
+                    this.adjustHeight();
+                }
+            }" x-init="
+                const textarea = $refs.messageInput;
+                textarea.value = $wire.message || '';
+                adjustHeight();
+                $watch('$wire.message', (value) => {
+                    if (textarea.value !== value) {
+                        textarea.value = value || '';
+                        $nextTick(() => adjustHeight());
+                    }
+                });
+            " wire:ignore x-ref="textareaContainer" class="flex-1">
+                <textarea wire:ignore x-ref="messageInput" @input.debounce.500ms="syncValue()" @input="adjustHeight()"
+                    @change="$wire.call('saveDraft')" placeholder="{{ __('chat.placeholder') }}" rows="1"
+                    maxlength="{{ config('purrai.limits.max_message_length') }}" class="input-field"
+                    @keydown.ctrl.enter="$wire.sendMessage()"></textarea>
+            </div>
 
             <div class="flex gap-1">
-                <x-ui.button type="button" variant="ghost" icon="microphone" :title="__('ui.tooltips.record_audio')" />
+                <x-ui.button type="button" variant="ghost" icon="microphone" :title="__('ui.tooltips.record_audio')"
+                    id="audio_device-button" />
                 <x-ui.button type="submit" variant="primary" :title="__('ui.tooltips.send_message')">
                     <i class="iconoir-arrow-up text-xl font-bold stroke-[3px]"></i>
                 </x-ui.button>
             </div>
+
+            {{-- Speech Recognition Translations --}}
+            <script>
+                window.speechRecognitionTranslations = @js([
+                    'settings' => __('chat.speech_recognition.settings'),
+                    'audio_device' => __('chat.speech_recognition.audio_device'),
+                    'default_audio_device' => __('chat.speech_recognition.default_audio_device'),
+                ]);
+                window.noiseSuppressionLevel = @js(\App\Models\Setting::get('noise_suppression_level', 'medium'));
+            </script>
 
             @error('message')
                 <div class="absolute -top-8 left-4 text-red-600 dark:text-red-400 flex items-center gap-1">

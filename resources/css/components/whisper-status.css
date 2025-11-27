@@ -1,0 +1,183 @@
+/**
+ * Whisper Status Component Styles
+ */
+
+/* Alert Container */
+.whisper-alert {
+    @apply border rounded-2xl p-4 border-amber-300 bg-amber-50/30;
+}
+
+.dark .whisper-alert {
+    @apply border-amber-800 bg-amber-900/30;
+}
+
+.whisper-alert-content {
+    @apply flex items-start items-center gap-3;
+}
+
+.whisper-alert-icon {
+    @apply text-xl text-amber-500;
+}
+
+.dark .whisper-alert-icon {
+    @apply text-amber-300;
+}
+
+.whisper-alert-body {
+    @apply flex-1;
+}
+
+.whisper-alert-title {
+    @apply text-sm font-medium text-amber-700;
+}
+
+.dark .whisper-alert-title {
+    @apply text-amber-100;
+}
+
+.whisper-alert-description {
+    @apply text-sm mt-1 text-amber-600;
+}
+
+.dark .whisper-alert-description {
+    @apply text-amber-200;
+}
+
+/* Status List */
+.whisper-status-list {
+    @apply mt-3 space-y-1.5 text-sm;
+}
+
+.whisper-status-item {
+    @apply flex items-center gap-2;
+}
+
+.whisper-status-icon {
+    @apply text-base;
+}
+
+.whisper-status-icon.success {
+    @apply text-emerald-600;
+}
+
+.dark .whisper-status-icon.success {
+    @apply text-emerald-300;
+}
+
+.whisper-status-icon.error {
+    @apply text-rose-600;
+}
+
+.dark .whisper-status-icon.error {
+    @apply text-rose-300;
+}
+
+.whisper-status-text.success {
+    @apply text-emerald-700;
+}
+
+.dark .whisper-status-text.success {
+    @apply text-emerald-100;
+}
+
+.whisper-status-text.error {
+    @apply text-rose-700;
+}
+
+.dark .whisper-status-text.error {
+    @apply text-rose-100;
+}
+
+/* FFmpeg Hint */
+.whisper-ffmpeg-hint {
+    @apply text-xs mt-3 text-amber-500;
+}
+
+.dark .whisper-ffmpeg-hint {
+    @apply text-amber-300;
+}
+
+/* Download Button */
+.whisper-download-btn {
+    @apply mt-4 px-4 py-2 text-sm font-medium rounded-lg cursor-pointer transition-colors duration-200 bg-amber-500 text-white hover:bg-amber-600;
+}
+
+.dark .whisper-download-btn {
+    @apply hover:bg-amber-400;
+}
+
+.whisper-download-btn:disabled {
+    @apply opacity-50 cursor-not-allowed;
+}
+
+/* Ready State */
+.whisper-ready {
+    @apply border rounded-lg p-4 border-emerald-300 bg-emerald-50;
+}
+
+.dark .whisper-ready {
+    @apply border-emerald-700 bg-emerald-900/20;
+}
+
+.whisper-ready-content {
+    @apply flex items-center gap-3;
+}
+
+.whisper-ready-icon {
+    @apply text-xl text-emerald-600;
+}
+
+.dark .whisper-ready-icon {
+    @apply text-emerald-300;
+}
+
+.whisper-ready-text {
+    @apply text-sm font-medium text-emerald-700;
+}
+
+.dark .whisper-ready-text {
+    @apply text-emerald-100;
+}
+
+.whisper-gpu-badge {
+    @apply ml-2 text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700;
+}
+
+.dark .whisper-gpu-badge {
+    @apply bg-emerald-800 text-emerald-100;
+}
+
+/* Progress */
+.whisper-progress {
+    @apply mt-3 flex items-center gap-2 text-sm text-blue-600;
+}
+
+.dark .whisper-progress {
+    @apply text-blue-300;
+}
+
+/* Error */
+.whisper-error {
+    @apply mt-3 rounded-lg border border-red-300 bg-red-50 p-3;
+}
+
+.dark .whisper-error {
+    @apply border-red-900 bg-red-950/20;
+}
+
+.whisper-error-header {
+    @apply flex items-center gap-2 text-sm font-medium mb-2 text-red-800;
+}
+
+.dark .whisper-error-header {
+    @apply text-red-300;
+}
+
+.whisper-error-content {
+    @apply text-xs font-mono p-2 rounded overflow-auto max-h-40;
+    @apply bg-white text-red-900 border border-red-200;
+}
+
+.dark .whisper-error-content {
+    @apply bg-black/30 text-red-200 border-red-900;
+}

@@ -1,4 +1,7 @@
 import "./bootstrap";
+import "./toast";
+import "./audio-devices";
+import "./speech-recognition";
 
 document.addEventListener("alpine:init", () => {
     Alpine.data(

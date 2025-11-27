@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Setting;
+use App\Services\WhisperService;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
 
@@ -38,8 +39,29 @@ class Settings extends Component
 
     public bool $openAtLogin = false;
 
+    public array $whisperStatus = [];
+
+    public bool $isDownloadingWhisper = false;
+
+    public string $downloadProgress = '';
+
+    public ?string $downloadError = null;
+
+    public bool $speechToTextEnabled = false;
+
+    public bool $useLocalSpeech = true;
+
+    public string $speechProvider = '';
+
+    public string $noiseSuppressionLevel = 'medium';
+
     public function mount(): void
     {
+        $this->checkWhisperStatus();
+        $this->speechToTextEnabled = (bool) Setting::get('speech_to_text_enabled', false);
+        $this->useLocalSpeech = (bool) Setting::get('use_local_speech', true);
+        $this->speechProvider = Setting::get('speech_provider', '');
+        $this->noiseSuppressionLevel = Setting::get('noise_suppression_level', 'medium');
         $this->mascotName = Setting::get('mascot_name', config('app.name'));
         $this->userName = Setting::get('user_name', '');
         $this->userDescription = Setting::get('user_description', '');
@@ -74,6 +96,10 @@ class Settings extends Component
         Setting::set('disable_transparency_maximized', $this->disableTransparencyMaximized);
         Setting::set('theme_mode', $this->themeMode);
         Setting::set('open_at_login', $this->openAtLogin);
+        Setting::set('speech_to_text_enabled', $this->speechToTextEnabled);
+        Setting::set('use_local_speech', $this->useLocalSpeech);
+        Setting::set('speech_provider', $this->speechProvider);
+        Setting::set('noise_suppression_level', $this->noiseSuppressionLevel);
 
         $this->dispatch('settings-saved');
         $this->dispatch('opacity-changed', opacity: $this->windowOpacity);
@@ -136,6 +162,26 @@ class Settings extends Component
     }
 
     public function updatedUserName(): void
+    {
+        $this->save();
+    }
+
+    public function updatedSpeechToTextEnabled(): void
+    {
+        $this->save();
+    }
+
+    public function updatedUseLocalSpeech(): void
+    {
+        $this->save();
+    }
+
+    public function updatedSpeechProvider(): void
+    {
+        $this->save();
+    }
+
+    public function updatedNoiseSuppressionLevel(): void
     {
         $this->save();
     }
@@ -235,9 +281,111 @@ class Settings extends Component
         }
 
         return array_values(array_filter(array_map(
-            fn($model) => trim($model),
+            fn ($model) => trim($model),
             explode(',', $models)
         )));
+    }
+
+    public function checkWhisperStatus(): void
+    {
+        try {
+            $whisperService = app(WhisperService::class);
+            $this->whisperStatus = $whisperService->getStatus();
+        } catch (\Throwable $e) {
+            $this->whisperStatus = [
+                'binary' => false,
+                'model' => false,
+                'ffmpeg' => false,
+                'gpu' => false,
+            ];
+        }
+    }
+
+    public function downloadWhisper(): void
+    {
+        $this->isDownloadingWhisper = true;
+        $this->downloadError = null;
+        $this->downloadProgress = __('settings.other.download_starting');
+
+        try {
+            $whisperService = app(WhisperService::class);
+            $status = $whisperService->getStatus();
+
+            // Download FFmpeg
+            if (! $status['ffmpeg']) {
+                $this->downloadProgress = __('settings.other.downloading_ffmpeg');
+                $this->dispatch('progress-updated');
+
+                if (! $whisperService->downloadFfmpeg()) {
+                    throw new \Exception(__('settings.other.ffmpeg_download_failed'));
+                }
+            }
+
+            // Download Whisper binary
+            if (! $status['binary']) {
+                $this->downloadProgress = __('settings.other.downloading_whisper_binary');
+                $this->dispatch('progress-updated');
+
+                if (! $whisperService->downloadBinary()) {
+                    throw new \Exception(__('settings.other.whisper_binary_download_failed'));
+                }
+            }
+
+            // Download model
+            if (! $status['model']) {
+                $this->downloadProgress = __('settings.other.downloading_whisper_model');
+                $this->dispatch('progress-updated');
+
+                if (! $whisperService->downloadModel()) {
+                    throw new \Exception(__('settings.other.whisper_model_download_failed'));
+                }
+            }
+
+            $this->downloadProgress = __('settings.other.download_complete');
+            $this->checkWhisperStatus();
+            $this->dispatch('whisper-setup-complete');
+        } catch (\Exception $e) {
+            $this->downloadError = $e->getMessage();
+            $this->downloadProgress = __('settings.other.download_failed');
+            $this->dispatch('whisper-setup-failed', message: $e->getMessage());
+        } finally {
+            $this->isDownloadingWhisper = false;
+        }
+    }
+
+    public function getSpeechProviderOptions(): array
+    {
+        $providers = config('purrai.ai_providers', []);
+        $options = [];
+
+        foreach ($providers as $provider) {
+            $providerKey = $provider['key'];
+            $providerName = __($provider['name']);
+
+            // Get speech models from config
+            $speechModels = $provider['models']['speech_to_text'] ?? [];
+
+            if (! empty($speechModels)) {
+                // Check if provider is configured
+                $configKey = $provider['config_key'];
+                $encrypted = $provider['encrypted'];
+                $data = $encrypted
+                    ? Setting::getJsonDecrypted($configKey, [])
+                    : Setting::getJson($configKey, []);
+
+                // Only show if provider has key/url configured
+                $hasConfig = $encrypted ? ! empty($data['key']) : ! empty($data['url']);
+
+                if ($hasConfig) {
+                    $options[$providerName] = [];
+                    foreach ($speechModels as $model) {
+                        $options[$providerName]["{$providerKey}:{$model}"] = $model;
+                    }
+                }
+            }
+        }
+
+        return $options;
     }
 
     public function render(): mixed

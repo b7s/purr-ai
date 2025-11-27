@@ -1,0 +1,252 @@
+/**
+ * Speech Recognition Floating Interface
+ * Apple-inspired wave animation and clean design
+ */
+
+.speech-recording-interface {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+.speech-recording-interface.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.speech-recording-content {
+    @apply p-5;
+    @apply min-w-[280px] max-w-[340px];
+    position: relative;
+}
+
+/* Wave Animation Container */
+.wave-container {
+    @apply flex items-center justify-center gap-1.5;
+    @apply h-10;
+    flex: 1;
+}
+
+.wave-bar {
+    @apply w-1.5 bg-gradient-to-t from-slate-900 to-slate-600;
+    @apply rounded-full;
+    height: 8px;
+    min-height: 8px;
+    transition: height 0.08s ease-out, opacity 0.08s ease-out;
+}
+
+.dark .wave-bar {
+    @apply from-slate-400 to-slate-100;
+}
+
+/* Transcript Preview */
+.transcript-preview {
+    @apply text-center text-xs leading-relaxed;
+    @apply text-slate-600;
+    @apply mb-3 py-2 px-3;
+    @apply bg-slate-50/50;
+    @apply rounded-lg;
+    @apply max-h-16 overflow-y-auto;
+    font-style: italic;
+}
+
+.dark .transcript-preview {
+    @apply bg-slate-800/50 text-slate-400;
+}
+
+.transcript-preview:empty::before {
+    content: "Listening...";
+    @apply text-slate-400;
+}
+
+.dark .transcript-preview:empty::before {
+    @apply text-slate-500;
+}
+
+/* Recording Controls */
+.recording-controls {
+    @apply flex items-center justify-between gap-2 mb-3;
+}
+
+.btn-recording-action {
+    @apply w-10 h-10;
+    @apply rounded-full cursor-pointer;
+    @apply flex items-center justify-center;
+    @apply transition-all duration-200;
+}
+
+.btn-recording-action i {
+    @apply text-lg;
+}
+
+.btn-stop {
+    @apply bg-gradient-to-br from-slate-900 to-slate-800;
+    @apply text-white;
+}
+
+.btn-stop:hover {
+    @apply from-slate-800 to-slate-700;
+    @apply scale-105;
+}
+
+.dark .btn-stop {
+    @apply from-slate-700 to-slate-600;
+}
+
+.dark .btn-stop:hover {
+    @apply from-slate-600 to-slate-500;
+}
+
+.btn-trash {
+    @apply bg-white/50;
+    @apply text-red-600;
+}
+
+.btn-trash:hover {
+    @apply bg-red-50;
+    @apply border-red-300;
+    @apply scale-105;
+}
+
+.dark .btn-trash {
+    @apply bg-slate-800/50 text-red-400 border-red-900/50;
+}
+
+.dark .btn-trash:hover {
+    @apply bg-red-900/30 border-red-800;
+}
+
+/* Pulse effect for recording indicator */
+.speech-recording-content::before {
+    content: "";
+    @apply absolute top-2 right-2;
+    @apply w-2 h-2 rounded-full;
+    @apply bg-red-500;
+    animation: pulse-recording 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-recording {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .speech-recording-content {
+        @apply min-w-[260px] max-w-[90vw];
+        @apply p-4;
+    }
+
+    .wave-container {
+        @apply h-16;
+    }
+
+    .btn-recording-action {
+        @apply w-9 h-9;
+    }
+
+    .btn-recording-action i {
+        @apply text-base;
+    }
+}
+
+/* Recording Settings Accordion */
+.recording-settings-accordion {
+    @apply pt-3 border-t border-slate-200/50;
+}
+
+.dark .recording-settings-accordion {
+    @apply border-slate-700/50;
+}
+
+.accordion-toggle {
+    @apply w-full flex items-center justify-center gap-2 py-2 px-3;
+    @apply text-xs text-slate-500;
+    @apply hover:text-slate-700;
+    @apply transition-colors cursor-pointer;
+}
+
+.dark .accordion-toggle {
+    @apply text-slate-400;
+}
+
+.dark .accordion-toggle:hover {
+    @apply text-slate-300;
+}
+
+.accordion-toggle i {
+    @apply text-sm;
+}
+
+.accordion-arrow {
+    @apply transition-transform duration-200;
+}
+
+.accordion-arrow.rotate-180 {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.accordion-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.accordion-inner {
+    @apply pt-3 space-y-3;
+}
+
+.setting-row {
+    @apply space-y-1;
+}
+
+.setting-label {
+    @apply block text-xs font-medium text-slate-600 mb-1.5;
+}
+
+.dark .setting-label {
+    @apply text-slate-400;
+}
+
+.setting-label-inline {
+    @apply flex items-center justify-between text-xs text-slate-600;
+}
+
+.dark .setting-label-inline {
+    @apply text-slate-400;
+}
+
+.mic-select {
+    @apply px-2 py-1 text-xs rounded-md;
+    @apply bg-white;
+    @apply border border-slate-200;
+    @apply text-slate-900;
+    @apply focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400;
+    @apply transition-colors;
+    font-size: 11px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.dark .mic-select {
+    @apply bg-slate-800 border-slate-600 text-slate-200;
+}

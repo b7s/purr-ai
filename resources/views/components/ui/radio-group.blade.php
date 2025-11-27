@@ -6,7 +6,7 @@
     'columns' => null,
 ])
 
-<div class="card">
+<div>
     @if($label)
         <label class="settings-label">
             {{ $label }}
@@ -20,10 +20,10 @@
     @endif
     
     <div @class([
-        'flex gap-3' => !$columns,
-        'grid gap-3' => $columns,
-        "grid-cols-{$columns}" => $columns,
-    ])>
+    'flex gap-3' => !$columns,
+    'grid gap-3' => $columns,
+    "grid-cols-{$columns}" => $columns,
+])>
         @foreach($options as $value => $option)
             <label class="settings-radio-card {{ $option['height'] ?? '' }}">
                 <input 
@@ -32,19 +32,19 @@
                     value="{{ $value }}" 
                     class="sr-only"
                 >
-                <span class="settings-radio-label {{ $option['class'] ?? '' }}">
-                    @if(isset($option['icon']))
-                        <i class="iconoir-{{ $option['icon'] }} {{ $option['iconClass'] ?? 'text-xl' }}"></i>
-                    @endif
-                    
-                    @if(isset($option['label']))
-                        <span class="{{ $option['labelClass'] ?? '' }}">{{ $option['label'] }}</span>
-                    @endif
-                    
+                <span class="settings-radio-label">
+                    <span class="label">
+                        @if(isset($option['icon']))
+                            <i class="iconoir-{{ $option['icon'] }}"></i>
+                        @endif
+
+                        @if(isset($option['label']))
+                            <span>{{ $option['label'] }}</span>
+                        @endif
+                    </span>
+
                     @if(isset($option['description']))
-                        <span class="{{ $option['descriptionClass'] ?? 'text-xs opacity-70 text-center leading-tight' }}">
-                            {{ $option['description'] }}
-                        </span>
+                        <span class="description">{{ $option['description'] }}</span>
                     @endif
                 </span>
             </label>

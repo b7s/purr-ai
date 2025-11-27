@@ -5,52 +5,52 @@
 </x-slot>
 
 @php
-    $tabs = [
-        'chat' => ['label' => __('settings.tabs.chat')],
-        'ai_providers' => ['label' => __('settings.tabs.ai_providers'), 'icon' => 'sparks'],
-        'other' => ['label' => __('settings.tabs.other')],
-    ];
+$tabs = [
+    'chat' => ['label' => __('settings.tabs.chat')],
+    'ai_providers' => ['label' => __('settings.tabs.ai_providers'), 'icon' => 'sparks'],
+    'other' => ['label' => __('settings.tabs.other')],
+];
 
-    $responseDetailOptions = [
-        'detailed' => ['label' => __('settings.chat.response_detail_detailed')],
-        'short' => ['label' => __('settings.chat.response_detail_short')],
-    ];
+$responseDetailOptions = [
+    'detailed' => ['label' => __('settings.chat.response_detail_detailed')],
+    'short' => ['label' => __('settings.chat.response_detail_short')],
+];
 
-    $responseToneOptions = collect(config('purrai.response_tones'))
-        ->mapWithKeys(function ($tone) {
-            return [
-                $tone['value'] => [
-                    'icon' => $tone['icon'],
-                    'label' => __($tone['label']),
-                    'description' => __($tone['description']),
-                    'height' => 'h-24',
-                    'class' => 'flex flex-col items-center justify-center gap-1.5 h-full px-2',
-                    'labelClass' => 'text-sm font-medium',
-                ],
-            ];
-        })
-        ->toArray();
+$responseToneOptions = collect(config('purrai.response_tones'))
+    ->mapWithKeys(function ($tone) {
+        return [
+            $tone['value'] => [
+                'icon' => $tone['icon'],
+                'label' => __($tone['label']),
+                'description' => __($tone['description']),
+                'height' => 'h-24',
+                'class' => 'flex flex-col items-center justify-center gap-1.5 h-full px-2',
+                'labelClass' => 'text-sm font-medium',
+            ],
+        ];
+    })
+    ->toArray();
 
-    $themeModeOptions = [
-        'light' => [
-            'icon' => 'sun-light',
-            'iconClass' => 'text-lg mr-1.5',
-            'label' => __('settings.other.theme_light'),
-            'class' => 'flex items-center justify-center',
-        ],
-        'dark' => [
-            'icon' => 'half-moon',
-            'iconClass' => 'text-lg mr-1.5',
-            'label' => __('settings.other.theme_dark'),
-            'class' => 'flex items-center justify-center',
-        ],
-        'automatic' => [
-            'icon' => 'settings',
-            'iconClass' => 'text-lg mr-1.5',
-            'label' => __('settings.other.theme_automatic'),
-            'class' => 'flex items-center justify-center',
-        ],
-    ];
+$themeModeOptions = [
+    'light' => [
+        'icon' => 'sun-light',
+        'iconClass' => 'text-lg mr-1.5',
+        'label' => __('settings.other.theme_light'),
+        'class' => 'flex items-center justify-center',
+    ],
+    'dark' => [
+        'icon' => 'half-moon',
+        'iconClass' => 'text-lg mr-1.5',
+        'label' => __('settings.other.theme_dark'),
+        'class' => 'flex items-center justify-center',
+    ],
+    'automatic' => [
+        'icon' => 'settings',
+        'iconClass' => 'text-lg mr-1.5',
+        'label' => __('settings.other.theme_automatic'),
+        'class' => 'flex items-center justify-center',
+    ],
+];
 @endphp
 
 <div class="h-full flex flex-col overflow-y-auto"
@@ -75,15 +75,148 @@
                         :placeholder="__('settings.chat.mascot_name_placeholder')" />
                 </div>
 
-                <x-ui.radio-group :label="__('settings.chat.response_detail')" :options="$responseDetailOptions"
+                <div class="card space-y-6">
+                    <x-ui.radio-group :label="__('settings.chat.response_detail')" :options="$responseDetailOptions"
                     model="responseDetail" />
 
-                <x-ui.radio-group :label="__('settings.chat.response_tone')" :options="$responseToneOptions"
-                    model="responseTone" columns="2 sm:grid-cols-3 md:grid-cols-4" />
+                    <x-ui.radio-group :label="__('settings.chat.response_tone')" :options="$responseToneOptions"
+                        model="responseTone" columns="2 sm:grid-cols-3 md:grid-cols-4" />
+                </div>
 
                 <div class="card">
-                    <x-ui.toggle :label="__('settings.chat.respond_as_cat')" :model="'respondAsACat'"
-                        :checked="$respondAsACat"></x-ui.toggle>
+                    <x-ui.toggle 
+                        :label="new \Illuminate\Support\HtmlString(
+        '<img src=\'' . asset('images/logo-PurrAI-64.webp') . '\' alt=\'\' class=\'w-8 inline-block me-2\'>' .
+        __('settings.chat.respond_as_cat')
+    )" 
+                        :model="'respondAsACat'"
+                        :checked="$respondAsACat"
+                    >
+                    </x-ui.toggle>
+                </div>
+
+                {{-- Speech Recognition Settings --}}
+                <div class="card space-y-4" id="active-speech-recognition-setting">
+                    <label class="settings-label">
+                        {{ __('settings.other.speech_recognition') }}
+                    </label>
+
+                    @if(\App\Services\WhisperService::hasPendingConfiguration())
+                        <div class="whisper-alert">
+                            <div class="whisper-alert-content">
+                                <i class="iconoir-warning-triangle whisper-alert-icon"></i>
+                                <div class="whisper-alert-body">
+                                    <h3 class="whisper-alert-title">
+                                        {{ __('settings.other.speech_recognition_setup') }}
+                                    </h3>
+
+                                    {{-- Speech Recognition Setup Alert --}}
+                                    @if($useLocalSpeech)
+                                        <x-settings.whisper-status 
+                                            :status="$whisperStatus"
+                                            :isDownloading="$isDownloadingWhisper"
+                                            :progress="$downloadProgress"
+                                            :error="$downloadError" 
+                                        />
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <x-ui.toggle :label="__('settings.speech.enable')"
+                        :description="__('settings.speech.enable_description')" 
+                        model="speechToTextEnabled"
+                        :checked="$speechToTextEnabled"
+                    />
+
+                    @if($speechToTextEnabled)
+                    <x-ui.toggle :label="__('settings.speech.use_local')"
+                        :description="(new \Illuminate\Support\HtmlString(view('components.ui.badge', ['slot' => __('settings.speech.private')])->render() . '&nbsp;&nbsp;' . __('settings.speech.use_local_description')))" 
+                        model="useLocalSpeech"
+                        :checked="$useLocalSpeech" 
+                    />
+
+                    @if(!$useLocalSpeech)
+                        <x-ui.select :label="__('settings.speech.provider') . ' *'" :description="__('settings.speech.provider_description')"
+                            :placeholder="__('settings.speech.provider_placeholder')" model="speechProvider"
+                            :options="$this->getSpeechProviderOptions()" />
+                    @endif
+
+                    {{-- AudioDevice Selection --}}
+                    <div class="audio_device-settings" x-data="audio_deviceSelector">
+                        <label class="settings-label">
+                            {{ __('settings.speech.audio_device_settings') }}
+                        </label>
+
+                        <div class="space-y-4">
+                            {{-- AudioDevice Select --}}
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1">
+                                    <label class="settings-label text-sm">
+                                        {{ __('settings.speech.select_audio_device') }}
+                                    </label>
+                                    <select 
+                                        x-model="selectedDeviceId"
+                                        @change="selectDevice($event.target.value)"
+                                        class="settings-input"
+                                        :disabled="loading"
+                                    >
+                                        <template x-if="loading">
+                                            <option>{{ __('settings.speech.loading_devices') }}</option>
+                                        </template>
+                                        <template x-if="!loading && devices.length === 0">
+                                            <option value="default">{{ __('settings.speech.default_audio_device') }}</option>
+                                        </template>
+                                        <template x-for="device in devices" :key="device.id">
+                                            <option :value="device.id" x-text="device.label"></option>
+                                        </template>
+                                    </select>
+                                    <p class="help-text">
+                                        {{ __('settings.speech.select_audio_device_description') }}
+                                    </p>
+                                </div>
+
+                                <button type="button" @click="refreshDevices()"
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors dark:text-slate-400 dark:hover:bg-slate-700 mb-1"
+                                    :disabled="loading" 
+                                    title="{{ __('settings.speech.refresh_devices') }}">
+                                    <i class="iconoir-refresh text-lg" :class="{ 'animate-spin': loading }"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Noise Suppression Level --}}
+                    <x-ui.radio-group 
+                        :label="__('settings.speech.noise_suppression')"
+                        :description="__('settings.speech.noise_suppression_description')"
+                        model="noiseSuppressionLevel"
+                        columns="2 sm:grid-cols-3 md:grid-cols-4"
+                        :options="[
+                        'disabled' => [
+                            'label' => __('settings.speech.noise_level_disabled'),
+                            'description' => __('settings.speech.noise_level_disabled_desc'),
+                            'icon' => 'sound-off',
+                        ],
+                        'light' => [
+                            'label' => __('settings.speech.noise_level_light'),
+                            'description' => __('settings.speech.noise_level_light_desc'),
+                            'icon' => 'sound-low',
+                        ],
+                        'medium' => [
+                            'label' => __('settings.speech.noise_level_medium'),
+                            'description' => __('settings.speech.noise_level_medium_desc'),
+                            'icon' => 'sound-min',
+                        ],
+                        'high' => [
+                            'label' => __('settings.speech.noise_level_high'),
+                            'description' => __('settings.speech.noise_level_high_desc'),
+                            'icon' => 'sound-high',
+                        ],
+                    ]"
+                    />
+                    @endif
                 </div>
 
                 <div class="card">
@@ -144,18 +277,19 @@
                         :checked="$openAtLogin" />
                 @endif
 
-                <x-ui.slider :label="__('settings.other.window_opacity')"
-                    :description="__('settings.other.window_opacity_description')" model="windowOpacity" min="50"
-                    max="100" :value="$windowOpacity" suffix="%" />
+                <div class="card space-y-4">
+                    <x-ui.slider :label="__('settings.other.window_opacity')" :description="__('settings.other.window_opacity_description')"
+                        model="windowOpacity" min="50" max="100" :value="$windowOpacity" suffix="%" />
 
-                <x-ui.slider :label="__('settings.other.window_blur')"
-                    :description="__('settings.other.window_blur_description')"
-                    :helpText="__('settings.other.window_blur_helper')" model="windowBlur" min="0" max="100"
-                    :value="$windowBlur" suffix="px">
+                    <x-ui.slider :label="__('settings.other.window_blur')" :description="__('settings.other.window_blur_description')"
+                        :helpText="__('settings.other.window_blur_helper')" model="windowBlur" min="0" max="100" :value="$windowBlur"
+                        suffix="px">
+                    </x-ui.slider>
+
                     <x-ui.toggle :label="__('settings.other.disable_transparency_maximized')"
-                        :description="__('settings.other.disable_transparency_maximized_description')"
-                        model="disableTransparencyMaximized" :checked="$disableTransparencyMaximized" class="mt-4" />
-                </x-ui.slider>
+                        :description="__('settings.other.disable_transparency_maximized_description')" model="disableTransparencyMaximized"
+                        :checked="$disableTransparencyMaximized" class="mt-4" />
+                </div>
             </x-ui.tab-content>
         </x-ui.tabs>
     </div>
@@ -163,7 +297,7 @@
     {{-- Saving Indicator --}}
     <div wire:loading
         class="fixed bottom-6 right-6 z-50 flex items-center gap-2 text-xs bg-slate-500/50 p-1 px-2 text-slate-50 text-center rounded-xl">
-        <x-ui.loading-icon></x-ui.loading-icon>
+        <x-ui.loading-icon />
         <span>{{ __('settings.saving') }}</span>
     </div>
 </div>

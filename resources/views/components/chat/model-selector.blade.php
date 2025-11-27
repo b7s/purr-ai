@@ -35,10 +35,7 @@
                 <i class="iconoir-nav-arrow-down text-xs transition-transform" :class="{ 'rotate-180': open }"></i>
             </button>
 
-            <div x-show="open" x-transition:enter="transition ease-out duration-150"
-                x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
-                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 translate-y-0"
-                x-transition:leave-end="opacity-0 -translate-y-1" class="model-selector-dropdown purrai-dropdown" x-cloak>
+            <div x-show="open" x-transition class="model-selector-dropdown purrai-opacity-box" x-cloak>
                 @foreach ($availableModels as $providerKey => $providerData)
                     <div class="model-selector-group"
                         x-show="[{{ implode(',', array_map(fn($m) => "'$m'", $providerData['models'])) }}].some(model => matchesFilter(model.replace(/[-_]/g, ' ')))">
@@ -61,14 +58,10 @@
                         title="{{ __('chat.model_selector.filter_models') }}">
                         <i class="iconoir-search"></i>
                     </button>
-                    <div x-show="filterOpen" x-transition:enter="transition ease-out duration-150"
-                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-100"
-                        x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                        class="flex-1" x-cloak>
+                    <div x-show="filterOpen" x-transition class="flex-1" x-cloak>
                         <x-ui.input x-ref="filterInput" x-model="filterText" @keydown.escape="closeFilter()" type="text"
                             placeholder="{{ __('chat.model_selector.filter_placeholder') }}"
-                            class="py-1! px-2! text-xs w-full ring-0" />
+                            class="py-1! px-2! text-xs w-full rounded-md" />
                     </div>
                     <a href="{{ route('settings') }}?tab=ai_providers" wire:navigate
                         class="py-3 pl-2 hover:opacity-75 shrink-0"

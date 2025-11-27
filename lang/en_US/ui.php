@@ -19,6 +19,8 @@ return [
         'take_screenshot' => 'Take a screenshot',
         'send_message' => 'Send message',
         'record_audio' => 'Record audio message',
+        'stop_recording' => 'Stop and send',
+        'discard_recording' => 'Cancel and discard',
     ],
     'window' => [
         'close' => 'Close',

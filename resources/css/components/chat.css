@@ -24,7 +24,7 @@
     }
 
     .model-selector-footer {
-        @apply text-xs text-center bg-transparent flex justify-between items-center text-gray-600 px-3;
+        @apply text-sm text-center bg-transparent flex justify-between items-center text-gray-600 px-3;
     }
 
     .dark .model-selector-footer {
@@ -209,7 +209,7 @@
     }
 
     .welcome-logo {
-        @apply w-38 h-38 mb-4;
+        @apply w-42 h-42 mb-4;
     }
 
     .animate-welcome-logo {

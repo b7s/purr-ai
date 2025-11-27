@@ -77,6 +77,18 @@ return [
         ],
     ],
 
+    /**
+     * Whisper.cpp: Local speech-to-text provider.
+     * Available models: 'base', 'small', 'medium', 'large'
+     */
+    'whisper' => [
+        'data_dir' => env('WHISPER_DATA_DIR'),
+        'binary_path' => env('WHISPER_BINARY_PATH'),
+        'model_path' => env('WHISPER_MODEL_PATH'),
+        'ffmpeg_path' => env('FFMPEG_PATH'),
+        'model' => env('WHISPER_MODEL', 'base.en'),
+    ],
+
     'ai_providers' => [
         [
             'key' => 'openai',
@@ -96,6 +108,15 @@ return [
                     'label' => 'settings.ai_providers.openai_models',
                     'placeholder' => 'settings.ai_providers.openai_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
+            'models' => [
+                'speech_to_text' => [
+                    'GPT-4o-Transcribe',
+                    'GPT-4o-Mini-Transcribe',
+                ],
+                'text' => [
+
                 ],
             ],
         ],
@@ -119,6 +140,13 @@ return [
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
+            'models' => [
+                'speech_to_text' => [
+                ],
+                'text' => [
+
+                ],
+            ],
         ],
         [
             'key' => 'google',
@@ -140,6 +168,41 @@ return [
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
+            'models' => [
+                'speech_to_text' => [
+                ],
+                'text' => [
+
+                ],
+            ],
+        ],
+        [
+            'key' => 'xai',
+            'name' => 'settings.ai_providers.xai',
+            'config_key' => 'xai_config',
+            'encrypted' => true,
+            'fields' => [
+                [
+                    'name' => 'key',
+                    'type' => 'password',
+                    'label' => 'settings.ai_providers.xai',
+                    'placeholder' => 'settings.ai_providers.xai_placeholder',
+                ],
+                [
+                    'name' => 'models',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.xai_models',
+                    'placeholder' => 'settings.ai_providers.xai_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
+            'models' => [
+                'speech_to_text' => [
+                ],
+                'text' => [
+
+                ],
+            ],
         ],
         [
             'key' => 'ollama',
@@ -159,6 +222,13 @@ return [
                     'label' => 'settings.ai_providers.ollama_models',
                     'placeholder' => 'settings.ai_providers.ollama_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
+                ],
+            ],
+            'models' => [
+                'speech_to_text' => [
+                ],
+                'text' => [
+
                 ],
             ],
         ],

@@ -194,4 +194,85 @@ class Setting extends Model
             // If encoding fails, don't save
         }
     }
+
+    /**
+     * Validate and return the selected speech provider model
+     *
+     * @return string|false Returns model name if valid, false otherwise
+     */
+    public static function getValidatedSpeechModel(): string|false
+    {
+        $speechProviderValue = static::get('speech_provider');
+        if (empty($speechProviderValue)) {
+            return false;
+        }
+
+        $parts = explode(':', $speechProviderValue);
+        if (\count($parts) < 2 || empty($parts[0]) || empty($parts[1])) {
+            return false;
+        }
+
+        [$provider, $model] = $parts;
+
+        // Find provider in config
+        $providers = config('purrai.ai_providers', []);
+        $providerConfig = collect($providers)->firstWhere('key', $provider);
+
+        if (! $providerConfig) {
+            return false;
+        }
+
+        // Validate model exists in provider's speech_to_text models
+        $availableModels = $providerConfig['models']['speech_to_text'] ?? [];
+        if (! \in_array($model, $availableModels, true)) {
+            return false;
+        }
+
+        // Check if provider has configuration
+        $configKey = $providerConfig['config_key'];
+        $encrypted = $providerConfig['encrypted'];
+
+        if ($encrypted) {
+            $config = static::getJsonDecrypted($configKey);
+            $hasConfig = ! empty($config['key']);
+        } else {
+            $config = static::getJson($configKey);
+            $hasConfig = ! empty($config['url']);
+        }
+
+        if (! $hasConfig) {
+            return false;
+        }
+
+        return $model;
+    }
+
+    /**
+     * Get the API key for a specific provider
+     *
+     * @return string|null Returns the API key or null if not found
+     */
+    public static function getProviderApiKey(string $provider): ?string
+    {
+        // Find provider in config
+        $providers = config('purrai.ai_providers', []);
+        $providerConfig = collect($providers)->firstWhere('key', $provider);
+
+        if (! $providerConfig) {
+            return null;
+        }
+
+        $configKey = $providerConfig['config_key'];
+        $encrypted = $providerConfig['encrypted'];
+
+        if ($encrypted) {
+            $config = static::getJsonDecrypted($configKey);
+
+            return $config['key'] ?? null;
+        }
+
+        $config = static::getJson($configKey);
+
+        return $config['url'] ?? null;
+    }
 }

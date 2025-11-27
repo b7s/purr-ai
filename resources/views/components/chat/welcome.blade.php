@@ -2,7 +2,8 @@
 
 <div class="welcome-container select-none">
     <div class="purr-ai-logo welcome-logo animate-welcome-logo">
-        <img src="{{ asset('images/logo-PurrAI-256.webp') }}" alt="{{ config('app.name') }}" class="w-full h-full">
+        <img src="{{ asset('images/mascot/position-out-of-screen.webp') }}" alt="{{ config('app.name') }}"
+            class="w-full h-full">
     </div>
     <div>
         <h2 class="welcome-title">

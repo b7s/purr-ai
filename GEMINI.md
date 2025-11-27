@@ -110,6 +110,14 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - Typically, keys in an Enum should be TitleCase. For example: `FavoritePerson`, `BestLake`, `Monthly`.
 
 
+=== tests rules ===
+
+## Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+
+
 === laravel/core rules ===
 
 ## Do Things the Laravel Way
@@ -234,7 +242,7 @@ protected function isAccessible(User $user, ?string $path = null): bool
     - Use `wire:model.live` for real-time updates, `wire:model` is now deferred by default.
     - Components now use the `App\Livewire` namespace (not `App\Http\Livewire`).
     - Use `$this->dispatch()` to dispatch events (not `emit` or `dispatchBrowserEvent`).
-    - Use the `components.layouts.app` view as the typical layout path (not `components.layouts.app`).
+    - Use the `components.layouts.app` view as the typical layout path (not `layouts.app`).
 
 ### New Directives
 - `wire:show`, `wire:transition`, `wire:cloak`, `wire:offline`, `wire:target` are available for use. Use the documentation to find usage examples.

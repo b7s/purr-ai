@@ -1,0 +1,96 @@
+/**
+ * Toast Notification Component
+ * Generic toast notifications for PurrAI
+ */
+
+.toast-container {
+    @apply fixed top-6 right-6 z-99999;
+    @apply max-w-md w-full;
+    @apply flex flex-col gap-3;
+}
+
+.toast-content {
+    @apply flex items-center gap-4 px-5 py-4 rounded-xl shadow-2xl;
+    @apply border backdrop-blur-xl;
+    @apply transition-all duration-200;
+}
+
+/* Toast Types */
+.toast-info {
+    @apply bg-blue-50/95 dark:bg-blue-900/95;
+    @apply border-blue-200 dark:border-blue-700;
+    @apply text-blue-900 dark:text-blue-100;
+}
+
+.toast-success {
+    @apply bg-green-50/95 dark:bg-green-900/95;
+    @apply border-green-200 dark:border-green-700;
+    @apply text-green-900 dark:text-green-100;
+}
+
+.toast-warning {
+    @apply bg-yellow-50/95 dark:bg-yellow-900/95;
+    @apply border-yellow-200 dark:border-yellow-700;
+    @apply text-yellow-900 dark:text-yellow-100;
+}
+
+.toast-error {
+    @apply bg-red-50/95 dark:bg-red-900/95;
+    @apply border-red-200 dark:border-red-700;
+    @apply text-red-900 dark:text-red-100;
+}
+
+/* Toast Icon */
+.toast-icon {
+    @apply shrink-0 text-2xl leading-none;
+}
+
+.toast-info .toast-icon {
+    @apply text-blue-600 dark:text-blue-400;
+}
+
+.toast-success .toast-icon {
+    @apply text-green-600 dark:text-green-400;
+}
+
+.toast-warning .toast-icon {
+    @apply text-yellow-600 dark:text-yellow-400;
+}
+
+.toast-error .toast-icon {
+    @apply text-red-600 dark:text-red-400;
+}
+
+/* Toast Message */
+.toast-message {
+    @apply flex-1 text-sm font-medium;
+    @apply leading-normal;
+    @apply py-0.5;
+}
+
+/* Toast Close Button */
+.toast-close {
+    @apply shrink-0 w-7 h-7 flex items-center justify-center;
+    @apply rounded-full transition-all;
+    @apply hover:bg-black/10 dark:hover:bg-white/10;
+    @apply -mr-1;
+}
+
+.toast-close i {
+    @apply text-lg leading-none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .toast-container {
+        @apply top-4 right-4 left-4 max-w-none;
+    }
+
+    .toast-content {
+        @apply p-3;
+    }
+
+    .toast-message {
+        @apply text-xs;
+    }
+}

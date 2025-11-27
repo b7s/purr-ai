@@ -9,7 +9,7 @@
     'suffix' => '',
 ])
 
-<div class="card">
+<div>
     @if($label)
         <label class="settings-label">
             {{ $label }}

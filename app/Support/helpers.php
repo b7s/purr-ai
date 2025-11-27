@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Setting;
 use App\Services\ChatService;
+use App\Services\WhisperService;
 use Native\Desktop\Facades\Window;
 
 if (! function_exists('is_native')) {
@@ -108,5 +109,12 @@ if (! function_exists('getUserName')) {
     function getUserName(): ?string
     {
         return Setting::get('user_name');
+    }
+}
+
+if (! function_exists('hasSettingsAlert')) {
+    function hasSettingsAlert(): bool
+    {
+        return WhisperService::hasPendingConfiguration();
     }
 }

@@ -9,6 +9,30 @@
         @apply text-slate-800;
     }
 
+    .settings-input {
+        @apply w-full px-4 py-3 rounded-xl text-[15px] transition-all;
+        @apply border border-slate-300 bg-white ring-offset-slate-700;
+        @apply text-slate-700 focus:outline-none focus:ring-2 ring-slate-300;
+    }
+
+    .settings-input::placeholder {
+        @apply placeholder-slate-500;
+    }
+
+    .dark .settings-input {
+        @apply bg-slate-800 border-slate-600 text-slate-300 ring-slate-600;
+    }
+
+    .settings-input option {
+        @apply bg-white;
+        @apply text-slate-800;
+    }
+
+    .dark .settings-input option {
+        background-color: rgb(15 23 42);
+        color: rgb(248 250 252);
+    }
+
     .dark .settings-title {
         color: rgb(248 250 252);
     }
@@ -72,29 +96,7 @@
         color: rgb(248 250 252);
     }
 
-    .settings-input {
-        @apply w-full px-4 py-3 rounded-xl text-[15px] transition-all;
-        @apply border border-slate-300 bg-white ring-offset-slate-700;
-        @apply text-slate-700 focus:outline-none focus:ring-2 ring-slate-300;
-    }
-
-    .settings-input::placeholder {
-        @apply placeholder-slate-500;
-    }
-
-    .dark .settings-input {
-        @apply bg-slate-800 border-slate-600 text-slate-300 ring-slate-600;
-    }
-
-    .settings-input option {
-        @apply bg-white;
-        @apply text-slate-800;
-    }
-
-    .dark .settings-input option {
-        background-color: rgb(15 23 42);
-        color: rgb(248 250 252);
-    }
+    /* Input styles have been moved to specific component classes */
 
     .settings-radio-card {
         @apply flex-1 cursor-pointer;
@@ -109,7 +111,7 @@
     }
 
     .settings-radio-label {
-        @apply block px-4 py-3 rounded-xl text-center text-sm font-medium transition-all border;
+        @apply flex flex-col items-center justify-center px-4 py-3 rounded-xl text-sm font-medium transition-all border;
         @apply bg-slate-50 border-slate-200 text-slate-700;
     }
 
@@ -127,6 +129,14 @@
         @apply bg-slate-900/30 border-slate-900/15 text-slate-100;
     }
 
+    .settings-radio-label .label {
+        @apply font-semibold flex flex-col items-center;
+    }
+
+    .settings-radio-label .description {
+        @apply text-xs opacity-70 text-center leading-tight;
+    }
+
     /* Prevent hover effect on checked radio buttons */
     .settings-radio-card input:checked + .settings-radio-label:hover {
         @apply bg-slate-800;
@@ -140,7 +150,7 @@
     }
 
     .settings-toggle {
-        @apply relative w-12 h-6 rounded-full transition-colors cursor-pointer;
+        @apply relative w-12 h-6 rounded-full transition-colors cursor-pointer shrink-0;
         @apply bg-white ring ring-slate-300;
     }
 
@@ -197,5 +207,72 @@
 
     .dark .settings-slider::-moz-range-thumb {
         @apply bg-white;
+    }
+
+    /* AudioDevice Settings */
+    .audio_device-settings {
+        @apply mt-6 pt-4 border-t;
+        border-color: rgb(226 232 240);
+    }
+
+    .dark .audio_device-settings {
+        border-color: rgb(51 65 85);
+    }
+
+    .audio_device-label {
+        @apply text-sm mb-1 block;
+        color: rgb(71 85 105);
+    }
+
+    .dark .audio_device-label {
+        color: rgb(148 163 184);
+    }
+
+    .audio_device-selector {
+        @apply flex items-center gap-2;
+    }
+
+    .audio_device-select {
+        @apply w-full px-4 py-3 rounded-xl text-[15px] transition-all;
+        @apply border border-slate-300 bg-white ring-offset-slate-700;
+        @apply text-slate-700 focus:outline-none focus:ring-2 ring-slate-300;
+    }
+
+    .dark .audio_device-select {
+        @apply ring-slate-600 bg-slate-800 border-slate-600 text-slate-300;
+    }
+
+    .refresh-button {
+        @apply w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors;
+    }
+
+    .dark .refresh-button {
+        @apply text-slate-400 hover:bg-slate-700;
+    }
+
+    .refresh-button:disabled {
+        @apply opacity-50 cursor-not-allowed;
+    }
+
+    .system-audio-toggle {
+        @apply flex items-center gap-3 cursor-pointer;
+    }
+
+    .system-audio-label {
+        @apply text-sm font-medium;
+        color: rgb(15 23 42);
+    }
+
+    .dark .system-audio-label {
+        color: rgb(248 250 252);
+    }
+
+    .system-audio-description {
+        @apply text-xs;
+        color: rgb(100 116 139);
+    }
+
+    .dark .system-audio-description {
+        color: rgb(148 163 184);
     }
 }

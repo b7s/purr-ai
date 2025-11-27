@@ -34,4 +34,9 @@ return [
         'filter_models' => 'Filter models',
         'filter_placeholder' => 'Filter...',
     ],
+    'speech_recognition' => [
+        'settings' => 'Settings',
+        'audio_device' => 'AudioDevice',
+        'default_audio_device' => 'Default',
+    ],
 ];

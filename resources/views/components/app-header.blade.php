@@ -15,8 +15,11 @@
     <div class="flex items-center gap-1">
         {{ $slot }}
 
-        <a href="{{ route('settings') }}" wire:navigate>
+        <a href="{{ route('settings') }}" wire:navigate class="relative">
             <x-ui.icon-button icon="settings" :title="__('ui.tooltips.settings')" />
+            @if(hasSettingsAlert())
+                <span class="settings-alert-badge"></span>
+            @endif
         </a>
 
         @if(is_native() && !is_mac() && !is_menubar())

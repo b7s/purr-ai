@@ -7,12 +7,12 @@
     animation: fadeIn 0.3s ease-in-out;
 }
 
-.purrai-dropdown {
+.purrai-opacity-box {
     @apply backdrop-blur-xl backdrop-saturate-150 border rounded-xl;
     @apply bg-white/80 border-white/20 shadow-lg;
 }
 
-.dark .purrai-dropdown {
+.dark .purrai-opacity-box {
     @apply bg-gray-900/80 border-white/10 shadow-2xl;
 }
 
