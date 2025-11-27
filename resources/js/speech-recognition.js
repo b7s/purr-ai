@@ -120,8 +120,13 @@ class LocalSpeechRecognition {
                         <div class="accordion-inner">
                             <div class="setting-row">
                                 <label class="setting-label">${t.audio_device}</label>
-                                <select class="mic-select">
+                                <select class="speech-select mic-select">
                                     <option value="default">${t.default_audio_device}</option>
+                                </select>
+                            </div>
+                            <div class="setting-row speech-provider-row hidden">
+                                <label class="setting-label">${t.speech_provider}</label>
+                                <select class="speech-select provider-select">
                                 </select>
                             </div>
                         </div>
@@ -180,6 +185,14 @@ class LocalSpeechRecognition {
             }
         });
 
+        // Speech provider select change
+        const providerSelect =
+            this.floatingDiv.querySelector(".provider-select");
+        providerSelect.addEventListener("change", async (e) => {
+            const provider = e.target.value;
+            await this.updateSpeechProvider(provider);
+        });
+
         // Listen for device updates
         window.addEventListener("audio-devices-updated", (e) => {
             this.updateAudioDeviceSelect(e.detail.devices);
@@ -208,6 +221,79 @@ class LocalSpeechRecognition {
         }
     }
 
+    updateSpeechProviderSelect() {
+        const providerSelect =
+            this.floatingDiv?.querySelector(".provider-select");
+        const providerRow = this.floatingDiv?.querySelector(
+            ".speech-provider-row"
+        );
+
+        if (!providerSelect || !providerRow) return;
+
+        const useLocal = window.useLocalSpeech ?? true;
+        const options = window.speechProviderOptions ?? {};
+        const selected = window.selectedSpeechProvider ?? "";
+
+        // Show/hide provider select based on useLocalSpeech
+        if (useLocal || Object.keys(options).length === 0) {
+            providerRow.classList.add("hidden");
+            return;
+        }
+
+        providerRow.classList.remove("hidden");
+        providerSelect.innerHTML = "";
+
+        // Add grouped options
+        // Format: { "OpenAI": { "openai:model1": "Model 1", "openai:model2": "Model 2" } }
+        Object.entries(options).forEach(([providerName, models]) => {
+            const optgroup = document.createElement("optgroup");
+            optgroup.label = providerName;
+
+            Object.entries(models).forEach(([value, label]) => {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = label;
+                optgroup.appendChild(option);
+            });
+
+            providerSelect.appendChild(optgroup);
+        });
+
+        // Set selected value
+        if (selected) {
+            providerSelect.value = selected;
+        }
+    }
+
+    async updateSpeechProvider(provider) {
+        try {
+            const csrfToken =
+                document.querySelector('meta[name="csrf-token"]')?.content ||
+                window.livewire?.csrf ||
+                document.querySelector('input[name="_token"]')?.value;
+
+            const response = await fetch("/api/update-speech-provider", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({ provider }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update speech provider");
+            }
+
+            window.selectedSpeechProvider = provider;
+            window.toast?.success?.("Speech provider updated", 2000);
+        } catch (error) {
+            console.error("Failed to update speech provider:", error);
+            window.toast?.error?.("Failed to update speech provider", 3000);
+        }
+    }
+
     async restartWithNewDevice(deviceId) {
         // Stop current recording without processing
         this.isDiscarded = true;
@@ -227,19 +313,19 @@ class LocalSpeechRecognition {
     }
 
     syncSettingsUI() {
-        if (!this.floatingDiv || !window.audioDevicesManager) return;
+        if (!this.floatingDiv) return;
 
         const micSelect = this.floatingDiv.querySelector(".mic-select");
-        const systemAudioToggle = this.floatingDiv.querySelector(
-            ".can-capture-audio-system .settings-toggle"
-        );
 
-        if (micSelect) {
+        if (micSelect && window.audioDevicesManager) {
             this.updateAudioDeviceSelect(
                 window.audioDevicesManager.getDevices()
             );
             micSelect.value = window.audioDevicesManager.getSelectedDeviceId();
         }
+
+        // Update speech provider select
+        this.updateSpeechProviderSelect();
     }
 
     showFloatingInterface() {
@@ -304,7 +390,9 @@ class LocalSpeechRecognition {
             const isStatusMessage = [
                 "Recording...",
                 "Listening...",
-                "Requesting audio_device access...",
+                "Processing...",
+                "Requesting microphone access...",
+                "Requesting audio device access...",
             ].includes(displayText);
 
             if (displayText.trim() && !isStatusMessage) {

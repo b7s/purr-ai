@@ -355,37 +355,7 @@ class Settings extends Component
 
     public function getSpeechProviderOptions(): array
     {
-        $providers = config('purrai.ai_providers', []);
-        $options = [];
-
-        foreach ($providers as $provider) {
-            $providerKey = $provider['key'];
-            $providerName = __($provider['name']);
-
-            // Get speech models from config
-            $speechModels = $provider['models']['speech_to_text'] ?? [];
-
-            if (! empty($speechModels)) {
-                // Check if provider is configured
-                $configKey = $provider['config_key'];
-                $encrypted = $provider['encrypted'];
-                $data = $encrypted
-                    ? Setting::getJsonDecrypted($configKey, [])
-                    : Setting::getJson($configKey, []);
-
-                // Only show if provider has key/url configured
-                $hasConfig = $encrypted ? ! empty($data['key']) : ! empty($data['url']);
-
-                if ($hasConfig) {
-                    $options[$providerName] = [];
-                    foreach ($speechModels as $model) {
-                        $options[$providerName]["{$providerKey}:{$model}"] = $model;
-                    }
-                }
-            }
-        }
-
-        return $options;
+        return Setting::getSpeechProviderOptions();
     }
 
     public function render(): mixed

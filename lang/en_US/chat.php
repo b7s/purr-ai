@@ -38,5 +38,6 @@ return [
         'settings' => 'Settings',
         'audio_device' => 'AudioDevice',
         'default_audio_device' => 'Default',
+        'speech_provider' => 'Speech Provider',
     ],
 ];

@@ -234,7 +234,7 @@
     @apply text-slate-400;
 }
 
-.mic-select {
+.speech-select {
     @apply px-2 py-1 text-xs rounded-md;
     @apply bg-white;
     @apply border border-slate-200;
@@ -247,6 +247,6 @@
     box-sizing: border-box;
 }
 
-.dark .mic-select {
+.dark .speech-select {
     @apply bg-slate-800 border-slate-600 text-slate-200;
 }

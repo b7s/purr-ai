@@ -275,4 +275,53 @@ class Setting extends Model
 
         return $config['url'] ?? null;
     }
+
+    /**
+     * Get speech provider options grouped by provider
+     * Returns format compatible with select.blade.php component
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function getSpeechProviderOptions(): array
+    {
+        $providers = config('purrai.ai_providers', []);
+        $result = [];
+
+        foreach ($providers as $provider) {
+            $speechModels = $provider['models']['speech_to_text'] ?? [];
+
+            // Skip providers without speech-to-text models
+            if (empty($speechModels)) {
+                continue;
+            }
+
+            // Check if provider has configuration
+            $configKey = $provider['config_key'];
+            $encrypted = $provider['encrypted'];
+
+            if ($encrypted) {
+                $config = static::getJsonDecrypted($configKey);
+                $hasConfig = ! empty($config['key']);
+            } else {
+                $config = static::getJson($configKey);
+                $hasConfig = ! empty($config['url']);
+            }
+
+            // Skip providers without configuration
+            if (! $hasConfig) {
+                continue;
+            }
+
+            $providerKey = $provider['key'];
+            $providerName = static::getProviderDisplayName($providerKey.'_config');
+
+            // Create grouped options for this provider
+            $result[$providerName] = [];
+            foreach ($speechModels as $model) {
+                $result[$providerName]["{$providerKey}:{$model}"] = $model;
+            }
+        }
+
+        return $result;
+    }
 }
