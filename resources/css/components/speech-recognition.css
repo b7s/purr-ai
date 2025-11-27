@@ -138,7 +138,7 @@
         transform: scale(1);
     }
     50% {
-        opacity: 0.5;
+        opacity: 0.3;
         transform: scale(1.2);
     }
 }
@@ -228,10 +228,19 @@
 
 .setting-label-inline {
     @apply flex items-center justify-between text-xs text-slate-600;
+    @apply w-full;
 }
 
 .dark .setting-label-inline {
     @apply text-slate-400;
+}
+
+.setting-label-inline span {
+    @apply flex items-center;
+}
+
+.setting-label-inline input {
+    @apply flex-shrink-0;
 }
 
 .speech-select {
@@ -249,4 +258,45 @@
 
 .dark .speech-select {
     @apply bg-slate-800 border-slate-600 text-slate-200;
+}
+
+/* Auto-send Toggle */
+.auto-send-toggle {
+    @apply w-9 h-5 rounded-full;
+    @apply bg-slate-200;
+    @apply border-2 border-transparent;
+    @apply transition-colors duration-200;
+    @apply cursor-pointer;
+    @apply relative;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.auto-send-toggle::before {
+    content: "";
+    @apply absolute top-0.5 left-0.5;
+    @apply w-3.5 h-3.5 rounded-full;
+    @apply bg-white;
+    @apply transition-transform duration-200;
+    @apply shadow-sm;
+}
+
+.auto-send-toggle:checked {
+    @apply bg-slate-900;
+}
+
+.auto-send-toggle:checked::before {
+    transform: translateX(16px);
+}
+
+.dark .auto-send-toggle {
+    @apply bg-slate-700;
+}
+
+.dark .auto-send-toggle:checked {
+    @apply bg-slate-500;
+}
+
+.dark .auto-send-toggle::before {
+    @apply bg-slate-200;
 }

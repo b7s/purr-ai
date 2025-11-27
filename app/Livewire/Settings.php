@@ -39,6 +39,8 @@ class Settings extends Component
 
     public bool $openAtLogin = false;
 
+    public bool $autoSendAfterTranscription = false;
+
     public array $whisperStatus = [];
 
     public bool $isDownloadingWhisper = false;
@@ -77,6 +79,7 @@ class Settings extends Component
         $this->disableTransparencyMaximized = (bool) Setting::get('disable_transparency_maximized', true);
         $this->themeMode = Setting::get('theme_mode', 'automatic');
         $this->openAtLogin = (bool) Setting::get('open_at_login', false);
+        $this->autoSendAfterTranscription = (bool) Setting::get('auto_send_after_transcription', false);
     }
 
     public function save(): void
@@ -100,6 +103,7 @@ class Settings extends Component
         Setting::set('use_local_speech', $this->useLocalSpeech);
         Setting::set('speech_provider', $this->speechProvider);
         Setting::set('noise_suppression_level', $this->noiseSuppressionLevel);
+        Setting::set('auto_send_after_transcription', $this->autoSendAfterTranscription);
 
         $this->dispatch('settings-saved');
         $this->dispatch('opacity-changed', opacity: $this->windowOpacity);
@@ -200,6 +204,11 @@ class Settings extends Component
                 App::openAtLogin($this->openAtLogin);
             }
         }
+    }
+
+    public function updatedAutoSendAfterTranscription(): void
+    {
+        $this->save();
     }
 
     private function loadProviders(): void

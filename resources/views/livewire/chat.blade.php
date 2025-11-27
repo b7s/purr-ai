@@ -323,6 +323,7 @@
                     type="submit"
                     variant="primary"
                     :title="__('ui.tooltips.send_message')"
+                    id="send-message-btn"
                 >
                     <i class="iconoir-arrow-up text-xl font-bold stroke-[3px]"></i>
                 </x-ui.button>
@@ -337,6 +338,7 @@
     'audio_device' => __('chat.speech_recognition.audio_device'),
     'default_audio_device' => __('chat.speech_recognition.default_audio_device'),
     'speech_provider' => __('chat.speech_recognition.speech_provider'),
+    'auto_send' => __('settings.speech.auto_send'),
 ]);
                 window
                     .noiseSuppressionLevel =
@@ -350,6 +352,9 @@
                 window
                     .selectedSpeechProvider =
                     @js(\App\Models\Setting::get('speech_provider', ''));
+                window
+                    .autoSendAfterTranscription =
+                    @js((bool) \App\Models\Setting::get('auto_send_after_transcription', false));
             </script>
 
             @error('message')

@@ -18,7 +18,7 @@ return [
         'attach_file' => 'Attach a file',
         'take_screenshot' => 'Take a screenshot',
         'send_message' => 'Send message',
-        'record_audio' => 'Record audio message',
+        'record_audio' => 'Talk to me via audio',
         'stop_recording' => 'Stop and send',
         'discard_recording' => 'Cancel and discard',
     ],

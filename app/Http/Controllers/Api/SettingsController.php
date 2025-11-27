@@ -37,4 +37,15 @@ final class SettingsController extends Controller
 
         return response()->json(['value' => $value]);
     }
+
+    public function updateAutoSend(Request $request): JsonResponse
+    {
+        $request->validate([
+            'enabled' => ['required', 'boolean'],
+        ]);
+
+        Setting::set('auto_send_after_transcription', $request->input('enabled'));
+
+        return response()->json(['success' => true]);
+    }
 }

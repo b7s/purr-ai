@@ -88,6 +88,7 @@ class LocalSpeechRecognition {
             settings: "Settings",
             audio_device: "AudioDevice",
             default_audio_device: "Default",
+            auto_send: "Auto-send message",
         };
 
         this.floatingDiv.innerHTML = `
@@ -119,15 +120,29 @@ class LocalSpeechRecognition {
                     <div class="accordion-content hidden">
                         <div class="accordion-inner">
                             <div class="setting-row">
-                                <label class="setting-label">${t.audio_device}</label>
+                                <label class="setting-label">${
+                                    t.audio_device
+                                }</label>
                                 <select class="speech-select mic-select">
-                                    <option value="default">${t.default_audio_device}</option>
+                                    <option value="default">${
+                                        t.default_audio_device
+                                    }</option>
                                 </select>
                             </div>
                             <div class="setting-row speech-provider-row hidden">
-                                <label class="setting-label">${t.speech_provider}</label>
+                                <label class="setting-label">${
+                                    t.speech_provider
+                                }</label>
                                 <select class="speech-select provider-select">
                                 </select>
+                            </div>
+                            <div class="setting-row">
+                                <label class="setting-label-inline cursor-pointer">
+                                    <span>${
+                                        t.auto_send || "Auto-send message"
+                                    }</span>
+                                    <input type="checkbox" class="auto-send-toggle" />
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -191,6 +206,14 @@ class LocalSpeechRecognition {
         providerSelect.addEventListener("change", async (e) => {
             const provider = e.target.value;
             await this.updateSpeechProvider(provider);
+        });
+
+        // Auto-send toggle change
+        const autoSendToggle =
+            this.floatingDiv.querySelector(".auto-send-toggle");
+        autoSendToggle.addEventListener("change", async (e) => {
+            const enabled = e.target.checked;
+            await this.updateAutoSendSetting(enabled);
         });
 
         // Listen for device updates
@@ -265,6 +288,47 @@ class LocalSpeechRecognition {
         }
     }
 
+    updateAutoSendToggle() {
+        const autoSendToggle =
+            this.floatingDiv?.querySelector(".auto-send-toggle");
+        if (!autoSendToggle) return;
+
+        const enabled = window.autoSendAfterTranscription ?? false;
+        autoSendToggle.checked = enabled;
+    }
+
+    async updateAutoSendSetting(enabled) {
+        try {
+            const csrfToken =
+                document.querySelector('meta[name="csrf-token"]')?.content ||
+                window.livewire?.csrf ||
+                document.querySelector('input[name="_token"]')?.value;
+
+            const response = await fetch("/api/update-auto-send-setting", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({ enabled }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update auto-send setting");
+            }
+
+            window.autoSendAfterTranscription = enabled;
+            window.toast?.success?.(
+                enabled ? "Auto-send enabled" : "Auto-send disabled",
+                2000
+            );
+        } catch (error) {
+            console.error("Failed to update auto-send setting:", error);
+            window.toast?.error?.("Failed to update setting", 3000);
+        }
+    }
+
     async updateSpeechProvider(provider) {
         try {
             const csrfToken =
@@ -326,6 +390,9 @@ class LocalSpeechRecognition {
 
         // Update speech provider select
         this.updateSpeechProviderSelect();
+
+        // Update auto-send toggle
+        this.updateAutoSendToggle();
     }
 
     showFloatingInterface() {
@@ -447,28 +514,30 @@ class LocalSpeechRecognition {
             // Get frequency data for visualization
             this.analyser.getByteFrequencyData(frequencyData);
 
-            // Map frequency data symmetrically from center to sides
-            const step = Math.floor(
-                frequencyData.length / Math.ceil(bars.length / 2)
-            );
+            // Use RMS-based volume (already calculated above) for visualization
+            // Scale it up significantly for better visual feedback
+            const visualVolume = Math.min(255, rms * 1200);
+
+            // Current time for wave effect
+            const time = Date.now() * 0.01;
 
             bars.forEach((bar, index) => {
-                // Calculate distance from center
+                // Create wave effect: each bar has a phase offset
+                const phase = (index - centerIndex) * 0.8;
+                const waveOffset = Math.sin(time + phase) * 0.4 + 0.6;
+
+                // Distance from center affects base amplitude
                 const distanceFromCenter = Math.abs(index - centerIndex);
-                const dataIndex = distanceFromCenter * step;
-                let value = frequencyData[dataIndex] || 0;
+                const centerBoost =
+                    1 - (distanceFromCenter / centerIndex) * 0.2;
 
-                // Apply noise gate - ignore values below threshold
-                if (value < noiseThreshold) {
-                    value = 0;
-                }
-
-                // Center bar gets more prominence
-                const prominence = 1 - (distanceFromCenter / centerIndex) * 0.3;
-                const height = Math.max(8, (value / 255) * 64 * prominence);
+                // Combine volume with wave effect
+                const value = visualVolume * waveOffset * centerBoost;
+                const height = Math.max(6, (value / 255) * 80);
 
                 bar.style.height = `${height}px`;
-                bar.style.opacity = value > 0 ? 0.4 + (value / 255) * 0.6 : 0.2;
+                bar.style.opacity =
+                    visualVolume > 5 ? 0.4 + (value / 255) * 0.6 : 0.2;
             });
 
             this.animationFrame = requestAnimationFrame(animate);
@@ -875,6 +944,22 @@ class LocalSpeechRecognition {
 
             textarea.dispatchEvent(new Event("input", { bubbles: true }));
             textarea.focus();
+
+            // Auto-send if enabled
+            if (window.autoSendAfterTranscription) {
+                // Delay to ensure textarea value is synced with Livewire
+                setTimeout(() => {
+                    const sendButton =
+                        document.getElementById("send-message-btn");
+                    if (
+                        sendButton &&
+                        !sendButton.disabled &&
+                        textarea.value.trim()
+                    ) {
+                        sendButton.click();
+                    }
+                }, 600);
+            }
         }
     }
 }

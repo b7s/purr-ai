@@ -144,5 +144,7 @@ return [
         'noise_level_medium_desc' => 'Balanced filtering',
         'noise_level_high' => 'High',
         'noise_level_high_desc' => 'Maximum filtering',
+        'auto_send' => 'Auto-send Message',
+        'auto_send_description' => 'Automatically send the message after transcription completes',
     ],
 ];
