@@ -31,7 +31,7 @@ return [
     ],
 
     'tones' => [
-        'basic' => 'Common',
+        'basic' => 'Normal',
         'basic_description' => 'Balanced',
         'professional' => 'Professional',
         'professional_description' => 'Precise and refined',

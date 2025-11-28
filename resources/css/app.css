@@ -5,6 +5,11 @@
 
 /* Base Styles */
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Dark mode configuration */
+@variant dark (&:where(.dark, .dark *));
+
 @import "./base/variables.css";
 @import "./base/scrollbar.css";
 @import "./base/base.css";

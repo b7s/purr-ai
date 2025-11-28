@@ -9,27 +9,25 @@
     }
 
     .circle-btn.ghost {
-        color: var(--color-slate-600);
+        @apply text-slate-600;
     }
 
     .circle-btn.ghost:hover {
-        color: var(--color-slate-800);
-        background-color: var(--color-slate-100);
+        @apply text-slate-800 bg-slate-100;
     }
 
     .dark .circle-btn.ghost {
-        color: var(--color-slate-300);
+        @apply text-slate-300;
     }
 
     .dark .circle-btn.ghost:hover {
-        color: var(--color-slate-100);
-        background-color: var(--color-slate-700);
+        @apply text-slate-100 bg-slate-700;
     }
 
     .circle-btn.primary {
         @apply shadow-md bg-linear-to-tr from-slate-900 to-slate-600;
         @apply transition-transform duration-200 ease-in-out;
-        color: rgb(255 255 255);
+        @apply text-white;
     }
 
     .circle-btn.primary:hover {
@@ -38,26 +36,24 @@
 
     .dark .circle-btn.primary {
         @apply bg-linear-to-tr from-slate-400 to-white;
-        color: rgb(0 0 0);
+        @apply text-black;
     }
 
     .btn-icon {
         @apply w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-all;
-        color: rgb(82 82 82);
+        @apply text-slate-600;
     }
 
     .btn-icon:hover {
-        color: rgb(23 23 23);
-        background-color: rgb(229 229 229);
+        @apply text-slate-900 bg-slate-200;
     }
 
     .dark .btn-icon {
-        color: rgb(148 163 184);
+        @apply text-slate-400;
     }
 
     .dark .btn-icon:hover {
-        color: rgb(248 250 252);
-        background-color: rgb(51 65 85 / 0.6);
+        @apply text-slate-50 bg-slate-700/60;
     }
 
     /* Settings Alert Badge */

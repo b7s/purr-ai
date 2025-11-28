@@ -3,188 +3,6 @@
  */
 
 @layer components {
-    .chat-messages {
-        @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-44!;
-        scroll-behavior: smooth;
-    }
-
-    /* Input Dock Wrapper */
-    .input-dock-wrapper {
-        @apply absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-3xl z-10;
-        @apply flex flex-col gap-2;
-    }
-
-    /* Model Selector */
-    .model-selector-container {
-        @apply flex justify-center;
-    }
-
-    .model-selector {
-        @apply relative;
-    }
-
-    .model-selector-footer {
-        @apply text-sm text-center bg-transparent flex justify-between items-center text-gray-600 px-3;
-    }
-
-    .dark .model-selector-footer {
-        @apply text-gray-300;
-    }
-
-    .model-selector-trigger {
-        @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
-        @apply transition-all cursor-pointer border;
-        backdrop-filter: blur(var(--window-blur));
-        background-color: rgb(255 255 255 / 0.8);
-        border-color: rgb(229 229 229 / 0.8);
-        color: rgb(64 64 64);
-    }
-
-    .model-selector-trigger:hover {
-        background-color: rgb(255 255 255 / 0.95);
-        border-color: rgb(212 212 212);
-    }
-
-    .dark .model-selector-trigger {
-        background-color: rgb(30 41 59 / 0.8);
-        border-color: rgb(51 65 85 / 0.6);
-        color: rgb(203 213 225);
-    }
-
-    .dark .model-selector-trigger:hover {
-        background-color: rgb(30 41 59 / 0.95);
-        border-color: rgb(71 85 105);
-    }
-
-    .model-selector-value {
-        @apply max-w-32 truncate;
-    }
-
-    .model-selector-dropdown {
-        @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-48 max-w-64 select-none;
-    }
-
-    .model-selector-group {
-        @apply py-1;
-    }
-
-    .model-selector-group:not(:last-child) {
-        @apply border-b;
-        border-color: rgb(229 229 229 / 0.5);
-    }
-
-    .dark .model-selector-group:not(:last-child) {
-        border-color: rgb(51 65 85 / 0.5);
-    }
-
-    .model-selector-group-label {
-        @apply px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider;
-        color: rgb(115 115 115);
-    }
-
-    .dark .model-selector-group-label {
-        color: rgb(148 163 184);
-    }
-
-    .model-selector-option {
-        @apply w-full flex items-center justify-between gap-2 px-3 pl-5 py-2 text-xs;
-        @apply transition-colors cursor-pointer text-left;
-        color: rgb(64 64 64);
-    }
-
-    .model-selector-option:hover {
-        background-color: rgb(245 245 245);
-    }
-
-    .model-selector-option.active {
-        background-color: rgb(245 245 245);
-        color: rgb(23 23 23);
-        font-weight: 500;
-    }
-
-    .dark .model-selector-option {
-        color: rgb(203 213 225);
-    }
-
-    .dark .model-selector-option:hover {
-        background-color: rgb(51 65 85 / 0.5);
-    }
-
-    .dark .model-selector-option.active {
-        background-color: rgb(51 65 85 / 0.5);
-        color: rgb(248 250 252);
-    }
-
-    .model-selector-empty {
-        @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
-        @apply transition-all cursor-pointer border;
-        backdrop-filter: blur(var(--window-blur));
-        background-color: rgb(254 243 199 / 0.8);
-        border-color: rgb(253 224 71 / 0.5);
-        color: rgb(161 98 7);
-    }
-
-    .model-selector-empty:hover {
-        background-color: rgb(254 243 199 / 0.95);
-        border-color: rgb(253 224 71);
-    }
-
-    .dark .model-selector-empty {
-        background-color: rgb(161 98 7 / 0.2);
-        border-color: rgb(161 98 7 / 0.3);
-        color: rgb(253 224 71);
-    }
-
-    .dark .model-selector-empty:hover {
-        background-color: rgb(161 98 7 / 0.3);
-        border-color: rgb(161 98 7 / 0.5);
-    }
-
-    /* Chat Rows */
-    .chat-row {
-        @apply flex gap-2 max-w-3xl w-full animate-slide-up;
-    }
-
-    .chat-row.user {
-        @apply ml-auto justify-end;
-    }
-
-    /* Chat Bubbles */
-    .chat-bubble {
-        @apply px-5 py-3 text-[15px] leading-relaxed shadow-sm relative max-w-full wrap-break-word;
-    }
-
-    .chat-bubble.primary {
-        @apply rounded-[20px] rounded-br-[4px];
-        background-color: rgb(23 23 23);
-        color: rgb(255 255 255);
-    }
-
-    .dark .chat-bubble.primary {
-        background-color: rgb(226 232 240);
-        color: rgb(15 23 42);
-    }
-
-    .chat-bubble.secondary {
-        @apply rounded-[20px] rounded-tl-[4px] border;
-        backdrop-filter: blur(var(--window-blur));
-        background-color: rgb(245 245 245);
-        border-color: rgb(229 229 229);
-        color: rgb(23 23 23);
-    }
-
-    .dark .chat-bubble.secondary {
-        background-color: rgb(30 41 59 / 0.9);
-        border-color: rgb(51 65 85 / 0.6);
-        color: rgb(226 232 240);
-    }
-
-    /* Avatar */
-    .purr-ai-logo {
-        @apply w-8 h-8;
-        @apply flex items-center justify-center shrink-0 select-none;
-    }
-
     /* Message Timestamp */
     .message-timestamp {
         @apply text-xs mt-1 font-medium;
@@ -218,20 +36,282 @@
     }
 
     .welcome-title {
-        @apply text-2xl font-semibold mb-2;
-        color: rgb(23 23 23);
+        @apply text-2xl font-semibold mb-2 text-slate-900;
     }
 
     .dark .welcome-title {
-        color: rgb(248 250 252);
+        @apply text-slate-50;
     }
 
     .welcome-message {
-        @apply max-w-md;
-        color: rgb(82 82 82);
+        @apply max-w-md text-slate-600;
     }
 
     .dark .welcome-message {
-        color: rgb(148 163 184);
+        @apply text-slate-400;
+    }
+
+    .chat-messages {
+        @apply flex-1 overflow-y-auto p-6 md:p-10 space-y-8 pb-44!;
+        scroll-behavior: smooth;
+    }
+
+    /* Input Dock Wrapper */
+    .input-dock-wrapper {
+        @apply absolute bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-3xl z-10;
+        @apply flex flex-col gap-2;
+    }
+
+    /* Model Selector */
+    .model-selector-container {
+        @apply flex justify-center;
+    }
+
+    .model-selector {
+        @apply relative;
+    }
+
+    .model-selector-footer {
+        @apply text-sm text-center bg-transparent flex justify-between items-center text-gray-600 px-3;
+    }
+
+    .dark .model-selector-footer {
+        @apply text-gray-300;
+    }
+
+    .model-selector-trigger {
+        @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
+        @apply transition-all cursor-pointer border;
+        backdrop-filter: blur(var(--window-blur));
+        @apply bg-slate-50/80 border-slate-200/80 text-slate-700;
+    }
+
+    .model-selector-trigger:hover {
+        @apply bg-slate-50/95 border-slate-300;
+    }
+
+    .dark .model-selector-trigger {
+        @apply bg-slate-800/80 border-slate-700/60 text-slate-200;
+    }
+
+    .dark .model-selector-trigger:hover {
+        @apply bg-slate-800/95 border-slate-600;
+    }
+
+    .model-selector-value {
+        @apply max-w-32 truncate;
+    }
+
+    .model-selector-dropdown {
+        @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2 min-w-48 max-w-64 select-none;
+    }
+
+    .model-selector-group {
+        @apply py-1;
+    }
+
+    .model-selector-group:not(:last-child) {
+        @apply border-b;
+        @apply border-slate-200/50;
+    }
+
+    .dark .model-selector-group:not(:last-child) {
+        @apply border-slate-700/50;
+    }
+
+    .model-selector-group-label {
+        @apply px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider;
+        @apply text-slate-500;
+    }
+
+    .dark .model-selector-group-label {
+        @apply text-slate-400;
+    }
+
+    .model-selector-option {
+        @apply w-full flex items-center justify-between gap-2 px-3 pl-5 py-2 text-xs;
+        @apply transition-colors cursor-pointer text-left text-slate-700;
+    }
+
+    .model-selector-option:hover {
+        @apply bg-slate-100;
+    }
+
+    .model-selector-option.active {
+        @apply bg-slate-100 text-slate-900 font-medium;
+    }
+
+    .dark .model-selector-option {
+        @apply text-slate-200;
+    }
+
+    .dark .model-selector-option:hover {
+        @apply bg-slate-700/50;
+    }
+
+    .dark .model-selector-option.active {
+        @apply bg-slate-700/50 text-slate-50;
+    }
+
+    .model-selector-empty {
+        @apply flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium;
+        @apply transition-all cursor-pointer border;
+        @apply bg-amber-100/80 border-amber-300/50 text-amber-800;
+        backdrop-filter: blur(var(--window-blur));
+    }
+
+    .model-selector-empty:hover {
+        @apply bg-amber-100/95 border-amber-300;
+    }
+
+    .dark .model-selector-empty {
+        @apply bg-amber-900/20 border-amber-900/30 text-amber-300;
+    }
+
+    .dark .model-selector-empty:hover {
+        @apply bg-amber-900/30 border-amber-900/50;
+    }
+
+    /* Chat Rows */
+    .chat-row {
+        @apply flex gap-2 w-full animate-slide-up;
+        max-width: min(48rem, 100%);
+        min-width: 0;
+    }
+
+    .chat-row.user {
+        @apply ml-auto justify-end;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        @apply px-5 py-3 text-[15px] leading-relaxed shadow-sm relative;
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-width: 0;
+    }
+
+    .chat-bubble.primary {
+        @apply rounded-[20px] rounded-br-[4px] bg-slate-900 text-white;
+    }
+
+    .dark .chat-bubble.primary {
+        @apply bg-slate-50 text-slate-800;
+    }
+
+    .chat-bubble.secondary {
+        @apply rounded-[20px] rounded-tl-[4px] border;
+        @apply bg-slate-100 border-slate-200 text-slate-900;
+        backdrop-filter: blur(var(--window-blur));
+    }
+
+    .dark .chat-bubble.secondary {
+        @apply bg-slate-800/90 border-slate-700/60 text-slate-100;
+    }
+
+    /* Prose styles for markdown content */
+    .chat-bubble.secondary.prose {
+        @apply prose-headings:mt-4 prose-headings:mb-2 prose-headings:font-semibold;
+        @apply prose-p:my-2 prose-p:leading-relaxed;
+        @apply prose-ul:my-2 prose-ul:pl-4 prose-ol:my-2 prose-ol:pl-4;
+        @apply prose-li:my-0.5;
+        @apply prose-pre:my-3 prose-pre:p-3 prose-pre:rounded-xl;
+        @apply prose-a:underline prose-a:underline-offset-2;
+        @apply prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:my-3;
+    }
+
+    /* Inline code (not in pre blocks) */
+    .chat-bubble.secondary.prose code:not(pre code) {
+        @apply bg-slate-200 text-slate-700;
+    }
+
+    .dark .chat-bubble.secondary.prose code:not(pre code) {
+        @apply bg-slate-700 text-slate-100;
+    }
+
+    /* Pre blocks - consolidated styles with !important to override Tailwind */
+    .chat-bubble.secondary.prose pre {
+        font-size: 14px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: auto !important;
+        white-space: pre !important;
+        word-break: normal !important;
+        word-wrap: normal !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgb(71 85 105) rgb(15 23 42);
+        border-radius: 0.75rem !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    /* Ensure code inside pre doesn't affect the width */
+    .chat-bubble.secondary.prose pre code {
+        display: block !important;
+        white-space: pre-wrap !important;
+        word-break: normal !important;
+        word-wrap: normal !important;
+        overflow: visible !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Custom scrollbar for pre blocks */
+    .chat-bubble.secondary.prose pre::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .chat-bubble.secondary.prose pre::-webkit-scrollbar-track {
+        @apply bg-slate-950 rounded;
+    }
+
+    .chat-bubble.secondary.prose pre::-webkit-scrollbar-thumb {
+        @apply bg-slate-600 rounded;
+    }
+
+    .chat-bubble.secondary.prose pre::-webkit-scrollbar-thumb:hover {
+        @apply bg-slate-500;
+    }
+
+    /* Copy button for code blocks */
+    .code-copy-btn {
+        @apply absolute top-2 right-2 p-1.5 rounded-md;
+        @apply bg-slate-100/10 hover:bg-slate-100/20 transition-colors;
+        @apply text-slate-100/70 hover:text-slate-100;
+        @apply cursor-pointer opacity-0;
+        @apply flex items-center justify-center;
+    }
+
+    pre:hover .code-copy-btn {
+        @apply opacity-100;
+    }
+
+    .code-copy-btn.copied {
+        @apply bg-emerald-500/20 text-emerald-400;
+    }
+
+    .chat-bubble.secondary.prose a {
+        color: rgb(37 99 235);
+    }
+
+    .dark .chat-bubble.secondary.prose a {
+        color: rgb(96 165 250);
+    }
+
+    .chat-bubble.secondary.prose blockquote {
+        @apply border-slate-300 text-slate-600;
+    }
+
+    .dark .chat-bubble.secondary.prose blockquote {
+        @apply border-slate-600 text-slate-400;
+    }
+
+    /* Avatar */
+    .purr-ai-logo {
+        @apply w-8 h-8;
+        @apply flex items-center justify-center shrink-0 select-none;
     }
 }

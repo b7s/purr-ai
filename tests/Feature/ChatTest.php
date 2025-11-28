@@ -23,6 +23,7 @@ it('renders chat component', function () {
 
 it('can send a message', function () {
     Livewire::test(Chat::class)
+        ->set('selectedModel', 'openai:gpt-4')
         ->set('message', 'Hello, PurrAI!')
         ->call('sendMessage')
         ->assertSet('message', '');
@@ -35,12 +36,21 @@ it('can send a message', function () {
 
 it('creates conversation on first message', function () {
     Livewire::test(Chat::class)
+        ->set('selectedModel', 'openai:gpt-4')
         ->set('message', 'First message')
         ->call('sendMessage');
 
     assertDatabaseHas('conversations', [
         'title' => 'First message',
     ]);
+});
+
+it('validates model is selected', function () {
+    Livewire::test(Chat::class)
+        ->set('selectedModel', '')
+        ->set('message', 'Hello')
+        ->call('sendMessage')
+        ->assertHasErrors(['message']);
 });
 
 it('can start new conversation', function () {

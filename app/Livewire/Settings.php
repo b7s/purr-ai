@@ -68,7 +68,7 @@ class Settings extends Component
         $this->userName = Setting::get('user_name', '');
         $this->userDescription = Setting::get('user_description', '');
         $this->responseDetail = Setting::get('response_detail', 'detailed');
-        $this->responseTone = Setting::get('response_tone', 'basic');
+        $this->responseTone = Setting::get('response_tone', 'normal');
         $this->respondAsACat = (bool) Setting::get('respond_as_cat', false);
 
         $this->loadProviders();

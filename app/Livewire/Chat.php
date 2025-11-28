@@ -35,11 +35,29 @@ class Chat extends Component
 
     public string $searchQuery = '';
 
+    public bool $isProcessing = false;
+
     public function mount(?int $conversationId = null): void
     {
         $this->conversationId = $conversationId;
         $this->conversations = $this->getConversationsHistory();
         $this->selectedModel = Setting::getSelectedModel() ?? '';
+
+        // Auto-select first available model if none selected
+        if (empty($this->selectedModel)) {
+            $availableModels = $this->getAvailableModels();
+            if (! empty($availableModels)) {
+                foreach ($availableModels as $providerKey => $providerData) {
+                    if (! empty($providerData['models'])) {
+                        $providerIdentifier = str_replace('_config', '', $providerKey);
+                        $firstModel = $providerData['models'][0];
+                        $this->selectedModel = "{$providerIdentifier}:{$firstModel}";
+                        Setting::setSelectedModel($this->selectedModel);
+                        break;
+                    }
+                }
+            }
+        }
 
         $this->loadDraft();
 
@@ -126,9 +144,16 @@ class Chat extends Component
             'message' => 'required|string|max:'.config('purrai.limits.max_message_length'),
         ]);
 
+        // Validate model is selected
+        if (empty($this->selectedModel)) {
+            $this->addError('message', __('chat.errors.no_model_selected'));
+
+            return;
+        }
+
         if (! $this->conversationId) {
             $conversation = Conversation::create([
-                'title' => substr($this->message, 0, 100),
+                'title' => mb_substr($this->message, 0, 100),
             ]);
 
             $this->conversationId = $conversation->id;
@@ -142,8 +167,19 @@ class Chat extends Component
 
         $this->clearDraft();
         $this->message = '';
+        $this->isProcessing = true;
+
         $this->dispatch('message-sent');
         $this->dispatch('scroll-to-user-message');
+        $this->dispatch('start-ai-stream', [
+            'conversationId' => $this->conversationId,
+            'selectedModel' => $this->selectedModel,
+        ]);
+    }
+
+    public function streamComplete(): void
+    {
+        $this->isProcessing = false;
     }
 
     public function updatedSelectedModel(): void

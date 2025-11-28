@@ -19,7 +19,7 @@ class LocalSpeechRecognition {
         this.silenceTimer = null;
         this.lastSoundTime = null;
         this.hasSoundDetected = false;
-        this.silenceThreshold = 5000; // 5 seconds of silence
+        this.silenceThreshold = 8000; // seconds of silence
         this.soundThreshold = 2; // Minimum RMS level to consider as sound (2% of max volume)
 
         this.init();

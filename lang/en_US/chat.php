@@ -40,4 +40,18 @@ return [
         'default_audio_device' => 'Default',
         'speech_provider' => 'Speech Provider',
     ],
+
+    'errors' => [
+        'no_model_selected' => 'Please select an AI model before sending a message.',
+        'invalid_provider' => 'The selected AI provider is not valid.',
+        'provider_not_configured' => 'The selected AI provider is not configured. Please add your API key in Settings.',
+        'rate_limited' => 'Rate limit exceeded. Please try again in:retry.',
+        'unexpected' => 'An unexpected error occurred: :message',
+        'stream_error' => 'An error occurred while streaming the response.',
+    ],
+
+    'code' => [
+        'copy' => 'Copy code',
+        'copied' => 'Copied!',
+    ],
 ];

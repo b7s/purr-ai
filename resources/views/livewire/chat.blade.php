@@ -239,8 +239,19 @@
             />
         @endif
 
-        @if ($isProcessing ?? false)
-            <x-chat.loading />
+        {{-- Streaming Response Container --}}
+        @if ($isProcessing)
+            <div class="chat-row">
+                <x-chat.avatar type="ai" />
+                <div class="space-y-2">
+                    <div
+                        id="streaming-response"
+                        class="chat-bubble secondary prose prose-sm dark:prose-invert max-w-none"
+                    >
+                        <x-ui.loading-icon />
+                    </div>
+                </div>
+            </div>
         @endif
     </div>
 

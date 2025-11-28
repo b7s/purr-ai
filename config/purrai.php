@@ -28,7 +28,7 @@ return [
 
     'response_tones' => [
         [
-            'value' => 'basic',
+            'value' => 'normal',
             'label' => 'settings.tones.basic',
             'description' => 'settings.tones.basic_description',
             'icon' => 'chat-bubble',

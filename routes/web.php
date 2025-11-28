@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\ChatStreamController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\TranscribeController;
 use App\Http\Controllers\Api\UpdateSpeechProviderController;
@@ -16,6 +17,7 @@ Route::post('/api/update-speech-provider', UpdateSpeechProviderController::class
 Route::post('/api/update-auto-send-setting', [SettingsController::class, 'updateAutoSend'])->name('api.update-auto-send-setting');
 Route::post('/api/settings', [SettingsController::class, 'store'])->name('api.settings.store');
 Route::get('/api/settings/{key}', [SettingsController::class, 'show'])->name('api.settings.show');
+Route::post('/api/chat/stream', ChatStreamController::class)->name('api.chat.stream');
 
 Route::get('/settings', Settings::class)->name('settings');
 Route::get('/menubar/{conversationId?}', Chat::class)->name('menubar.chat');
