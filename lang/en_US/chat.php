@@ -8,6 +8,12 @@ return [
 
     'title' => 'PurrAI',
     'welcome_title' => 'Welcome to :name',
+    'greetings' => [
+        'morning' => 'Good morning',
+        'afternoon' => 'Good afternoon',
+        'evening' => 'Good evening',
+        'night' => 'Good night',
+    ],
     'welcome_title_back' => 'Welcome back to :name',
     'welcome_message' => 'Your adorable AI companion is ready to help. Start a conversation by typing a message below.',
     'placeholder' => 'Type your message...',

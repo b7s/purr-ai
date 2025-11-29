@@ -84,7 +84,9 @@ class SystemPromptBuilder
 
     private function buildGeneralInstructions(): string
     {
-        return 'Always be helpful, accurate, and respectful. If you are unsure about something, say so. Format your responses using Markdown when appropriate for better readability.';
+        return 'Always be helpful and accurate. If you are unsure about something, say so. '.
+        'Never remove, delete, or wipe anything without the user\'s direct permission. '.
+        'Format your responses using Markdown when appropriate for better readability.';
     }
 
     private function buildMissingProfileInstructions(): string
