@@ -1,23 +1,56 @@
-<svg class="w-8 h-1 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 14 32 4" preserveAspectRatio="none">
+<svg
+    class="w-8 h-8 inline-block"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+>
     <style>
-        .loading-dot {
-            fill: rgb(75, 85, 99);
+        @keyframes spinner-pulse {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
-        .dark .loading-dot {
-            fill: rgb(156, 163, 175);
+        .spinner-dot {
+            fill: currentColor;
+            animation: spinner-pulse 1.2s ease-in-out infinite;
+        }
+
+        .spinner-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .spinner-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .spinner-dot:nth-child(3) {
+            animation-delay: 0.4s;
         }
     </style>
-    <path class="loading-dot" opacity="0.8" transform="translate(0 0)" d="M2 14 V18 H6 V14z">
-        <animateTransform attributeName="transform" type="translate" values="0 0; 24 0; 0 0" dur="2s" begin="0"
-            repeatCount="indefinite" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" calcMode="spline" />
-    </path>
-    <path class="loading-dot" opacity="0.5" transform="translate(0 0)" d="M0 14 V18 H8 V14z">
-        <animateTransform attributeName="transform" type="translate" values="0 0; 24 0; 0 0" dur="2s" begin="0.1s"
-            repeatCount="indefinite" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" calcMode="spline" />
-    </path>
-    <path class="loading-dot" opacity="0.25" transform="translate(0 0)" d="M0 14 V18 H8 V14z">
-        <animateTransform attributeName="transform" type="translate" values="0 0; 24 0; 0 0" dur="2s" begin="0.2s"
-            repeatCount="indefinite" keySplines="0.2 0.2 0.4 0.8;0.2 0.2 0.4 0.8" calcMode="spline" />
-    </path>
+    <circle
+        class="spinner-dot text-gray-900 dark:text-white"
+        cx="4"
+        cy="12"
+        r="3"
+    />
+    <circle
+        class="spinner-dot text-gray-900 dark:text-white"
+        cx="12"
+        cy="12"
+        r="3"
+    />
+    <circle
+        class="spinner-dot text-gray-900 dark:text-white"
+        cx="20"
+        cy="12"
+        r="3"
+    />
 </svg>

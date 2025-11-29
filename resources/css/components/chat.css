@@ -27,7 +27,7 @@
     }
 
     .welcome-logo {
-        @apply w-42 h-42 mb-4;
+        @apply w-42! h-42! mb-4;
     }
 
     .animate-welcome-logo {
@@ -44,11 +44,7 @@
     }
 
     .welcome-message {
-        @apply max-w-md text-slate-600;
-    }
-
-    .dark .welcome-message {
-        @apply text-slate-400;
+        @apply max-w-md text-slate-500 dark:text-slate-600;
     }
 
     .chat-messages {
@@ -313,5 +309,22 @@
     .purr-ai-logo {
         @apply w-8 h-8;
         @apply flex items-center justify-center shrink-0 select-none;
+    }
+
+    /* Tool Calling Message */
+    .tool-calling {
+        @apply inline-block text-sm italic;
+        @apply opacity-80;
+        @apply text-slate-600;
+        @apply transition-opacity duration-300;
+    }
+
+    .dark .tool-calling {
+        @apply text-slate-400;
+    }
+
+    /* Hidden state for completed tool calls */
+    .tool-calling.completed {
+        @apply hidden;
     }
 }

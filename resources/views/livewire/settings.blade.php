@@ -105,12 +105,7 @@
 
                 <div class="card">
                     <x-ui.toggle
-                        :label="new \Illuminate\Support\HtmlString(
-                            '<img src=\'' .
-                                asset('images/logo-PurrAI-64.webp') .
-                                '\' alt=\'\' class=\'w-8 inline-block me-2\'>' .
-                                __('settings.chat.respond_as_cat'),
-                        )"
+                        :label="new \Illuminate\Support\HtmlString('<img src=\'' . asset('images/mascot/logo.svg') . '\' alt=\'\' class=\'w-8 inline-block me-2\'>' . __('settings.chat.respond_as_cat'))"
                         :model="'respondAsACat'"
                         :checked="$respondAsACat"
                     >
@@ -159,11 +154,7 @@
                     @if ($speechToTextEnabled)
                         <x-ui.toggle
                             :label="__('settings.speech.use_local')"
-                            :description="new \Illuminate\Support\HtmlString(
-                                view('components.ui.badge', ['slot' => __('settings.speech.private')])->render() .
-                                    '&nbsp;&nbsp;' .
-                                    __('settings.speech.use_local_description'),
-                            )"
+                            :description="new \Illuminate\Support\HtmlString(view('components.ui.badge', ['slot' => __('settings.speech.private')])->render() . '&nbsp;&nbsp;' . __('settings.speech.use_local_description'))"
                             model="useLocalSpeech"
                             :checked="$useLocalSpeech"
                         />
@@ -344,6 +335,20 @@
                         min="0"
                         step="1"
                         placeholder="0"
+                    />
+                </div>
+
+                <div
+                    class="card"
+                    x-data="timezoneSelector"
+                >
+                    <x-ui.input
+                        :label="__('settings.other.timezone')"
+                        :description="__('settings.other.timezone_description')"
+                        :helpText="__('settings.other.timezone_helper')"
+                        model="timezone"
+                        :placeholder="__('settings.other.timezone_placeholder')"
+                        x-ref="timezoneInput"
                     />
                 </div>
 

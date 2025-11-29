@@ -241,7 +241,7 @@ class Chat extends Component
                 'updated_at' => $conv->updated_at->format(__('chat.date_format')),
                 'updated_at_human' => $conv->updated_at->diffForHumans(),
             ])
-            ->toArray();
+            ->all();
     }
 
     private function loadDraft(): void

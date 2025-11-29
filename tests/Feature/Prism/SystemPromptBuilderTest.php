@@ -80,3 +80,35 @@ it('includes response tone setting', function (): void {
 
     expect($prompt)->toContain('Professional');
 });
+
+it('includes missing profile instructions when user name is empty', function (): void {
+    Setting::set('user_name', '');
+    Setting::set('user_description', 'Some description');
+
+    $builder = new SystemPromptBuilder;
+    $prompt = $builder->build();
+
+    expect($prompt)->toContain('user_profile');
+    expect($prompt)->toContain('missing');
+});
+
+it('includes missing profile instructions when user description is empty', function (): void {
+    Setting::set('user_name', 'John');
+    Setting::set('user_description', '');
+
+    $builder = new SystemPromptBuilder;
+    $prompt = $builder->build();
+
+    expect($prompt)->toContain('user_profile');
+    expect($prompt)->toContain('missing');
+});
+
+it('does not include missing profile instructions when profile is complete', function (): void {
+    Setting::set('user_name', 'John');
+    Setting::set('user_description', 'Software developer');
+
+    $builder = new SystemPromptBuilder;
+    $prompt = $builder->build();
+
+    expect($prompt)->not->toContain('profile is incomplete');
+});

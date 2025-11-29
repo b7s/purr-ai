@@ -4,6 +4,7 @@ import "./audio-devices";
 import "./speech-recognition";
 import "./chat-stream";
 import "./code-copy";
+import "./timezone-selector";
 
 document.addEventListener("alpine:init", () => {
     Alpine.data(

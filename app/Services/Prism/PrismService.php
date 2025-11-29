@@ -6,14 +6,19 @@ namespace App\Services\Prism;
 
 use App\Models\Attachment;
 use App\Models\Message;
+use App\Services\Prism\Tools\CalendarTool;
+use App\Services\Prism\Tools\UserProfileTool;
 use Generator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Exceptions\PrismException;
 use Prism\Prism\Exceptions\PrismRateLimitedException;
 use Prism\Prism\Facades\Prism;
 use Prism\Prism\Streaming\Events\StreamEndEvent;
 use Prism\Prism\Streaming\Events\TextDeltaEvent;
+use Prism\Prism\Streaming\Events\ToolCallEvent;
+use Prism\Prism\Streaming\Events\ToolResultEvent;
 use Prism\Prism\Text\PendingRequest;
 use Prism\Prism\ValueObjects\Media\Audio;
 use Prism\Prism\ValueObjects\Media\Document;
@@ -65,8 +70,40 @@ class PrismService
             foreach ($request->asStream() as $event) {
                 if ($event instanceof TextDeltaEvent) {
                     yield $event->delta;
+                } elseif ($event instanceof ToolCallEvent) {
+                    Log::info('PrismService: Tool call detected', [
+                        'tool_name' => $event->toolCall->name,
+                        'tool_id' => $event->toolCall->id,
+                        'arguments' => $event->toolCall->arguments(),
+                        'message_id' => $event->messageId,
+                    ]);
+
+                    yield "\n\n<span class=\"tool-calling\">🪄 ".__('chat.tool_calling', ['tool' => $event->toolCall->name])."</span>\n\n";
+                } elseif ($event instanceof ToolResultEvent) {
+                    Log::info('PrismService: Tool result received', [
+                        'tool_id' => $event->toolResult->toolCallId,
+                        'success' => $event->success,
+                        'result' => $event->toolResult->result,
+                        'error' => $event->error,
+                    ]);
+
+                    // Parse the result to extract user_message if available
+                    $result = $event->toolResult->result;
+                    if (\is_string($result)) {
+                        $decoded = json_decode($result, true);
+                        if (isset($decoded['user_message'])) {
+                            yield "\n\n{$decoded['user_message']}\n\n";
+                        } elseif ($event->success) {
+                            yield "\n\n✅ ".__('chat.tool_success')."\n\n";
+                        } else {
+                            yield "\n\n❌ ".__('chat.tool_failed', ['error' => $event->error])."\n\n";
+                        }
+                    }
                 } elseif ($event instanceof StreamEndEvent) {
-                    break;
+                    Log::info('PrismService: Stream ended', [
+                        'message_id' => $event->id ?? null,
+                    ]);
+                    // Don't break here - tool calls may follow
                 }
             }
         } catch (PrismRateLimitedException $e) {
@@ -90,12 +127,15 @@ class PrismService
         Collection $messages,
         string $providerKey
     ): PendingRequest {
-        $request = Prism::text()
+        return Prism::text()
             ->using($provider, $model, $providerConfig)
             ->withSystemPrompt($this->systemPromptBuilder->build())
-            ->withMessages($this->convertMessages($messages, $providerKey));
-
-        return $request;
+            ->withMessages($this->convertMessages($messages, $providerKey))
+            ->withTools([
+                CalendarTool::make(),
+                UserProfileTool::make(),
+            ])
+            ->withMaxSteps(3);
     }
 
     /**

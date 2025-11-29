@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Prism;
 
 use App\Models\Setting;
+use Carbon\Carbon;
 
 class SystemPromptBuilder
 {
@@ -46,6 +47,8 @@ class SystemPromptBuilder
         }
 
         $parts[] = $this->buildGeneralInstructions();
+        $parts[] = $this->buildMissingProfileInstructions();
+        $parts[] = $this->extraInfo();
 
         return implode("\n\n", array_filter($parts));
     }
@@ -55,7 +58,7 @@ class SystemPromptBuilder
         $prompt = "You are {$this->mascotName}, a helpful and friendly AI assistant mascot.";
 
         if (! empty($this->userName)) {
-            $prompt .= " You are always ready to help your owner and tutor, {$this->userName}, with whatever they need.";
+            $prompt .= " You are always ready to help your owner and tutor, {$this->userName} (his/her name), with whatever they need.";
         }
 
         return $prompt;
@@ -84,6 +87,30 @@ class SystemPromptBuilder
         return 'Always be helpful, accurate, and respectful. If you are unsure about something, say so. Format your responses using Markdown when appropriate for better readability.';
     }
 
+    private function buildMissingProfileInstructions(): string
+    {
+        $missing = [];
+
+        if (empty($this->userName)) {
+            $missing[] = 'name';
+        }
+
+        if (empty($this->userDescription)) {
+            $missing[] = 'description';
+        }
+
+        if (empty($missing)) {
+            return '';
+        }
+
+        return 'IMPORTANT: If the user profile is incomplete (missing: '.implode(', ', $missing).'). '.
+            'When the user asks personal questions like "what is my name?" or similar, '.
+            'use the user_profile tool with action "get" first to check current data, '.
+            'then politely ask them to provide the missing information. '.
+            'Once they provide it, use the user_profile tool with action "update" to save it.'.
+            'Inform him that he can adjust the options by going to "Settings".';
+    }
+
     private function getDetailDescription(): string
     {
         return match ($this->responseDetail) {
@@ -107,5 +134,14 @@ class SystemPromptBuilder
         }
 
         return 'normal (balanced)';
+    }
+
+    private function extraInfo(): string
+    {
+        $datetime = Carbon::now(date_default_timezone_get())->toIso8601String();
+
+        return "User's datetime now in ISO 8601 format is: $datetime.".
+            'Format the returned text with markdown in important places with bold, italics, link, quote, etc.'.
+            'Never return technical system information, such as column names, variables, functions, etc.';
     }
 }

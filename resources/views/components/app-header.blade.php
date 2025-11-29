@@ -6,7 +6,7 @@
 
         <div class="purr-ai-logo {{ is_native() && is_mac() ? 'ml-2' : '' }}">
             <span class="w-full h-full"
-                style="background: url({{ asset('images/logo-PurrAI-64.webp') }}) center no-repeat; background-size: contain;"></span>
+                style="background: url({{ asset('images/mascot/logo.svg') }}) center no-repeat; background-size: contain;"></span>
         </div>
 
         <span class="window-title">{{ config('app.name') }}</span>

@@ -28,8 +28,8 @@ return [
         'maximize' => 'Maximize',
     ],
     'messages' => [
-        'see_more' => 'see more',
-        'see_less' => 'see less',
+        'see_more' => 'more',
+        'see_less' => 'less',
     ],
     'menu' => [
         'open_chat' => 'Open Chat',

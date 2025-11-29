@@ -13,22 +13,30 @@ marked.setOptions({
 });
 
 /**
- * Stream AI response from the server
+ * Stream AI response from the server with retry logic
  */
-async function streamAIResponse(conversationId, selectedModel) {
+async function streamAIResponse(conversationId, selectedModel, retryCount = 0) {
     const streamingContainer = document.getElementById("streaming-response");
     const messagesContainer = document.getElementById("messages-container");
+    const loadingIndicator = document.getElementById(
+        "stream-loading-indicator"
+    );
 
     if (!streamingContainer || !messagesContainer) {
         console.error("Required containers not found");
         return;
     }
 
-    // Show streaming container
-    streamingContainer.classList.remove("hidden");
+    // Clear any previous content
     streamingContainer.innerHTML = "";
 
+    // Show loading indicator
+    if (loadingIndicator) {
+        loadingIndicator.classList.remove("hidden");
+    }
+
     let fullResponse = "";
+    let hasReceivedContent = false;
 
     try {
         const response = await fetch("/api/chat/stream", {
@@ -48,13 +56,30 @@ async function streamAIResponse(conversationId, selectedModel) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
+        if (!response.body) {
+            throw new Error("Response body is null");
+        }
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
 
         while (true) {
             const { done, value } = await reader.read();
 
-            if (done) break;
+            if (done) {
+                // Check if we received any content
+                if (!hasReceivedContent && retryCount === 0) {
+                    console.warn(
+                        "Stream ended without content, retrying once..."
+                    );
+                    return streamAIResponse(
+                        conversationId,
+                        selectedModel,
+                        retryCount + 1
+                    );
+                }
+                break;
+            }
 
             const chunk = decoder.decode(value, { stream: true });
             const lines = chunk.split("\n");
@@ -66,27 +91,82 @@ async function streamAIResponse(conversationId, selectedModel) {
 
                         if (data.chunk) {
                             fullResponse += data.chunk;
-                            renderMarkdown(streamingContainer, fullResponse);
+                            // Only render if we have actual content (not just whitespace)
+                            if (fullResponse.trim()) {
+                                hasReceivedContent = true;
+                                renderMarkdown(
+                                    streamingContainer,
+                                    fullResponse
+                                );
+                            }
                             scrollToBottom(messagesContainer);
                         }
 
                         if (data.done) {
+                            // Hide loading indicator
+                            hideLoadingIndicator();
                             // Stream complete - notify Livewire
                             notifyStreamComplete();
                         }
                     } catch (e) {
+                        console.warn("Failed to parse SSE data:", e);
                         // Skip invalid JSON lines
                     }
                 }
             }
         }
+
+        // If we still haven't received content after retry, show error
+        if (!hasReceivedContent) {
+            throw new Error("No content received from stream");
+        }
     } catch (error) {
         console.error("Stream error:", error);
-        streamingContainer.innerHTML = `<div class="text-red-500">${
-            window.chatTranslations?.stream_error ||
-            "An error occurred while streaming the response."
-        }</div>`;
+
+        // Retry once if this is the first attempt
+        if (retryCount === 0) {
+            console.log("Retrying stream request...");
+            setTimeout(() => {
+                streamAIResponse(conversationId, selectedModel, retryCount + 1);
+            }, 1000);
+            return;
+        }
+
+        // Show error to user with retry button after retry failed
+        const errorMessage =
+            window.chatTranslations?.stream_error || "Failed to load response";
+        const tryAgainText = window.chatTranslations?.try_again || "Try Again";
+        const retryMessage =
+            window.chatTranslations?.retry_message ||
+            "What happened? Please try again.";
+
+        streamingContainer.innerHTML = `<div class="text-red-500 text-sm">
+            <p class="font-medium mb-2">😔 ${errorMessage}</p>
+            <p class="text-xs opacity-80 mb-3">${error.message}</p>
+            <button 
+                onclick="window.chatStream.retryWithMessage('${retryMessage.replace(
+                    /'/g,
+                    "\\'"
+                )}')"
+                class="px-4 py-2 bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-700 dark:to-gray-600 text-white rounded-lg hover:from-gray-800 hover:to-gray-700 dark:hover:from-gray-600 dark:hover:to-gray-500 transition-all duration-200 text-sm font-medium"
+            >
+                ${tryAgainText}
+            </button>
+        </div>`;
+        hideLoadingIndicator();
         notifyStreamComplete();
+    }
+}
+
+/**
+ * Hide loading indicator
+ */
+function hideLoadingIndicator() {
+    const loadingIndicator = document.getElementById(
+        "stream-loading-indicator"
+    );
+    if (loadingIndicator) {
+        loadingIndicator.style.display = "none";
     }
 }
 
@@ -94,53 +174,92 @@ async function streamAIResponse(conversationId, selectedModel) {
  * Render markdown content safely
  */
 function renderMarkdown(container, content) {
-    const html = marked.parse(content);
-    const sanitized = DOMPurify.sanitize(html, {
-        ALLOWED_TAGS: [
-            "p",
-            "br",
-            "strong",
-            "em",
-            "code",
-            "pre",
-            "ul",
-            "ol",
-            "li",
-            "a",
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "blockquote",
-            "hr",
-            "table",
-            "thead",
-            "tbody",
-            "tr",
-            "th",
-            "td",
-            "span",
-            "div",
-        ],
-        ALLOWED_ATTR: ["href", "target", "rel", "class"],
-    });
+    try {
+        const html = marked.parse(content);
+        const sanitized = DOMPurify.sanitize(html, {
+            ALLOWED_TAGS: [
+                "p",
+                "br",
+                "strong",
+                "em",
+                "code",
+                "pre",
+                "ul",
+                "ol",
+                "li",
+                "a",
+                "h1",
+                "h2",
+                "h3",
+                "h4",
+                "h5",
+                "h6",
+                "blockquote",
+                "hr",
+                "table",
+                "thead",
+                "tbody",
+                "tr",
+                "th",
+                "td",
+                "span",
+                "div",
+            ],
+            ALLOWED_ATTR: ["href", "target", "rel", "class"],
+            KEEP_CONTENT: true,
+        });
 
-    container.innerHTML = sanitized;
+        container.innerHTML = sanitized;
 
-    // Add target="_blank" to external links
-    container.querySelectorAll("a").forEach((link) => {
-        if (link.href && !link.href.startsWith(window.location.origin)) {
-            link.setAttribute("target", "_blank");
-            link.setAttribute("rel", "noopener noreferrer");
+        // Hide tool-calling messages that have responses after them
+        hideCompletedToolCalls(container);
+
+        // Add target="_blank" to external links
+        container.querySelectorAll("a").forEach((link) => {
+            if (link.href && !link.href.startsWith(window.location.origin)) {
+                link.setAttribute("target", "_blank");
+                link.setAttribute("rel", "noopener noreferrer");
+            }
+        });
+
+        // Initialize copy buttons for code blocks
+        if (window.initCodeCopyButtons) {
+            window.initCodeCopyButtons();
+        }
+    } catch (error) {
+        console.error("Markdown rendering error:", error);
+        container.textContent = content; // Fallback to plain text
+    }
+}
+
+/**
+ * Hide tool-calling messages that have content after them
+ */
+function hideCompletedToolCalls(container) {
+    const toolCallings = container.querySelectorAll(".tool-calling");
+    const containerText = container.textContent || "";
+
+    toolCallings.forEach((toolCall) => {
+        const toolCallText = toolCall.textContent || "";
+
+        // Get all text after this tool-calling in the container
+        const toolCallIndex = containerText.indexOf(toolCallText);
+        if (toolCallIndex !== -1) {
+            const textAfter = containerText
+                .substring(toolCallIndex + toolCallText.length)
+                .trim();
+
+            // If there's meaningful content after (not just whitespace or emojis)
+            // and it's not just another tool-calling message
+            if (
+                textAfter.length > 0 &&
+                !textAfter.startsWith("🔧") &&
+                textAfter.replace(/[\s\n\r]/g, "").length > 0
+            ) {
+                toolCall.classList.add("completed");
+            }
         }
     });
-
-    // Initialize copy buttons for code blocks
-    if (window.initCodeCopyButtons) {
-        window.initCodeCopyButtons();
-    }
 }
 
 /**
@@ -237,8 +356,30 @@ document.addEventListener("livewire:init", () => {
     });
 });
 
+/**
+ * Retry by sending a message automatically
+ */
+function retryWithMessage(message) {
+    const messageInput = document.getElementById("message-input");
+    const sendButton = document.querySelector('[wire\\:click="sendMessage"]');
+
+    if (messageInput && sendButton) {
+        // Set the message
+        messageInput.value = message;
+
+        // Trigger input event to update Livewire
+        messageInput.dispatchEvent(new Event("input", { bubbles: true }));
+
+        // Small delay to ensure Livewire updates
+        setTimeout(() => {
+            sendButton.click();
+        }, 100);
+    }
+}
+
 // Export for global use
 window.chatStream = {
     parseMarkdown,
     streamAIResponse,
+    retryWithMessage,
 };

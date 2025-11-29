@@ -1,15 +1,16 @@
-@props(['type' => 'assistant', 'content' => ''])
+@props(['type' => 'assistant', 'content' => '', 'loading' => false])
 
 @php
     $truncateLimit = config('purrai.limits.truncate_words', 45);
-    $text = trim($content ?: $slot);
+    $rawText = trim($content ?: $slot);
+    $isLoading = $loading || empty($rawText);
 @endphp
 
 @if ($type === 'user')
     <div
         class="chat-bubble primary"
         x-data="{
-            fullText: {{ json_encode($text) }},
+            fullText: {{ json_encode($rawText) }},
             expanded: false,
             wordLimit: {{ $truncateLimit }},
             get words() {
@@ -46,16 +47,41 @@
     <div
         class="chat-bubble secondary prose prose-sm dark:prose-invert max-w-none"
         x-data="{
-            content: {{ json_encode($text) }},
+            content: {{ json_encode($rawText) }},
+            isLoading: {{ $isLoading ? 'true' : 'false' }},
             rendered: '',
             init() {
-                if (window.chatStream && window.chatStream.parseMarkdown) {
+                if (this.isLoading || !this.content) {
+                    this.rendered = '';
+                } else if (window.chatStream && window.chatStream.parseMarkdown) {
                     this.rendered = window.chatStream.parseMarkdown(this.content);
                 } else {
                     this.rendered = this.content;
                 }
             }
         }"
-        x-html="rendered"
-    ></div>
+    >
+        @if ($slot->isNotEmpty())
+            {{-- Streaming content slot --}}
+            {{ $slot }}
+            {{-- Loading indicator for streaming (hidden by JS when content arrives) --}}
+            <div
+                id="stream-loading-indicator"
+                class="flex items-center justify-center py-2"
+            >
+                <x-ui.loading-icon />
+            </div>
+        @else
+            {{-- Regular message content --}}
+            <div
+                x-show="!isLoading && content"
+                x-html="rendered"
+            ></div>
+            <template x-if="isLoading || !content">
+                <div class="flex items-center justify-start py-2">
+                    <x-ui.loading-icon />
+                </div>
+            </template>
+        @endif
+    </div>
 @endif

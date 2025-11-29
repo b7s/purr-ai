@@ -3,17 +3,15 @@
         x-data="historyDropdown(@js($conversations), {{ $hasMorePages ? 'true' : 'false' }}, @js($searchQuery))"
         class="flex items-center gap-2"
     >
-        @if ($conversation && $conversation->messages->count() > 0)
-            <span
-                @click="startNewConversation()"
-                x-transition
-            >
-                <x-ui.icon-button
-                    icon="plus"
-                    :title="__('ui.tooltips.new_chat')"
-                />
-            </span>
-        @endif
+        <span
+            @click="startNewConversation()"
+            x-transition
+        >
+            <x-ui.icon-button
+                icon="plus"
+                :title="__('ui.tooltips.new_chat')"
+            />
+        </span>
 
         <div class="relative">
             <x-ui.icon-button
@@ -233,24 +231,24 @@
                 />
             @endforeach
         @else
-            <x-chat.welcome
-                :title="__('chat.welcome_title')"
-                :message="__('chat.welcome_message')"
-            />
+            <x-chat.welcome />
         @endif
 
         {{-- Streaming Response Container --}}
         @if ($isProcessing)
             <div class="chat-row">
                 <x-chat.avatar type="ai" />
-                <div class="space-y-2">
+                <x-chat.bubble
+                    type="assistant"
+                    :loading="true"
+                >
                     <div
                         id="streaming-response"
-                        class="chat-bubble secondary prose prose-sm dark:prose-invert max-w-none"
+                        class="stream-content"
                     >
-                        <x-ui.loading-icon />
+                        {{-- Content will be streamed here --}}
                     </div>
-                </div>
+                </x-chat.bubble>
             </div>
         @endif
     </div>
@@ -311,7 +309,7 @@
                 <textarea
                     wire:ignore
                     x-ref="messageInput"
-                    @input.debounce.500ms="syncValue()"
+                    @input.debounce.200ms="syncValue()"
                     @input="adjustHeight()"
                     @change="$wire.call('saveDraft')"
                     placeholder="{{ __('chat.placeholder') }}"
@@ -366,6 +364,15 @@
                 window
                     .autoSendAfterTranscription =
                     @js((bool) \App\Models\Setting::get('auto_send_after_transcription', false));
+
+                {{-- Chat Error Translations --}}
+                window
+                    .chatTranslations =
+                    @js([
+    'stream_error' => __('chat.errors.stream_error'),
+    'try_again' => __('chat.errors.try_again'),
+    'retry_message' => __('chat.errors.retry_message'),
+]);
             </script>
 
             @error('message')

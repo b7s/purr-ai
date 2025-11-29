@@ -32,10 +32,19 @@ class ChatStreamController extends Controller
             ->findOrFail($conversationId);
 
         return response()->stream(function () use ($conversation, $selectedModel, $conversationId): void {
+            // Send initial ping to establish connection
+            echo ": ping\n\n";
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
+            flush();
+
             $fullResponse = '';
+            $hasContent = false;
 
             foreach ($this->prismService->streamResponse($selectedModel, $conversation->messages) as $chunk) {
                 $fullResponse .= $chunk;
+                $hasContent = true;
 
                 echo 'data: '.json_encode(['chunk' => $chunk])."\n\n";
 
@@ -45,9 +54,12 @@ class ChatStreamController extends Controller
                 flush();
             }
 
-            $this->saveAssistantMessage($conversationId, $fullResponse);
+            // Only save if we have actual content
+            if ($hasContent) {
+                $this->saveAssistantMessage($conversationId, $fullResponse);
+            }
 
-            echo 'data: '.json_encode(['done' => true, 'message_id' => Str::uuid()->toString()])."\n\n";
+            echo 'data: '.json_encode(['done' => true, 'message_id' => Str::uuid7()->toString()])."\n\n";
 
             if (ob_get_level() > 0) {
                 ob_flush();

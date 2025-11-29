@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/images/logo-PurrAI-256.webp" width="120" alt="PurrAI">
+<img src="public/images/mascot/logo.svg" width="120" alt="PurrAI">
 
 # {PurrAI}
 

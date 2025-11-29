@@ -21,7 +21,7 @@ class Settings extends Component
 
     public string $responseDetail = 'detailed';
 
-    public string $responseTone = 'basic';
+    public string $responseTone = 'normal';
 
     public bool $respondAsACat = false;
 
@@ -57,6 +57,8 @@ class Settings extends Component
 
     public string $noiseSuppressionLevel = 'medium';
 
+    public string $timezone = '';
+
     public function mount(): void
     {
         $this->checkWhisperStatus();
@@ -70,6 +72,7 @@ class Settings extends Component
         $this->responseDetail = Setting::get('response_detail', 'detailed');
         $this->responseTone = Setting::get('response_tone', 'normal');
         $this->respondAsACat = (bool) Setting::get('respond_as_cat', false);
+        $this->timezone = Setting::get('timezone', config('app.timezone'));
 
         $this->loadProviders();
 
@@ -90,6 +93,7 @@ class Settings extends Component
         Setting::set('response_detail', $this->responseDetail);
         Setting::set('response_tone', $this->responseTone);
         Setting::set('respond_as_cat', $this->respondAsACat);
+        Setting::set('timezone', $this->timezone);
 
         $this->saveProviders();
 
@@ -208,6 +212,16 @@ class Settings extends Component
 
     public function updatedAutoSendAfterTranscription(): void
     {
+        $this->save();
+    }
+
+    public function updatedTimezone(): void
+    {
+        // Validate timezone
+        if (! empty($this->timezone) && ! in_array($this->timezone, timezone_identifiers_list(), true)) {
+            $this->timezone = config('app.timezone');
+        }
+
         $this->save();
     }
 

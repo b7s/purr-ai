@@ -17,7 +17,7 @@ class GenerateAppIcons extends Command
         $sourcePath = public_path('images/full-logo-PurrAI.webp');
 
         if (! file_exists($sourcePath)) {
-            $this->error('Source icon not found: '.$sourcePath);
+            $this->error('Source icon not found: ' . $sourcePath);
 
             return self::FAILURE;
         }
@@ -39,19 +39,19 @@ class GenerateAppIcons extends Command
         // Generate icon.png (512x512 - Electron default for Linux)
         $this->info('Generating build/icon.png (512x512)...');
         $png512 = imagescale($image, 512, 512, IMG_BICUBIC);
-        imagepng($png512, $buildDir.'/icon.png', 9);
+        imagepng($png512, $buildDir . '/icon.png', 9);
         imagedestroy($png512);
 
         // Generate 1024x1024 for high-res displays
         $this->info('Generating build/icon@2x.png (1024x1024)...');
         $png1024 = imagescale($image, 1024, 1024, IMG_BICUBIC);
-        imagepng($png1024, $buildDir.'/icon@2x.png', 9);
+        imagepng($png1024, $buildDir . '/icon@2x.png', 9);
         imagedestroy($png1024);
 
         // Generate 256x256 (common size for Windows ICO)
         $this->info('Generating build/icon-256.png...');
         $png256 = imagescale($image, 256, 256, IMG_BICUBIC);
-        imagepng($png256, $buildDir.'/icon-256.png', 9);
+        imagepng($png256, $buildDir . '/icon-256.png', 9);
         imagedestroy($png256);
 
         // Generate IconTemplate.png (16x16 for menu bar - macOS)
@@ -68,7 +68,7 @@ class GenerateAppIcons extends Command
 
         // Copy to public for runtime use
         $this->info('Copying icon.png to public/...');
-        copy($buildDir.'/icon.png', public_path('icon.png'));
+        copy($buildDir . '/icon.png', public_path('icon.png'));
 
         imagedestroy($image);
 
@@ -103,7 +103,7 @@ class GenerateAppIcons extends Command
 
     protected function generateWindowsIco(string $buildDir): bool
     {
-        if (! file_exists($buildDir.'/icon-256.png')) {
+        if (! file_exists($buildDir . '/icon-256.png')) {
             return false;
         }
 
@@ -126,7 +126,7 @@ class GenerateAppIcons extends Command
 
     protected function generateMacOsIcns(string $buildDir): bool
     {
-        if (! file_exists($buildDir.'/icon.png')) {
+        if (! file_exists($buildDir . '/icon.png')) {
             return false;
         }
 
