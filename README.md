@@ -18,6 +18,10 @@
 
 ---
 
+> ⚠️ Attention: Under construction!
+
+---
+
 ## 🌟 Overview
 
 **PurrAI** is a lightweight, cross-platform desktop application that brings the power of AI to your fingertips. With a cute black kitten mascot living in your system's menu bar, you can instantly access AI assistance for any task—from answering questions to analyzing images and documents.
