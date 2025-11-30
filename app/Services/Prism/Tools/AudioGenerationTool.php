@@ -27,7 +27,7 @@ class AudioGenerationTool
             ->as('generate_audio')
             ->for(
                 'Generate audio/speech from text. Use this tool when the user asks to create audio, generate speech, or convert text to speech. '.
-                'The generated audio will be saved and displayed to the user. If the user does not specify the voice, use "alloy" voice.'
+                    'The generated audio will be saved and displayed to the user. If the user does not specify the voice, use "alloy" voice.'
             )
             ->withParameter(new StringSchema(
                 'text',
@@ -130,20 +130,13 @@ class AudioGenerationTool
                 'type' => 'audio',
             ];
 
-            Log::info('AudioGenerationTool: Audio generated successfully', [
-                'text' => $text,
-            ]);
-
             return json_encode([
                 'success' => true,
                 'media' => [$savedAudio],
                 'user_message' => __('chat.tools.audio.generated'),
             ]);
         } catch (\Throwable $e) {
-            Log::error('AudioGenerationTool: Failed to generate audio', [
-                'text' => $text,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('AudioGenerationTool: Failed to generate audio - '.$e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),

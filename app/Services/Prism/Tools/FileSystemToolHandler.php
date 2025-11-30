@@ -129,10 +129,7 @@ class FileSystemToolHandler
                 'user_message' => $summary,
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to list directory', [
-                'path' => $path,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to list directory - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -196,7 +193,7 @@ class FileSystemToolHandler
             return null;
         }
 
-        $fullPath = $basePath.DIRECTORY_SEPARATOR.$name;
+        $fullPath = $basePath . DIRECTORY_SEPARATOR . $name;
         $extension = $isDir ? null : pathinfo($name, PATHINFO_EXTENSION);
 
         return [
@@ -276,7 +273,7 @@ class FileSystemToolHandler
         }
 
         $isDir = $sizeOrDir === '<DIR>';
-        $fullPath = $basePath.DIRECTORY_SEPARATOR.$name;
+        $fullPath = $basePath . DIRECTORY_SEPARATOR . $name;
         $extension = $isDir ? null : pathinfo($name, PATHINFO_EXTENSION);
 
         return [
@@ -303,16 +300,16 @@ class FileSystemToolHandler
             return [];
         }
 
-        $items = array_filter($items, fn ($item) => $item !== '.' && $item !== '..');
+        $items = array_filter($items, fn($item) => $item !== '.' && $item !== '..');
         $items = \array_slice($items, 0, $maxResults);
 
         $entries = [];
         foreach ($items as $item) {
-            $fullPath = $path.DIRECTORY_SEPARATOR.$item;
+            $fullPath = $path . DIRECTORY_SEPARATOR . $item;
             $entries[] = $this->getItemInfo($fullPath, $item);
         }
 
-        usort($entries, fn ($a, $b) => ($b['is_directory'] <=> $a['is_directory']) ?: strcasecmp($a['name'], $b['name']));
+        usort($entries, fn($a, $b) => ($b['is_directory'] <=> $a['is_directory']) ?: strcasecmp($a['name'], $b['name']));
 
         return $entries;
     }
@@ -344,10 +341,7 @@ class FileSystemToolHandler
                 'user_message' => __('chat.filesystem.info_retrieved', ['name' => $info['name']]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to get file info', [
-                'path' => $path,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to get file info - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -403,11 +397,7 @@ class FileSystemToolHandler
                 'user_message' => $summary,
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to search files', [
-                'path' => $path,
-                'pattern' => $pattern,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to search files - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -509,9 +499,7 @@ class FileSystemToolHandler
                 'user_message' => __('chat.filesystem.home_found', ['path' => $home]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to get home directory', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to get home directory - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -573,7 +561,7 @@ class FileSystemToolHandler
                 return;
             }
 
-            $fullPath = $dir.DIRECTORY_SEPARATOR.$item;
+            $fullPath = $dir . DIRECTORY_SEPARATOR . $item;
 
             if (fnmatch($pattern, $item, FNM_CASEFOLD)) {
                 $results[] = $this->getItemInfo($fullPath, $item);
@@ -589,7 +577,7 @@ class FileSystemToolHandler
     {
         if (str_starts_with($path, '~')) {
             $home = getenv('HOME') ?: getenv('USERPROFILE');
-            $path = $home.substr($path, 1);
+            $path = $home . substr($path, 1);
         }
 
         return realpath($path) ?: $path;
@@ -603,7 +591,7 @@ class FileSystemToolHandler
         $pow = min($pow, \count($units) - 1);
         $bytes /= (1024 ** $pow);
 
-        return round($bytes, 2).' '.$units[$pow];
+        return round($bytes, 2) . ' ' . $units[$pow];
     }
 
     private function isDestructiveOperationsAllowed(): bool
@@ -656,10 +644,7 @@ class FileSystemToolHandler
                 'user_message' => __('chat.filesystem.deleted', ['path' => $path]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to delete', [
-                'path' => $path,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to delete {$path} - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -713,11 +698,7 @@ class FileSystemToolHandler
                 'user_message' => __('chat.filesystem.renamed', ['from' => $path, 'to' => $destination]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to rename', [
-                'path' => $path,
-                'destination' => $destination,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to rename {$path} to {$destination} - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -747,7 +728,7 @@ class FileSystemToolHandler
                 continue;
             }
 
-            $path = $dir.DIRECTORY_SEPARATOR.$item;
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
 
             if (is_dir($path)) {
                 if (! $this->deleteDirectory($path)) {
@@ -805,9 +786,7 @@ class FileSystemToolHandler
                 'user_message' => __('chat.filesystem.system_info_retrieved'),
             ]);
         } catch (\Throwable $e) {
-            Log::error('FileSystemTool: Failed to get system info', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("FileSystemTool: Failed to get system info - {$e->getMessage()}");
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -826,14 +805,14 @@ class FileSystemToolHandler
         if (PHP_OS_FAMILY === 'Windows') {
             // Windows: Get drive letters
             for ($letter = 'A'; $letter <= 'Z'; $letter++) {
-                $drive = $letter.':';
+                $drive = $letter . ':';
                 if (is_dir($drive)) {
                     $total = @disk_total_space($drive);
                     $free = @disk_free_space($drive);
 
                     $drives[] = [
                         'drive' => $drive,
-                        'mount_point' => $drive.'\\',
+                        'mount_point' => $drive . '\\',
                         'total' => ($total !== false) ? $total : null,
                         'free' => ($free !== false) ? $free : null,
                         'used' => ($total !== false && $free !== false) ? $total - $free : null,

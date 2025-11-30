@@ -45,16 +45,14 @@ class ModelFetcherService
 
             $models = collect($response->json('data', []))
                 ->pluck('id')
-                ->filter(fn ($id) => $this->isRelevantOpenAIModel($id))
+                ->filter(fn($id) => $this->isRelevantOpenAIModel($id))
                 ->sort()
                 ->values()
                 ->toArray();
 
             return $models;
         } catch (\Throwable $e) {
-            Log::warning('ModelFetcherService: Failed to fetch OpenAI models', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('ModelFetcherService: Failed to fetch OpenAI models: ' . $e->getMessage());
 
             return [];
         }
@@ -97,9 +95,7 @@ class ModelFetcherService
                 ->values()
                 ->toArray();
         } catch (\Throwable $e) {
-            Log::warning('ModelFetcherService: Failed to fetch Anthropic models', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('ModelFetcherService: Failed to fetch Anthropic models: ' . $e->getMessage());
 
             return [];
         }
@@ -121,15 +117,13 @@ class ModelFetcherService
 
             return collect($response->json('models', []))
                 ->pluck('name')
-                ->map(fn ($name) => str_replace('models/', '', $name))
-                ->filter(fn ($name) => str_contains($name, 'gemini'))
+                ->map(fn($name) => str_replace('models/', '', $name))
+                ->filter(fn($name) => str_contains($name, 'gemini'))
                 ->sort()
                 ->values()
                 ->toArray();
         } catch (\Throwable $e) {
-            Log::warning('ModelFetcherService: Failed to fetch Google models', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('ModelFetcherService: Failed to fetch Google models: ' . $e->getMessage());
 
             return [];
         }
@@ -156,9 +150,7 @@ class ModelFetcherService
                 ->values()
                 ->toArray();
         } catch (\Throwable $e) {
-            Log::warning('ModelFetcherService: Failed to fetch xAI models', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('ModelFetcherService: Failed to fetch xAI models: ' . $e->getMessage());
 
             return [];
         }
@@ -185,9 +177,7 @@ class ModelFetcherService
                 ->values()
                 ->toArray();
         } catch (\Throwable $e) {
-            Log::warning('ModelFetcherService: Failed to fetch Ollama models', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('ModelFetcherService: Failed to fetch Ollama models: ' . $e->getMessage());
 
             return [];
         }

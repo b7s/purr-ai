@@ -60,9 +60,7 @@ class CalendarToolHandler
                 ]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to create appointment', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('CalendarTool: Failed to create appointment - ' . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -147,9 +145,7 @@ class CalendarToolHandler
                 'user_message' => $summary,
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to list appointments', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('CalendarTool: Failed to list appointments - ' . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -226,10 +222,7 @@ class CalendarToolHandler
                 ]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to update appointment', [
-                'schedule_id' => $schedule_id,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("CalendarTool: Failed to update appointment #$schedule_id - " . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -266,10 +259,7 @@ class CalendarToolHandler
                 'user_message' => __('chat.calendar.appointment_deleted', ['title' => $title]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to delete appointment', [
-                'schedule_id' => $schedule_id,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("CalendarTool: Failed to delete appointment #$schedule_id - " . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -331,10 +321,7 @@ class CalendarToolHandler
                 'user_message' => $summary,
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to check availability', [
-                'date' => $date,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("CalendarTool: Failed to check availability for $date - " . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -398,11 +385,7 @@ class CalendarToolHandler
                 ]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to create reminder', [
-                'schedule_id' => $schedule_id,
-                'minutes_before' => $minutes_before,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("CalendarTool: Failed to create reminder for schedule #$schedule_id - " . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -447,9 +430,7 @@ class CalendarToolHandler
                 'user_message' => $summary,
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to list reminders', [
-                'error' => $e->getMessage(),
-            ]);
+            Log::error('CalendarTool: Failed to list reminders - ' . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
@@ -489,10 +470,7 @@ class CalendarToolHandler
                 ]),
             ]);
         } catch (\Throwable $e) {
-            Log::error('CalendarTool: Failed to delete reminder', [
-                'reminder_id' => $reminder_id,
-                'error' => $e->getMessage(),
-            ]);
+            Log::error("CalendarTool: Failed to delete reminder #$reminder_id - " . $e->getMessage());
 
             return json_encode([
                 'error' => $e->getMessage(),
