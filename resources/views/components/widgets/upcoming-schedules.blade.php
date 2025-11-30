@@ -33,13 +33,23 @@
         @else
             <ul class="schedules-list">
                 @foreach ($upcomingSchedules as $schedule)
-                    <li class="schedule-item">
+                    <li
+                        class="schedule-item"
+                        @click="
+    const messageInput = document.querySelector(`[x-ref='messageInput']`);
+    messageInput.value = `{{ __('chat.widgets.upcoming_schedules.tell_me_more_abour_schedule', ['name' => $schedule->name]) }}`;
+    messageInput.dispatchEvent(new Event('input'));
+    messageInput.dispatchEvent(new Event('change'));
+    messageInput.focus();
+"
+                    >
                         <div class="schedule-date">
                             <span class="schedule-day">{{ $schedule->start_date->format('d') }}</span>
                             <span class="schedule-month">{{ $schedule->start_date->format('M') }}</span>
                         </div>
                         <div class="schedule-details">
                             <h4 class="schedule-name">{{ $schedule->name }}</h4>
+
                             @if ($schedule->description)
                                 <p class="schedule-description">{{ Str::limit($schedule->description, 50) }}</p>
                             @endif
@@ -52,6 +62,16 @@
                                         {{ Carbon::parse($firstPeriod->start_time)->format('H:i') }}
                                         @if ($firstPeriod->end_time)
                                             - {{ Carbon::parse($firstPeriod->end_time)->format('H:i') }}
+                                        @endif
+                                        @php
+                                            $startTime = Carbon::parse($firstPeriod->start_time);
+                                            $now = now();
+                                            $isToday = $schedule->start_date->isToday() && $now->lt($startTime);
+                                        @endphp
+                                        @if ($isToday)
+                                            <span class="schedule-badge today">
+                                                {{ __('chat.widgets.upcoming_schedules.today') }}
+                                            </span>
                                         @endif
                                     </span>
                                 @endif

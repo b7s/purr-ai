@@ -158,6 +158,8 @@ return [
             'no_schedules' => 'No upcoming schedules',
             'create_hint' => 'Chat with me to create a new schedule!',
             'recurring' => 'Recurring',
+            'today' => 'Today',
+            'tell_me_more_abour_schedule' => 'Tell me more about this appointment: :name',
         ],
     ],
 
