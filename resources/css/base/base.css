@@ -13,7 +13,7 @@
 }
 
 .dark .purrai-opacity-box {
-    @apply bg-gray-900/80 border-white/10 shadow-2xl;
+    @apply bg-slate-900/80 border-white/10 shadow-2xl;
 }
 
 .card {

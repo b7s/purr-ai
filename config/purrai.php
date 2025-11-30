@@ -22,7 +22,7 @@ return [
 
         'default_x' => 10,
         'default_y' => 10,
-        'opacity' => 90,
+        'opacity' => 95,
         'blur' => 8,
     ],
 
@@ -105,8 +105,29 @@ return [
                 [
                     'name' => 'models',
                     'type' => 'text',
-                    'label' => 'settings.ai_providers.openai_models',
+                    'label' => 'settings.ai_providers.text_models',
                     'placeholder' => 'settings.ai_providers.openai_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_image',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.image_models',
+                    'placeholder' => 'settings.ai_providers.image_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_audio',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.audio_models',
+                    'placeholder' => 'settings.ai_providers.audio_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_video',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.video_models',
+                    'placeholder' => 'settings.ai_providers.video_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
@@ -115,9 +136,7 @@ return [
                     'GPT-4o-Transcribe',
                     'GPT-4o-Mini-Transcribe',
                 ],
-                'text' => [
-
-                ],
+                'text' => [],
             ],
         ],
         [
@@ -135,17 +154,35 @@ return [
                 [
                     'name' => 'models',
                     'type' => 'text',
-                    'label' => 'settings.ai_providers.anthropic_models',
+                    'label' => 'settings.ai_providers.text_models',
                     'placeholder' => 'settings.ai_providers.anthropic_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_image',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.image_models',
+                    'placeholder' => 'settings.ai_providers.image_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_audio',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.audio_models',
+                    'placeholder' => 'settings.ai_providers.audio_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_video',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.video_models',
+                    'placeholder' => 'settings.ai_providers.video_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
             'models' => [
-                'speech_to_text' => [
-                ],
-                'text' => [
-
-                ],
+                'speech_to_text' => [],
+                'text' => [],
             ],
         ],
         [
@@ -163,17 +200,35 @@ return [
                 [
                     'name' => 'models',
                     'type' => 'text',
-                    'label' => 'settings.ai_providers.google_models',
+                    'label' => 'settings.ai_providers.text_models',
                     'placeholder' => 'settings.ai_providers.google_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_image',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.image_models',
+                    'placeholder' => 'settings.ai_providers.image_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_audio',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.audio_models',
+                    'placeholder' => 'settings.ai_providers.audio_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_video',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.video_models',
+                    'placeholder' => 'settings.ai_providers.video_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
             'models' => [
-                'speech_to_text' => [
-                ],
-                'text' => [
-
-                ],
+                'speech_to_text' => [],
+                'text' => [],
             ],
         ],
         [
@@ -191,17 +246,35 @@ return [
                 [
                     'name' => 'models',
                     'type' => 'text',
-                    'label' => 'settings.ai_providers.xai_models',
+                    'label' => 'settings.ai_providers.text_models',
                     'placeholder' => 'settings.ai_providers.xai_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_image',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.image_models',
+                    'placeholder' => 'settings.ai_providers.image_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_audio',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.audio_models',
+                    'placeholder' => 'settings.ai_providers.audio_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_video',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.video_models',
+                    'placeholder' => 'settings.ai_providers.video_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
             'models' => [
-                'speech_to_text' => [
-                ],
-                'text' => [
-
-                ],
+                'speech_to_text' => [],
+                'text' => [],
             ],
         ],
         [
@@ -219,17 +292,35 @@ return [
                 [
                     'name' => 'models',
                     'type' => 'text',
-                    'label' => 'settings.ai_providers.ollama_models',
+                    'label' => 'settings.ai_providers.text_models',
                     'placeholder' => 'settings.ai_providers.ollama_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_image',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.image_models',
+                    'placeholder' => 'settings.ai_providers.image_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_audio',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.audio_models',
+                    'placeholder' => 'settings.ai_providers.audio_models_placeholder',
+                    'helper' => 'settings.ai_providers.models_helper',
+                ],
+                [
+                    'name' => 'models_video',
+                    'type' => 'text',
+                    'label' => 'settings.ai_providers.video_models',
+                    'placeholder' => 'settings.ai_providers.video_models_placeholder',
                     'helper' => 'settings.ai_providers.models_helper',
                 ],
             ],
             'models' => [
-                'speech_to_text' => [
-                ],
-                'text' => [
-
-                ],
+                'speech_to_text' => [],
+                'text' => [],
             ],
         ],
     ],

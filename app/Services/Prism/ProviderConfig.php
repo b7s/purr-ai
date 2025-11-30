@@ -46,14 +46,18 @@ class ProviderConfig
     ];
 
     /**
-     * @var array<string, array<string>>
+     * @var array<string, string>
      */
-    private const MEDIA_SUPPORT = [
-        'openai' => ['image'],
-        'anthropic' => ['image', 'document'],
-        'google' => ['image', 'audio', 'video', 'document'],
-        'xai' => ['image'],
-        'ollama' => ['image'],
+    private const PROVIDER_NAMESPACE_MAP = [
+        'openai' => 'OpenAI',
+        'anthropic' => 'Anthropic',
+        'google' => 'Gemini',
+        'xai' => 'XAI',
+        'ollama' => 'Ollama',
+        'deepseek' => 'DeepSeek',
+        'groq' => 'Groq',
+        'mistral' => 'Mistral',
+        'openrouter' => 'OpenRouter',
     ];
 
     /**
@@ -119,11 +123,47 @@ class ProviderConfig
     }
 
     /**
+     * Get supported media types by checking which mappers exist for the provider
+     *
      * @return array<string>
      */
     public function getSupportedMediaTypes(string $providerKey): array
     {
-        return self::MEDIA_SUPPORT[$providerKey] ?? [];
+        $namespace = self::PROVIDER_NAMESPACE_MAP[$providerKey] ?? null;
+
+        if (! $namespace) {
+            return [];
+        }
+
+        $basePath = base_path("vendor/prism-php/prism/src/Providers/{$namespace}/Maps");
+
+        if (! is_dir($basePath)) {
+            return [];
+        }
+
+        $supportedTypes = [];
+
+        // Check for ImageMapper
+        if (file_exists("{$basePath}/ImageMapper.php")) {
+            $supportedTypes[] = 'image';
+        }
+
+        // Check for DocumentMapper
+        if (file_exists("{$basePath}/DocumentMapper.php")) {
+            $supportedTypes[] = 'document';
+        }
+
+        // Check for AudioVideoMapper or AudioMapper
+        if (file_exists("{$basePath}/AudioVideoMapper.php") || file_exists("{$basePath}/AudioMapper.php")) {
+            $supportedTypes[] = 'audio';
+        }
+
+        // Check for AudioVideoMapper or VideoMapper
+        if (file_exists("{$basePath}/AudioVideoMapper.php") || file_exists("{$basePath}/VideoMapper.php")) {
+            $supportedTypes[] = 'video';
+        }
+
+        return $supportedTypes;
     }
 
     public function supportsMediaType(string $providerKey, string $mediaType): bool

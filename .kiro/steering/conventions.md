@@ -355,17 +355,17 @@ Create documentation and ".md" files only when prompted.
 
 - **Light Mode**:
   - Background: White (`bg-white`)
-  - Primary buttons: Near-black with subtle gradient (`bg-gradient-to-br from-gray-900 to-gray-800`)
-  - Text: Dark gray (`text-gray-900`)
-  - Secondary text: Medium gray (`text-gray-600`)
-  - Borders: Light gray (`border-gray-200`)
+  - Primary buttons: Near-black with subtle gradient (`bg-gradient-to-br from-slate-900 to-slate-800`)
+  - Text: Dark gray (`text-slate-900`)
+  - Secondary text: Medium gray (`text-slate-600`)
+  - Borders: Light gray (`border-slate-200`)
 
 - **Dark Mode**:
-  - Background: Dark gray (`dark:bg-gray-950`)
-  - Primary buttons: Light gray with gradient (`dark:bg-gradient-to-br dark:from-gray-700 dark:to-gray-600`)
+  - Background: Dark gray (`dark:bg-slate-950`)
+  - Primary buttons: Light gray with gradient (`dark:bg-gradient-to-br dark:from-slate-700 dark:to-slate-600`)
   - Text: White (`dark:text-white`)
-  - Secondary text: Light gray (`dark:text-gray-400`)
-  - Borders: Dark gray (`dark:border-gray-800`)
+  - Secondary text: Light gray (`dark:text-slate-400`)
+  - Borders: Dark gray (`dark:border-slate-800`)
 
 #### Typography
 
@@ -385,9 +385,9 @@ Create documentation and ".md" files only when prompted.
 - **Buttons**: Smooth transitions with hover states
   ```css
   .btn-primary {
-    @apply bg-gradient-to-br from-gray-900 to-gray-800 text-white px-4 py-2 rounded-lg;
-    @apply hover:from-gray-800 hover:to-gray-700 transition-all duration-200;
-    @apply dark:from-gray-700 dark:to-gray-600 dark:hover:from-gray-600 dark:hover:to-gray-500;
+    @apply bg-gradient-to-br from-slate-900 to-slate-800 text-white px-4 py-2 rounded-lg;
+    @apply hover:from-slate-800 hover:to-slate-700 transition-all duration-200;
+    @apply dark:from-slate-700 dark:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500;
   }
   ```
 
@@ -424,15 +424,15 @@ To avoid HTML pollution with multiple Tailwind classes, create semantic CSS clas
 /* resources/css/app.css */
 
 .chat-container {
-    @apply flex flex-col h-screen bg-white dark:bg-gray-950;
+    @apply flex flex-col h-screen bg-white dark:bg-slate-950;
 }
 
 .message-user {
-    @apply bg-gray-100 dark:bg-gray-900 rounded-lg p-4 ml-auto max-w-[80%];
+    @apply bg-slate-100 dark:bg-slate-900 rounded-lg p-4 ml-auto max-w-[80%];
 }
 
 .message-assistant {
-    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mr-auto max-w-[80%];
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 mr-auto max-w-[80%];
 }
 
 .attachment-grid {
@@ -444,9 +444,9 @@ To avoid HTML pollution with multiple Tailwind classes, create semantic CSS clas
 }
 
 .input-field {
-    @apply w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg;
-    @apply focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-600;
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-white;
+    @apply w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-600;
+    @apply bg-white dark:bg-slate-900 text-slate-900 dark:text-white;
 }
 ```
 

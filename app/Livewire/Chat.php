@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\Attachment;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\MessageDraft;
 use App\Models\Setting;
+use App\Services\Prism\ProviderConfig;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
 
 class Chat extends Component
@@ -20,7 +23,10 @@ class Chat extends Component
     public string $message = '';
 
     /** @var array<int, mixed> */
-    public array $attachments = [];
+    public array $pendingFiles = [];
+
+    /** @var array<int, array{name: string, type: string, size: int, preview: string|null, tempPath: string, mimeType: string}> */
+    public array $pendingAttachments = [];
 
     /** @var array<int, array<string, mixed>> */
     public array $conversations = [];
@@ -136,15 +142,83 @@ class Chat extends Component
         );
     }
 
+    /**
+     * @param  array<int, mixed>  $files
+     */
+    public function addFiles(array $files): void
+    {
+        foreach ($files as $file) {
+            if (! $file instanceof TemporaryUploadedFile) {
+                continue;
+            }
+
+            $mimeType = $file->getMimeType() ?: 'application/octet-stream';
+
+            $type = $this->getAttachmentType($mimeType);
+            $preview = null;
+
+            if ($type === 'image' && str_starts_with($mimeType, 'image/')) {
+                $preview = $file->temporaryUrl();
+            }
+
+            $this->pendingAttachments[] = [
+                'name' => $file->getClientOriginalName(),
+                'type' => $type,
+                'size' => $file->getSize(),
+                'preview' => $preview,
+                'tempPath' => $file->getRealPath(),
+                'mimeType' => $mimeType,
+            ];
+
+            $this->pendingFiles[] = $file;
+        }
+    }
+
+    public function removeAttachment(int $index): void
+    {
+        if (isset($this->pendingAttachments[$index])) {
+            unset($this->pendingAttachments[$index]);
+            unset($this->pendingFiles[$index]);
+            $this->pendingAttachments = array_values($this->pendingAttachments);
+            $this->pendingFiles = array_values($this->pendingFiles);
+        }
+    }
+
+    public function clearAttachments(): void
+    {
+        $this->pendingAttachments = [];
+        $this->pendingFiles = [];
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getSupportedMediaTypes(): array
+    {
+        if (empty($this->selectedModel)) {
+            return [];
+        }
+
+        $providerConfig = app(ProviderConfig::class);
+        $parsed = $providerConfig->parseSelectedModel($this->selectedModel);
+
+        if (! $parsed) {
+            return [];
+        }
+
+        return $providerConfig->getSupportedMediaTypes($parsed['provider']);
+    }
+
     public function sendMessage(): void
     {
         $this->message = trim($this->message);
 
+        $hasAttachments = \count($this->pendingAttachments) > 0;
+
         $this->validate([
-            'message' => 'required|string|max:'.config('purrai.limits.max_message_length'),
+            'message' => $hasAttachments ? 'nullable|string|max:'.config('purrai.limits.max_message_length') : 'required|string|max:'.config('purrai.limits.max_message_length'),
         ]);
 
-        // Validate model is selected
         if (empty($this->selectedModel)) {
             $this->addError('message', __('chat.errors.no_model_selected'));
 
@@ -152,21 +226,25 @@ class Chat extends Component
         }
 
         if (! $this->conversationId) {
+            $title = ! empty($this->message) ? mb_substr($this->message, 0, 100) : __('chat.attachment_conversation');
             $conversation = Conversation::create([
-                'title' => mb_substr($this->message, 0, 100),
+                'title' => $title,
             ]);
 
             $this->conversationId = $conversation->id;
         }
 
-        Message::create([
+        $message = Message::create([
             'conversation_id' => $this->conversationId,
             'role' => 'user',
             'content' => $this->message,
         ]);
 
+        $this->saveAttachments($message);
+
         $this->clearDraft();
         $this->message = '';
+        $this->clearAttachments();
         $this->isProcessing = true;
 
         $this->dispatch('message-sent');
@@ -177,9 +255,60 @@ class Chat extends Component
         ]);
     }
 
+    private function saveAttachments(Message $message): void
+    {
+        foreach ($this->pendingFiles as $index => $file) {
+            if (! $file instanceof TemporaryUploadedFile) {
+                continue;
+            }
+
+            if (! isset($this->pendingAttachments[$index])) {
+                continue;
+            }
+
+            $attachmentData = $this->pendingAttachments[$index];
+            $path = $file->store('attachments', 'local');
+
+            if (! $path) {
+                continue;
+            }
+
+            Attachment::query()->create([
+                'message_id' => $message->id,
+                'type' => $attachmentData['type'],
+                'filename' => $attachmentData['name'],
+                'path' => $path,
+                'mime_type' => $attachmentData['mimeType'],
+                'size' => $attachmentData['size'],
+            ]);
+        }
+    }
+
+    private function getAttachmentType(string $mimeType): string
+    {
+        if (str_starts_with($mimeType, 'image/')) {
+            return 'image';
+        }
+
+        if (str_starts_with($mimeType, 'audio/')) {
+            return 'audio';
+        }
+
+        if (str_starts_with($mimeType, 'video/')) {
+            return 'video';
+        }
+
+        return 'document';
+    }
+
     public function streamComplete(): void
     {
         $this->isProcessing = false;
+    }
+
+    public function updatedPendingFiles(): void
+    {
+        $this->addFiles($this->pendingFiles);
     }
 
     public function updatedSelectedModel(): void

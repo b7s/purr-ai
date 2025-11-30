@@ -36,19 +36,19 @@
         }
     </style>
     <circle
-        class="spinner-dot text-gray-900 dark:text-white"
+        class="spinner-dot text-slate-900 dark:text-white"
         cx="4"
         cy="12"
         r="3"
     />
     <circle
-        class="spinner-dot text-gray-900 dark:text-white"
+        class="spinner-dot text-slate-900 dark:text-white"
         cx="12"
         cy="12"
         r="3"
     />
     <circle
-        class="spinner-dot text-gray-900 dark:text-white"
+        class="spinner-dot text-slate-900 dark:text-white"
         cx="20"
         cy="12"
         r="3"

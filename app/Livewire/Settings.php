@@ -59,6 +59,8 @@ class Settings extends Component
 
     public string $timezone = '';
 
+    public bool $allowDestructiveFileOperations = false;
+
     public function mount(): void
     {
         $this->checkWhisperStatus();
@@ -83,6 +85,7 @@ class Settings extends Component
         $this->themeMode = Setting::get('theme_mode', 'automatic');
         $this->openAtLogin = (bool) Setting::get('open_at_login', false);
         $this->autoSendAfterTranscription = (bool) Setting::get('auto_send_after_transcription', false);
+        $this->allowDestructiveFileOperations = (bool) Setting::get('allow_destructive_file_operations', false);
     }
 
     public function save(): void
@@ -108,6 +111,7 @@ class Settings extends Component
         Setting::set('speech_provider', $this->speechProvider);
         Setting::set('noise_suppression_level', $this->noiseSuppressionLevel);
         Setting::set('auto_send_after_transcription', $this->autoSendAfterTranscription);
+        Setting::set('allow_destructive_file_operations', $this->allowDestructiveFileOperations);
 
         $this->dispatch('settings-saved');
         $this->dispatch('opacity-changed', opacity: $this->windowOpacity);
@@ -225,6 +229,11 @@ class Settings extends Component
         $this->save();
     }
 
+    public function updatedAllowDestructiveFileOperations(): void
+    {
+        $this->save();
+    }
+
     private function loadProviders(): void
     {
         $providersConfig = config('purrai.ai_providers', []);
@@ -243,7 +252,7 @@ class Settings extends Component
                 $fieldName = $field['name'];
                 $value = $data[$fieldName] ?? '';
 
-                if ($fieldName === 'models' && is_array($value)) {
+                if ($this->isModelsField($fieldName) && is_array($value)) {
                     $value = implode(', ', $value);
                 } elseif ($fieldName === 'key' && ! empty($value)) {
                     $value = self::$fakeKey;
@@ -252,6 +261,11 @@ class Settings extends Component
                 $this->providers[$providerConfig['key']][$fieldName] = $value;
             }
         }
+    }
+
+    private function isModelsField(string $fieldName): bool
+    {
+        return $fieldName === 'models' || str_starts_with($fieldName, 'models_');
     }
 
     private function saveProviders(): void
@@ -277,7 +291,7 @@ class Settings extends Component
                         $value = $existingConfig['key'] ?? '';
                     }
                     $data[$fieldName] = $value;
-                } elseif ($fieldName === 'models') {
+                } elseif ($this->isModelsField($fieldName)) {
                     $data[$fieldName] = $this->parseModels($value);
                 } else {
                     $data[$fieldName] = $value;
@@ -295,7 +309,9 @@ class Settings extends Component
     }
 
     /**
-     * Parse comma-separated models string into array
+     * Parse comma-separated models string into array with deduplication
+     *
+     * @return array<string>
      */
     private function parseModels(string $models): array
     {
@@ -303,10 +319,57 @@ class Settings extends Component
             return [];
         }
 
-        return array_values(array_filter(array_map(
+        return array_values(array_unique(array_filter(array_map(
             fn ($model) => trim($model),
             explode(',', $models)
-        )));
+        ))));
+    }
+
+    /**
+     * Fetch available models from provider API
+     */
+    public function fetchModels(string $providerKey): void
+    {
+        $providersConfig = config('purrai.ai_providers', []);
+        $providerConfig = collect($providersConfig)->firstWhere('key', $providerKey);
+
+        if (! $providerConfig) {
+            return;
+        }
+
+        $configKey = $providerConfig['config_key'];
+        $encrypted = $providerConfig['encrypted'];
+
+        $existingConfig = $encrypted
+            ? Setting::getJsonDecrypted($configKey, [])
+            : Setting::getJson($configKey, []);
+
+        $apiKeyOrUrl = $existingConfig['key'] ?? $existingConfig['url'] ?? '';
+
+        if (empty($apiKeyOrUrl)) {
+            $this->dispatch('notify', type: 'error', message: __('settings.ai_providers.models_fetch_failed'));
+
+            return;
+        }
+
+        $fetcher = app(\App\Services\Prism\ModelFetcherService::class);
+        $models = $fetcher->fetchModels($providerKey, $apiKeyOrUrl);
+
+        if (empty($models)) {
+            $this->dispatch('notify', type: 'error', message: __('settings.ai_providers.models_fetch_failed'));
+
+            return;
+        }
+
+        $categorized = $fetcher->categorizeModels($providerKey, $models);
+
+        $this->providers[$providerKey]['models'] = implode(', ', $categorized['text']);
+        $this->providers[$providerKey]['models_image'] = implode(', ', $categorized['image']);
+        $this->providers[$providerKey]['models_audio'] = implode(', ', $categorized['audio']);
+        $this->providers[$providerKey]['models_video'] = implode(', ', $categorized['video']);
+
+        $this->save();
+        $this->dispatch('notify', type: 'success', message: __('settings.ai_providers.models_fetched'));
     }
 
     public function checkWhisperStatus(): void

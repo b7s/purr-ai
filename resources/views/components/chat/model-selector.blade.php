@@ -58,34 +58,37 @@
                 class="model-selector-dropdown purrai-opacity-box"
                 x-cloak
             >
-                @foreach ($availableModels as $providerKey => $providerData)
-                    @php
-                        $providerIdentifier = str_replace('_config', '', $providerKey);
-                    @endphp
-                    <div
-                        class="model-selector-group"
-                        x-show="[{{ implode(',', array_map(fn($m) => "'$m'", $providerData['models'])) }}].some(model => matchesFilter(model.replace(/[-_]/g, ' ')))"
-                    >
-                        <div class="model-selector-group-label">{{ $providerData['provider'] }}</div>
-                        @foreach ($providerData['models'] as $model)
-                            @php
-                                $fullModelName = $providerIdentifier . ':' . $model;
-                            @endphp
-                            <button
-                                type="button"
-                                wire:click="$set('selectedModel', '{{ $fullModelName }}')"
-                                @click="open = false"
-                                class="model-selector-option {{ $selectedModel === $fullModelName ? 'active' : '' }}"
-                                x-show="matchesFilter('{{ str_replace(['-', '_'], ' ', $model) }}')"
-                            >
-                                <span>{{ str_replace(['-', '_'], ' ', $model) }}</span>
-                                @if ($selectedModel === $fullModelName)
-                                    <i class="iconoir-check text-xs"></i>
-                                @endif
-                            </button>
-                        @endforeach
-                    </div>
-                @endforeach
+                <div class="max-h-52 overflow-y-auto">
+                    @foreach ($availableModels as $providerKey => $providerData)
+                        @php
+                            $providerIdentifier = str_replace('_config', '', $providerKey);
+                        @endphp
+                        <div
+                            class="model-selector-group"
+                            x-show="[{{ implode(',', array_map(fn($m) => "'$m'", $providerData['models'])) }}].some(model => matchesFilter(model.replace(/[-_]/g, ' ')))"
+                        >
+                            <div class="model-selector-group-label">{{ $providerData['provider'] }}</div>
+
+                            @foreach ($providerData['models'] as $model)
+                                @php
+                                    $fullModelName = $providerIdentifier . ':' . $model;
+                                @endphp
+                                <button
+                                    type="button"
+                                    wire:click="$set('selectedModel', '{{ $fullModelName }}')"
+                                    @click="open = false"
+                                    class="model-selector-option {{ $selectedModel === $fullModelName ? 'active' : '' }}"
+                                    x-show="matchesFilter('{{ str_replace(['-', '_'], ' ', $model) }}')"
+                                >
+                                    <span>{{ str_replace(['-', '_'], ' ', $model) }}</span>
+                                    @if ($selectedModel === $fullModelName)
+                                        <i class="iconoir-check text-xs"></i>
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
                 <div class="model-selector-footer">
                     <button
                         type="button"

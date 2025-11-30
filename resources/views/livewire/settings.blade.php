@@ -297,18 +297,55 @@
                 @foreach (config('purrai.ai_providers', []) as $provider)
                     <div class="card">
                         @foreach ($provider['fields'] as $index => $field)
-                            <label class="settings-label @if ($index > 0) mt-4 @endif">
-                                {{ __($field['label']) }}
-                            </label>
-                            <x-ui.input
-                                type="{{ $field['type'] }}"
-                                wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
-                                placeholder="{{ __($field['placeholder']) }}"
-                                class="settings-input font-mono text-sm"
-                            ></x-ui.input>
+                            @if ($field['name'] === 'key' || $field['name'] === 'url')
+                                <div class="flex items-end gap-2 @if ($index > 0) mt-4 @endif">
+                                    <div class="flex-1">
+                                        <label class="settings-label">
+                                            {{ __($field['label']) }}
+                                        </label>
+                                        <x-ui.input
+                                            type="{{ $field['type'] }}"
+                                            wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
+                                            placeholder="{{ __($field['placeholder']) }}"
+                                            class="settings-input font-mono text-sm"
+                                        ></x-ui.input>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        wire:click="fetchModels('{{ $provider['key'] }}')"
+                                        wire:loading.attr="disabled"
+                                        wire:target="fetchModels('{{ $provider['key'] }}')"
+                                        class="settings-button"
+                                        title="{{ __('settings.ai_providers.fetch_models') }}"
+                                    >
+                                        <span
+                                            wire:loading.remove
+                                            wire:target="fetchModels('{{ $provider['key'] }}')"
+                                        >
+                                            <i class="iconoir-refresh text-base"></i>
+                                        </span>
+                                        <span
+                                            wire:loading
+                                            wire:target="fetchModels('{{ $provider['key'] }}')"
+                                        >
+                                            <i class="iconoir-refresh text-base animate-spin"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                            @else
+                                <label class="settings-label @if ($index > 0) mt-4 @endif">
+                                    {{ __($field['label']) }}
+                                </label>
+                                <x-ui.input
+                                    type="{{ $field['type'] }}"
+                                    wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
+                                    placeholder="{{ __($field['placeholder']) }}"
+                                    class="settings-input font-mono text-sm"
+                                ></x-ui.input>
 
-                            @if (isset($field['helper']))
-                                <p class="help-text">{{ __($field['helper']) }}</p>
+                                @if (isset($field['helper']))
+                                    <p class="help-text">{{ __($field['helper']) }}</p>
+                                @endif
                             @endif
                         @endforeach
                     </div>
@@ -391,6 +428,32 @@
                         :checked="$disableTransparencyMaximized"
                         class="mt-4"
                     />
+                </div>
+
+                {{-- Danger Zone --}}
+                <div class="card border-2 border-red-500/20! dark:border-red-500/30! space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="shrink-0 w-10 h-10 rounded-lg bg-red-500/10 dark:bg-red-500/20 flex items-center justify-center">
+                            <i class="iconoir-warning-triangle text-red-600 dark:text-red-400 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-base font-semibold text-red-600 dark:text-red-400 mb-1">
+                                {{ __('settings.danger_zone.title') }}
+                            </h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                {{ __('settings.danger_zone.description') }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-red-500/20 dark:border-red-500/30">
+                        <x-ui.toggle
+                            :label="__('settings.danger_zone.allow_destructive_operations')"
+                            :description="__('settings.danger_zone.allow_destructive_operations_description')"
+                            model="allowDestructiveFileOperations"
+                            :checked="$allowDestructiveFileOperations"
+                        />
+                    </div>
                 </div>
             </x-ui.tab-content>
         </x-ui.tabs>

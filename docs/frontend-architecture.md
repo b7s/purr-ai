@@ -60,8 +60,8 @@ Each major feature has its own CSS file:
 Dark mode is handled via Tailwind's `dark:` variant:
 
 ```html
-<div class="bg-white dark:bg-gray-950">
-    <p class="text-gray-900 dark:text-white">Content</p>
+<div class="bg-white dark:bg-slate-950">
+    <p class="text-slate-900 dark:text-white">Content</p>
 </div>
 ```
 

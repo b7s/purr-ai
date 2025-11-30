@@ -38,4 +38,6 @@ return [
     ],
     'cancel' => 'Cancel',
     'confirm' => 'Confirm',
+    'download' => 'Download',
+    'close' => 'Close',
 ];

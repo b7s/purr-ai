@@ -66,6 +66,6 @@
     }
 
     .dark .settings-alert-badge {
-        @apply dark:border-gray-900;
+        @apply dark:border-slate-900;
     }
 }

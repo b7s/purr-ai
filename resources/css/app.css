@@ -18,6 +18,7 @@
 @import "./components/glass-panel.css";
 @import "./components/chat.css";
 @import "./components/buttons.css";
+@import "./components/attachments.css";
 @import "./components/file-attachments.css";
 @import "./components/forms.css";
 @import "./components/history.css";
@@ -25,6 +26,7 @@
 @import "./components/speech-recognition.css";
 @import "./components/toast.css";
 @import "./components/whisper-status.css";
+@import "./components/media-display.css";
 @import "./components/window-controls.css";
 @import "./components/menubar.css";
 

@@ -141,9 +141,28 @@ class SystemPromptBuilder
     private function extraInfo(): string
     {
         $datetime = Carbon::now(date_default_timezone_get())->toIso8601String();
+        $osInfo = $this->getOperatingSystemInfo();
 
-        return "User's datetime now in ISO 8601 format is: $datetime.".
-            'Format the returned text with markdown in important places with bold, italics, link, quote, etc.'.
+        return "User's datetime now in ISO 8601 format is: $datetime. ".
+            "User's operating system: {$osInfo}. ".
+            'Format the returned text with markdown in important places with bold, italics, link, quote, etc. '.
             'Never return technical system information, such as column names, variables, functions, etc.';
+    }
+
+    private function getOperatingSystemInfo(): string
+    {
+        $osName = php_uname('s');
+        $osFamily = PHP_OS_FAMILY;
+        $machine = php_uname('m');
+
+        // Build a user-friendly OS description
+        $description = match ($osFamily) {
+            'Windows' => "Windows ({$osName})",
+            'Darwin' => "macOS ({$osName})",
+            'Linux' => "Linux ({$osName})",
+            default => $osName,
+        };
+
+        return "{$description} on {$machine} architecture";
     }
 }

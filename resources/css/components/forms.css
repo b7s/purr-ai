@@ -6,11 +6,12 @@
     /* Input Dock */
     .input-dock {
         @apply w-full rounded-4xl! flex gap-2 p-2 focus-within:shadow-xl;
-        @apply border ring-1;
+        @apply border ring-1 bg-white/75!;
         --tw-ring-color: rgb(245 245 245);
     }
 
     .dark .input-dock {
+        @apply bg-slate-900/75!;
         --tw-ring-color: rgb(51 65 85 / 0.4);
     }
 

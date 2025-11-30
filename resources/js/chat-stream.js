@@ -148,7 +148,7 @@ async function streamAIResponse(conversationId, selectedModel, retryCount = 0) {
                     /'/g,
                     "\\'"
                 )}')"
-                class="px-4 py-2 bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-700 dark:to-gray-600 text-white rounded-lg hover:from-gray-800 hover:to-gray-700 dark:hover:from-gray-600 dark:hover:to-gray-500 transition-all duration-200 text-sm font-medium"
+                class="px-4 py-2 bg-linear-to-br from-slate-900 to-slate-800 dark:from-slate-700 dark:to-slate-600 text-white rounded-lg hover:from-slate-800 hover:to-slate-700 dark:hover:from-slate-600 dark:hover:to-slate-500 transition-all duration-200 text-sm font-medium"
             >
                 ${tryAgainText}
             </button>
@@ -175,6 +175,26 @@ function hideLoadingIndicator() {
  */
 function renderMarkdown(container, content) {
     try {
+        // Check if content contains media markers
+        const mediaMatch = content.match(
+            /<!-- MEDIA_START -->([\s\S]*?)<!-- MEDIA_END -->/
+        );
+        let mediaHtml = "";
+
+        if (mediaMatch) {
+            try {
+                const mediaJson = mediaMatch[1].trim();
+                const mediaData = JSON.parse(mediaJson);
+                if (Array.isArray(mediaData)) {
+                    mediaHtml = renderMediaContent(mediaData);
+                    // Remove the media markers and JSON from content
+                    content = content.replace(mediaMatch[0], "").trim();
+                }
+            } catch (e) {
+                console.warn("[warning] Failed to parse media JSON:", e);
+            }
+        }
+
         const html = marked.parse(content);
         const sanitized = DOMPurify.sanitize(html, {
             ALLOWED_TAGS: [
@@ -209,7 +229,7 @@ function renderMarkdown(container, content) {
             KEEP_CONTENT: true,
         });
 
-        container.innerHTML = sanitized;
+        container.innerHTML = sanitized + mediaHtml;
 
         // Hide tool-calling messages that have responses after them
         hideCompletedToolCalls(container);
@@ -303,6 +323,26 @@ function notifyStreamComplete() {
  * Parse markdown to HTML (exported for use in Blade)
  */
 export function parseMarkdown(content) {
+    // Check if content contains media markers
+    const mediaMatch = content.match(
+        /<!-- MEDIA_START -->([\s\S]*?)<!-- MEDIA_END -->/
+    );
+    let mediaHtml = "";
+
+    if (mediaMatch) {
+        try {
+            const mediaJson = mediaMatch[1].trim();
+            const mediaData = JSON.parse(mediaJson);
+            if (Array.isArray(mediaData)) {
+                mediaHtml = renderMediaContent(mediaData);
+                // Remove the media markers and JSON from content
+                content = content.replace(mediaMatch[0], "").trim();
+            }
+        } catch (e) {
+            console.warn("[warning] Failed to parse media JSON:", e);
+        }
+    }
+
     const html = marked.parse(content);
     const sanitized = DOMPurify.sanitize(html, {
         ALLOWED_TAGS: [
@@ -343,7 +383,80 @@ export function parseMarkdown(content) {
         }
     }, 0);
 
-    return sanitized;
+    return sanitized + mediaHtml;
+}
+
+/**
+ * Render media content (images, videos, audio)
+ */
+function renderMediaContent(mediaItems) {
+    if (!Array.isArray(mediaItems) || mediaItems.length === 0) {
+        return "";
+    }
+
+    let html = '<div class="media-display-container">';
+
+    mediaItems.forEach((item) => {
+        const type = item.type || "image";
+        const url = item.url || "";
+        const revisedPrompt = item.revised_prompt || "";
+
+        if (!url) return;
+
+        if (type === "image") {
+            html += `
+                <div class="media-item media-image">
+                    <div class="media-wrapper">
+                        <img 
+                            src="${url}" 
+                            alt="${revisedPrompt || "Generated image"}" 
+                            class="media-content"
+                            onclick="window.dispatchEvent(new CustomEvent('open-media-modal', { detail: { url: '${url}', type: 'image' } }))"
+                        />
+                    </div>
+                    ${
+                        revisedPrompt
+                            ? `<p class="media-caption">${revisedPrompt}</p>`
+                            : ""
+                    }
+                    <div class="media-actions">
+                        <a href="${url}" download="generated-image.png" class="download-btn" title="Download">
+                            <i class="iconoir-download"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        } else if (type === "video") {
+            html += `
+                <div class="media-item media-video">
+                    <div class="media-wrapper">
+                        <video src="${url}" controls class="media-content"></video>
+                    </div>
+                    <div class="media-actions">
+                        <a href="${url}" download="generated-video.mp4" class="download-btn" title="Download">
+                            <i class="iconoir-download"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        } else if (type === "audio") {
+            html += `
+                <div class="media-item media-audio">
+                    <div class="media-wrapper">
+                        <audio src="${url}" controls class="media-content"></audio>
+                    </div>
+                    <div class="media-actions">
+                        <a href="${url}" download="generated-audio.mp3" class="download-btn" title="Download">
+                            <i class="iconoir-download"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    html += "</div>";
+    return html;
 }
 
 // Listen for Livewire events

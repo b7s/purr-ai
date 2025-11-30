@@ -31,8 +31,8 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     {
         Dock::icon(public_path('icon.png'));
 
-        $this->createMenuBar();
-        $this->registerMenuEvents();
+        // $this->createMenuBar();
+        // $this->registerMenuEvents();
         $this->openMainWindow();
     }
 

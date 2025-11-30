@@ -6,11 +6,16 @@ namespace App\Services\Prism;
 
 use App\Models\Attachment;
 use App\Models\Message;
+use App\Services\Prism\Tools\AudioGenerationTool;
 use App\Services\Prism\Tools\CalendarTool;
+use App\Services\Prism\Tools\FileSystemTool;
+use App\Services\Prism\Tools\ImageGenerationTool;
 use App\Services\Prism\Tools\UserProfileTool;
+use App\Services\Prism\Tools\VideoGenerationTool;
 use Generator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Prism\Prism\Enums\Provider;
 use Prism\Prism\Exceptions\PrismException;
 use Prism\Prism\Exceptions\PrismRateLimitedException;
@@ -78,7 +83,7 @@ class PrismService
                         'message_id' => $event->messageId,
                     ]);
 
-                    yield "\n\n<span class=\"tool-calling\">🪄 ".__('chat.tool_calling', ['tool' => $event->toolCall->name])."</span>\n\n";
+                    yield "\n\n<span class=\"tool-calling\">🪄 ".__('chat.tool_calling', ['tool' => str($event->toolCall->name)->headline()])."</span>\n\n";
                 } elseif ($event instanceof ToolResultEvent) {
                     Log::info('PrismService: Tool result received', [
                         'tool_id' => $event->toolResult->toolCallId,
@@ -87,15 +92,17 @@ class PrismService
                         'error' => $event->error,
                     ]);
 
-                    // Parse the result to extract user_message if available
                     $result = $event->toolResult->result;
                     if (\is_string($result)) {
                         $decoded = json_decode($result, true);
-                        if (isset($decoded['user_message'])) {
+
+                        if (isset($decoded['media']) && \is_array($decoded['media'])) {
+                            yield "\n\n<!-- MEDIA_START -->".json_encode($decoded['media'])."<!-- MEDIA_END -->\n\n";
+                        } elseif (isset($decoded['user_message'])) {
                             yield "\n\n{$decoded['user_message']}\n\n";
-                        } elseif ($event->success) {
+                        } elseif ($event->success && ! isset($decoded['media'])) {
                             yield "\n\n✅ ".__('chat.tool_success')."\n\n";
-                        } else {
+                        } elseif (! $event->success) {
                             yield "\n\n❌ ".__('chat.tool_failed', ['error' => $event->error])."\n\n";
                         }
                     }
@@ -131,11 +138,43 @@ class PrismService
             ->using($provider, $model, $providerConfig)
             ->withSystemPrompt($this->systemPromptBuilder->build())
             ->withMessages($this->convertMessages($messages, $providerKey))
-            ->withTools([
-                CalendarTool::make(),
-                UserProfileTool::make(),
-            ])
-            ->withMaxSteps(3);
+            ->withTools($this->buildTools())
+            ->withMaxSteps(3)
+            ->withClientOptions([
+                'timeout' => 600, // timeout for AI requests
+                'connect_timeout' => 30,
+            ]);
+    }
+
+    /**
+     * Build the list of available tools, including generation tools only if configured
+     *
+     * @return array<\Prism\Prism\Tool>
+     */
+    private function buildTools(): array
+    {
+        $tools = [
+            CalendarTool::make(),
+            UserProfileTool::make(),
+            FileSystemTool::make(),
+        ];
+
+        $imageTool = ImageGenerationTool::make();
+        if ($imageTool) {
+            $tools[] = $imageTool;
+        }
+
+        $audioTool = AudioGenerationTool::make();
+        if ($audioTool) {
+            $tools[] = $audioTool;
+        }
+
+        $videoTool = VideoGenerationTool::make();
+        if ($videoTool) {
+            $tools[] = $videoTool;
+        }
+
+        return $tools;
     }
 
     /**
@@ -199,11 +238,25 @@ class PrismService
 
     private function createMediaFromAttachment(Attachment $attachment, string $mediaType): Image|Audio|Video|Document|null
     {
-        $path = storage_path("app/{$attachment->path}");
+        $path = Storage::disk('local')->path($attachment->path);
 
         if (! file_exists($path)) {
+            Log::warning('PrismService: Attachment file not found', [
+                'path' => $path,
+                'attachment_id' => $attachment->id,
+                'attachment_path' => $attachment->path,
+                'storage_path' => storage_path('app'),
+            ]);
+
             return null;
         }
+
+        Log::info('PrismService: Creating media from attachment', [
+            'type' => $mediaType,
+            'path' => $path,
+            'filename' => $attachment->filename,
+            'mime_type' => $attachment->mime_type,
+        ]);
 
         return match ($mediaType) {
             'image' => Image::fromLocalPath($path),

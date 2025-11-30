@@ -27,7 +27,7 @@
 
     @media (max-width: 640px) {
         .dark .history-dropdown {
-            @apply bg-gray-900/95;
+            @apply bg-slate-900/95;
         }
     }
 
@@ -80,7 +80,7 @@
     }
 
     .history-item:hover {
-        @apply bg-gray-100/30;
+        @apply bg-slate-100/30;
     }
 
     .dark .history-item:hover {
@@ -312,18 +312,18 @@
     }
 
     .edit-modal-btn-confirm {
-        @apply bg-gradient-to-br from-gray-900 to-gray-800 text-white;
+        @apply bg-gradient-to-br from-slate-900 to-slate-800 text-white;
     }
 
     .edit-modal-btn-confirm:hover {
-        @apply from-gray-800 to-gray-700;
+        @apply from-slate-800 to-slate-700;
     }
 
     .dark .edit-modal-btn-confirm {
-        @apply from-gray-700 to-gray-600;
+        @apply from-slate-700 to-slate-600;
     }
 
     .dark .edit-modal-btn-confirm:hover {
-        @apply from-gray-600 to-gray-500;
+        @apply from-slate-600 to-slate-500;
     }
 }

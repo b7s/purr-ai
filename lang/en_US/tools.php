@@ -3,6 +3,20 @@
 declare(strict_types=1);
 
 return [
+    'filesystem' => [
+        'path_required' => 'Please provide a path to continue.',
+        'not_directory' => 'The path ":path" is not a directory.',
+        'permission_denied' => 'You do not have permission to access ":path".',
+        'read_failed' => 'Failed to read the directory contents.',
+        'list_summary' => 'Found :count of :total items in "**:path**"',
+        'list_failed' => 'Failed to list directory contents.',
+        'not_found' => 'The file or directory ":path" was not found.',
+        'info_retrieved' => 'Retrieved information for ":name".',
+        'info_failed' => 'Failed to retrieve file information.',
+        'pattern_required' => 'Please provide a search pattern.',
+        'search_summary' => 'Found :count results for "**:**pattern**" in "**:**path**"',
+        'search_failed' => 'Search operation failed.',
+    ],
     'user_profile' => [
         'fields' => [
             'user_name' => 'name',

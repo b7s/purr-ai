@@ -23,6 +23,22 @@
         @apply bg-slate-800 border-slate-600 text-slate-300 ring-slate-600;
     }
 
+    .settings-button {
+        @apply px-4 py-3 rounded-xl text-[15px] whitespace-nowrap transition-all cursor-pointer;
+        @apply border border-slate-300 bg-white text-slate-700;
+        @apply hover:bg-slate-50;
+        @apply flex items-center justify-center;
+    }
+
+    .settings-button:disabled {
+        @apply opacity-50 cursor-not-allowed;
+    }
+
+    .dark .settings-button {
+        @apply bg-slate-800 border-slate-600 text-slate-300;
+        @apply hover:bg-slate-700;
+    }
+
     .settings-input option {
         @apply bg-white;
         @apply text-slate-800;

@@ -8,7 +8,7 @@
 
 .menubar-panel {
     @apply w-full h-screen flex flex-col;
-    @apply bg-white/95 dark:bg-gray-900/95;
+    @apply bg-white/95 dark:bg-slate-900/95;
     @apply backdrop-blur-xl;
     border-radius: 12px;
     overflow: hidden;
@@ -24,22 +24,22 @@
 }
 
 .menubar-input-wrapper {
-    @apply p-3 border-t border-gray-200/50 dark:border-gray-700/50;
-    @apply bg-white/80 dark:bg-gray-900/80;
+    @apply p-3 border-t border-slate-200/50 dark:border-slate-700/50;
+    @apply bg-white/80 dark:bg-slate-900/80;
 }
 
 .menubar-input-dock {
     @apply flex items-end gap-2;
-    @apply bg-gray-100/80 dark:bg-gray-800/80;
+    @apply bg-slate-100/80 dark:bg-slate-800/80;
     @apply rounded-xl p-2;
-    @apply border border-gray-200/50 dark:border-gray-700/50;
+    @apply border border-slate-200/50 dark:border-slate-700/50;
 }
 
 .menubar-input-field {
     @apply flex-1 resize-none;
     @apply bg-transparent;
-    @apply text-gray-900 dark:text-white;
-    @apply placeholder-gray-500 dark:placeholder-gray-400;
+    @apply text-slate-900 dark:text-white;
+    @apply placeholder-slate-500 dark:placeholder-slate-400;
     @apply text-sm leading-relaxed;
     @apply outline-none;
     @apply max-h-[120px];

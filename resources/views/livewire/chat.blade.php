@@ -253,6 +253,9 @@
         @endif
     </div>
 
+    {{-- Media Modal --}}
+    <x-chat.media-modal />
+
     {{-- Input Dock --}}
     <div class="input-dock-wrapper">
         {{-- Model Selector --}}
@@ -261,17 +264,15 @@
             :selected-model="$selectedModel"
         />
 
+        {{-- Attachment Preview --}}
+        <x-chat.attachment-preview :attachments="$pendingAttachments" />
+
         {{-- Input Form --}}
         <form
             wire:submit="sendMessage"
             class="purrai-opacity-box input-dock"
         >
-            <x-ui.button
-                type="button"
-                variant="ghost"
-                icon="plus"
-                :title="__('ui.tooltips.attach_file')"
-            />
+            <x-chat.attachment-selector :supported-types="$this->getSupportedMediaTypes()" />
 
             <div
                 x-data="{

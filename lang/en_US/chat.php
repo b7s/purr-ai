@@ -52,6 +52,17 @@ return [
         'speech_provider' => 'Speech Provider',
     ],
 
+    'attachments' => [
+        'image' => 'Image',
+        'document' => 'Document',
+        'audio' => 'Audio',
+        'video' => 'Video',
+        'remove' => 'Remove attachment',
+        'no_support' => 'Selected model does not support attachments',
+    ],
+
+    'attachment_conversation' => 'Attachment',
+
     'errors' => [
         'no_model_selected' => 'Please select an AI model before sending a message.',
         'invalid_provider' => 'The selected AI provider is not valid.',
@@ -69,9 +80,37 @@ return [
         'copied' => 'Copied!',
     ],
 
-    'tool_calling' => 'Calling :tool...',
+    'media' => [
+        'download' => 'Download',
+        'close' => 'Close',
+        'view_full_size' => 'View full size',
+    ],
+
+    'tool_calling' => 'Calling: :tool...',
     'tool_success' => 'Tool executed successfully',
     'tool_failed' => 'Tool execution failed: :error',
+
+    'tools' => [
+        'image' => [
+            'no_model_configured' => '🖼️ No image generation model is configured. Please add an image model in Settings.',
+            'invalid_provider' => '😕 The configured image provider is not valid.',
+            'generation_failed' => '😔 Sorry, I couldn\'t generate the image. Please try again.',
+            'generated' => '{1} 🖼️ Generated 1 image successfully!|[2,*] 🖼️ Generated :count images successfully!',
+        ],
+        'audio' => [
+            'no_model_configured' => '🔊 No audio generation model is configured. Please add an audio model in Settings.',
+            'invalid_provider' => '😕 The configured audio provider is not valid.',
+            'generation_failed' => '😔 Sorry, I couldn\'t generate the audio. Please try again.',
+            'generated' => '🔊 Generated audio successfully!',
+        ],
+        'video' => [
+            'no_model_configured' => '🎬 No video generation model is configured. Please add a video model in Settings.',
+            'invalid_provider' => '😕 The configured video provider is not valid.',
+            'generation_failed' => '😔 Sorry, I couldn\'t generate the video. Please try again.',
+            'not_supported' => '🎬 Video generation is not yet fully supported. This feature is coming soon!',
+            'generated' => '🎬 Generated video successfully!',
+        ],
+    ],
 
     'calendar' => [
         'appointment_created' => '✅ Done! I\'ve scheduled ":title" for :start to :end.',
@@ -111,5 +150,32 @@ return [
             'reminder_list_failed' => '😔 Sorry, I had trouble loading reminders. Please try again.',
             'reminder_delete_failed' => '😔 Sorry, I couldn\'t remove that reminder. Please try again.',
         ],
+    ],
+
+    'filesystem' => [
+        'path_required' => '🤔 I need a path to work with. Please specify which directory or file.',
+        'not_directory' => '😕 ":path" is not a directory.',
+        'not_found' => '😕 I couldn\'t find ":path". Please check the path and try again.',
+        'permission_denied' => '🔒 I don\'t have permission to access ":path".',
+        'read_failed' => '😔 Sorry, I couldn\'t read that directory. Please try again.',
+        'list_failed' => '😔 Sorry, I had trouble listing the directory contents. Please try again.',
+        'info_failed' => '😔 Sorry, I couldn\'t get information about that file. Please try again.',
+        'search_failed' => '😔 Sorry, I had trouble searching for files. Please try again.',
+        'home_not_found' => '😕 I couldn\'t determine your home directory.',
+        'home_failed' => '😔 Sorry, I had trouble getting your home directory. Please try again.',
+        'pattern_required' => '🔍 I need a search pattern. What kind of files are you looking for?',
+        'list_summary' => '📁 Found :count items in :path{0} (showing all :total items)|{1} (showing :count of :total items)',
+        'info_retrieved' => '📄 Here\'s the information about ":name".',
+        'search_summary' => '🔍 Found :count items matching ":pattern" in :path.',
+        'home_found' => '🏠 Your home directory is: :path',
+        'destructive_disabled' => '🔒 Ops! Destructive file operations (delete, rename, move) are disabled. You can enable them in Settings > Other > Danger Zone.',
+        'path_destination_required' => '🤔 I need both a source path and destination path for this operation.',
+        'destination_exists' => '😕 The destination ":path" already exists. Please choose a different name.',
+        'deleted' => '✅ Successfully deleted ":path".',
+        'delete_failed' => '😔 Sorry, I couldn\'t delete ":path". Please try again.',
+        'renamed' => '✅ Successfully renamed ":from" to ":to".',
+        'rename_failed' => '😔 Sorry, I couldn\'t rename the file. Please try again.',
+        'system_info_retrieved' => '💻 Here\'s your system information.',
+        'system_info_failed' => '😔 Sorry, I couldn\'t retrieve system information. Please try again.',
     ],
 ];
