@@ -1,12 +1,15 @@
 @props(['type' => 'ai'])
 
-@if($type === 'ai')
-    <div class="purr-ai-logo">
-        <img src="{{ asset('images/mascot/logo.svg') }}" alt="PurrAI" class="w-full h-full">
+@if ($type === 'ai')
+    <div class="purr-ai-logo sticky top-2 transition-transform duration-200 hover:scale-110">
+        <img
+            src="{{ asset('images/mascot/logo.svg') }}"
+            alt="PurrAI"
+            class="w-full h-full"
+        >
     </div>
 @else
-    <div
-        class="w-8 h-8 rounded-full bg-linear-to-tr from-slate-200 to-slate-400 dark:from-slate-700 dark:to-slate-500 flex items-center justify-center shadow-inner shrink-0 select-none">
+    <div class="user-avatar">
         @if (getUserName())
             <span class="text-white font-medium text-sm cursor-default uppercase">{{ getUserName()[0] }}</span>
         @else

@@ -121,6 +121,10 @@
         @apply sticky top-0 z-10;
     }
 
+    .model-selector-group-label span {
+        @apply bg-white/85 dark:bg-slate-800/85 rounded-full px-2 py-1;
+    }
+
     .dark .model-selector-group-label {
         @apply text-slate-400;
     }
@@ -189,25 +193,28 @@
         min-width: 0;
     }
 
+    .chat-bubble .see-more-less-btn {
+        @apply text-sm opacity-70 hover:opacity-100 ml-1 cursor-pointer inline-flex items-center gap-1 select-none;
+    }
+
     .chat-bubble.primary {
-        @apply rounded-[20px] rounded-br-[4px] bg-slate-900 text-white;
+        @apply rounded-[20px]! rounded-tr-[4px]! ml-auto;
     }
 
-    .dark .chat-bubble.primary {
-        @apply bg-slate-50 text-slate-800;
-    }
-
+    .chat-bubble.primary,
     .chat-bubble.secondary {
         @apply rounded-[20px] rounded-tl-[4px] border;
         @apply bg-slate-100 border-slate-200 text-slate-900;
         backdrop-filter: blur(var(--window-blur));
     }
 
+    .dark .chat-bubble.primary,
     .dark .chat-bubble.secondary {
         @apply bg-slate-800/90 border-slate-700/60 text-slate-100;
     }
 
     /* Prose styles for markdown content */
+    .chat-bubble.primary.prose,
     .chat-bubble.secondary.prose {
         @apply prose-headings:mt-4 prose-headings:mb-2 prose-headings:font-semibold;
         @apply prose-p:my-2 prose-p:leading-relaxed;
@@ -219,16 +226,16 @@
     }
 
     /* Inline code (not in pre blocks) */
-    .chat-bubble.secondary.prose code:not(pre code) {
+    .chat-bubble.prose code:not(pre code) {
         @apply bg-slate-200 text-slate-700;
     }
 
-    .dark .chat-bubble.secondary.prose code:not(pre code) {
+    .dark .chat-bubble.prose code:not(pre code) {
         @apply bg-slate-700 text-slate-100;
     }
 
     /* Pre blocks - consolidated styles with !important to override Tailwind */
-    .chat-bubble.secondary.prose pre {
+    .chat-bubble.prose pre {
         font-size: 14px !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -245,7 +252,7 @@
     }
 
     /* Ensure code inside pre doesn't affect the width */
-    .chat-bubble.secondary.prose pre code {
+    .chat-bubble.prose pre code {
         display: block !important;
         white-space: pre-wrap !important;
         word-break: normal !important;
@@ -253,23 +260,24 @@
         overflow: visible !important;
         width: 100% !important;
         max-width: 100% !important;
+        padding-top: 1rem !important;
     }
 
     /* Custom scrollbar for pre blocks */
-    .chat-bubble.secondary.prose pre::-webkit-scrollbar {
+    .chat-bubble.prose pre::-webkit-scrollbar {
         width: 8px;
         height: 8px;
     }
 
-    .chat-bubble.secondary.prose pre::-webkit-scrollbar-track {
+    .chat-bubble.prose pre::-webkit-scrollbar-track {
         @apply bg-slate-950 rounded;
     }
 
-    .chat-bubble.secondary.prose pre::-webkit-scrollbar-thumb {
+    .chat-bubble.prose pre::-webkit-scrollbar-thumb {
         @apply bg-slate-600 rounded;
     }
 
-    .chat-bubble.secondary.prose pre::-webkit-scrollbar-thumb:hover {
+    .chat-bubble.prose pre::-webkit-scrollbar-thumb:hover {
         @apply bg-slate-500;
     }
 
@@ -310,6 +318,12 @@
     .purr-ai-logo {
         @apply w-8 h-8;
         @apply flex items-center justify-center shrink-0 select-none;
+    }
+
+    .user-avatar {
+        @apply w-8 h-8 rounded-full bg-linear-to-tr from-slate-200 to-slate-400 dark:from-slate-700 dark:to-slate-500;
+        @apply flex items-center justify-center shadow-inner shrink-0 select-none sticky top-2;
+        @apply transition-all duration-200 hover:scale-110 hover:shadow-md dark:hover:shadow-slate-600/20;
     }
 
     /* Tool Calling Message */

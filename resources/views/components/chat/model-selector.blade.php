@@ -8,7 +8,7 @@
     class="model-selector-container"
     x-data="{
         open: false,
-        filterOpen: false,
+        filterOpen: true,
         filterText: '',
         toggleFilter() {
             this.filterOpen = !this.filterOpen;
@@ -35,7 +35,11 @@
         >
             <button
                 type="button"
-                @click="open = !open"
+                @click="() => {
+                    open = !open;
+                    if(open)
+                        $nextTick(() => $refs.filterInput.focus());
+                }"
                 class="model-selector-trigger"
             >
                 <i class="iconoir-sparks text-sm"></i>
@@ -67,7 +71,9 @@
                             class="model-selector-group"
                             x-show="[{{ implode(',', array_map(fn($m) => "'$m'", $providerData['models'])) }}].some(model => matchesFilter(model.replace(/[-_]/g, ' ')))"
                         >
-                            <div class="model-selector-group-label">{{ $providerData['provider'] }}</div>
+                            <div class="model-selector-group-label">
+                                <span>{{ $providerData['provider'] }}</span>
+                            </div>
 
                             @foreach ($providerData['models'] as $model)
                                 @php

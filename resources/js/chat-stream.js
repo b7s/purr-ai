@@ -105,6 +105,10 @@ async function streamAIResponse(conversationId, selectedModel, retryCount = 0) {
                         if (data.done) {
                             // Hide loading indicator
                             hideLoadingIndicator();
+                            // Apply syntax highlighting to streamed code
+                            if (window.highlightStreamedCode) {
+                                window.highlightStreamedCode();
+                            }
                             // Stream complete - notify Livewire
                             notifyStreamComplete();
                         }

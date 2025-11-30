@@ -76,15 +76,30 @@ function addCopyButton(preElement) {
 async function copyCode(preElement, button) {
     // Get code content (excluding the button)
     const codeElement = preElement.querySelector("code");
-    const text = codeElement ? codeElement.textContent : preElement.textContent;
 
-    // Clean the text
+    // Clone the code element to avoid including the button
+    const clone = codeElement
+        ? codeElement.cloneNode(true)
+        : preElement.cloneNode(true);
+
+    // Remove any copy buttons and language labels from the clone
+    const buttons = clone.querySelectorAll(".code-copy-btn");
+    buttons.forEach((btn) => btn.remove());
+
+    const labels = clone.querySelectorAll(".code-language-label");
+    labels.forEach((label) => label.remove());
+
+    // Get the text content (this will be plain text without HTML formatting)
+    const text = clone.textContent || clone.innerText;
     const cleanText = text.trim();
 
     try {
         await navigator.clipboard.writeText(cleanText);
 
         // Show success feedback
+        const originalHTML = button.innerHTML;
+        const originalTitle = button.getAttribute("title");
+
         button.classList.add("copied");
         button.innerHTML = getCheckIcon();
         button.setAttribute("title", t("code_copied", "Copied!"));
@@ -92,9 +107,9 @@ async function copyCode(preElement, button) {
         // Reset after 2 seconds
         setTimeout(() => {
             button.classList.remove("copied");
-            button.innerHTML = getCopyIcon();
-            button.setAttribute("title", t("code_copy", "Copy code"));
-        }, 500);
+            button.innerHTML = originalHTML;
+            button.setAttribute("title", originalTitle);
+        }, 2000);
     } catch (err) {
         console.error("Failed to copy code:", err);
     }

@@ -29,6 +29,7 @@
 @import "./components/media-display.css";
 @import "./components/window-controls.css";
 @import "./components/menubar.css";
+@import "./components/code-highlight.css";
 
 /* Vendor */
 @import "./iconoir.css";

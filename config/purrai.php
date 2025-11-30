@@ -22,7 +22,7 @@ return [
 
         'default_x' => 10,
         'default_y' => 10,
-        'opacity' => 95,
+        'opacity' => 92,
         'blur' => 8,
     ],
 

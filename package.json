@@ -17,6 +17,7 @@
     "dependencies": {
         "@tailwindcss/typography": "^0.5.19",
         "dompurify": "^3.3.0",
+        "highlight.js": "^11.11.1",
         "marked": "^17.0.1"
     }
 }

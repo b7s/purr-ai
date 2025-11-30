@@ -14,7 +14,7 @@
     ];
 @endphp
 
-<div 
+<div
     class="welcome-container select-none"
     x-data="{
         timeOfDay: 'morning',
@@ -30,7 +30,8 @@
             return this.greetings[this.timeOfDay] || this.greetings.morning;
         }
     }"
-    x-init="updateGreeting();">
+    x-init="updateGreeting();"
+>
     <div class="purr-ai-logo welcome-logo animate-welcome-logo">
         <img
             src="{{ asset('images/mascot/position-out-of-screen.webp') }}"
@@ -48,8 +49,8 @@
                 <span class="border-b-3 text-slate-800 dark:text-slate-100 border-amber-400 hover:border-slate-100 hover:dark:border-slate-400">{{ explode(' ', $user_name)[0] }}</span>!
                 <div class="text-xl py-2">
                     {!! __('chat.welcome_title_back', [
-                    'name' => "<span class='text-slate-800 dark:text-slate-100'>$mascotName</span>",
-                ]) !!}.
+                        'name' => "<span class='text-slate-800 dark:text-slate-100'>$mascotName</span>",
+                    ]) !!}.
                 </div>
             @else
                 <span x-text="greeting"></span>! {{ $title }}

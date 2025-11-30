@@ -1,0 +1,271 @@
+/**
+ * Code Syntax Highlighting Styles
+ * Based on GitHub Dark theme for dark mode and GitHub Light for light mode
+ */
+
+/* Base code block styles */
+pre code.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 1em;
+}
+
+code.hljs {
+    padding: 3px 5px;
+}
+
+/* Language label */
+.code-language-label {
+    @apply absolute top-2 left-2 px-2 py-0.5 text-xs font-mono;
+    @apply bg-slate-700/50 text-slate-300 rounded;
+    @apply dark:bg-slate-800/50 dark:text-slate-400;
+    @apply pointer-events-none select-none;
+    z-index: 1;
+}
+
+/* Light mode syntax highlighting */
+@media (prefers-color-scheme: light) {
+    .hljs {
+        @apply bg-slate-50 text-slate-900;
+    }
+
+    .hljs-comment,
+    .hljs-quote {
+        @apply text-slate-500 italic;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-subst {
+        @apply text-pink-600 font-semibold;
+    }
+
+    .hljs-number,
+    .hljs-literal,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-tag .hljs-attr {
+        @apply text-blue-600;
+    }
+
+    .hljs-string,
+    .hljs-doctag {
+        @apply text-green-700;
+    }
+
+    .hljs-title,
+    .hljs-section,
+    .hljs-selector-id {
+        @apply text-purple-600 font-semibold;
+    }
+
+    .hljs-type,
+    .hljs-class .hljs-title {
+        @apply text-orange-600;
+    }
+
+    .hljs-tag,
+    .hljs-name,
+    .hljs-attribute {
+        @apply text-blue-700;
+    }
+
+    .hljs-regexp,
+    .hljs-link {
+        @apply text-cyan-600;
+    }
+
+    .hljs-symbol,
+    .hljs-bullet {
+        @apply text-purple-500;
+    }
+
+    .hljs-built_in,
+    .hljs-builtin-name {
+        @apply text-orange-700;
+    }
+
+    .hljs-meta {
+        @apply text-slate-600;
+    }
+
+    .hljs-deletion {
+        @apply bg-red-100 text-red-800;
+    }
+
+    .hljs-addition {
+        @apply bg-green-100 text-green-800;
+    }
+
+    .hljs-emphasis {
+        @apply italic;
+    }
+
+    .hljs-strong {
+        @apply font-bold;
+    }
+}
+
+/* Dark mode syntax highlighting */
+@media (prefers-color-scheme: dark) {
+    .hljs {
+        @apply bg-slate-900 text-slate-100;
+    }
+
+    .hljs-comment,
+    .hljs-quote {
+        @apply text-slate-500 italic;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag,
+    .hljs-subst {
+        @apply text-pink-400 font-semibold;
+    }
+
+    .hljs-number,
+    .hljs-literal,
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-tag .hljs-attr {
+        @apply text-blue-400;
+    }
+
+    .hljs-string,
+    .hljs-doctag {
+        @apply text-green-400;
+    }
+
+    .hljs-title,
+    .hljs-section,
+    .hljs-selector-id {
+        @apply text-purple-400 font-semibold;
+    }
+
+    .hljs-type,
+    .hljs-class .hljs-title {
+        @apply text-orange-400;
+    }
+
+    .hljs-tag,
+    .hljs-name,
+    .hljs-attribute {
+        @apply text-blue-300;
+    }
+
+    .hljs-regexp,
+    .hljs-link {
+        @apply text-cyan-400;
+    }
+
+    .hljs-symbol,
+    .hljs-bullet {
+        @apply text-purple-300;
+    }
+
+    .hljs-built_in,
+    .hljs-builtin-name {
+        @apply text-orange-300;
+    }
+
+    .hljs-meta {
+        @apply text-slate-400;
+    }
+
+    .hljs-deletion {
+        @apply bg-red-900/30 text-red-300;
+    }
+
+    .hljs-addition {
+        @apply bg-green-900/30 text-green-300;
+    }
+
+    .hljs-emphasis {
+        @apply italic;
+    }
+
+    .hljs-strong {
+        @apply font-bold;
+    }
+}
+
+/* Explicit dark mode class support */
+.dark .hljs {
+    @apply bg-slate-900 text-slate-100;
+}
+
+.dark .hljs-comment,
+.dark .hljs-quote {
+    @apply text-slate-500 italic;
+}
+
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-subst {
+    @apply text-pink-400 font-semibold;
+}
+
+.dark .hljs-number,
+.dark .hljs-literal,
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-tag .hljs-attr {
+    @apply text-blue-400;
+}
+
+.dark .hljs-string,
+.dark .hljs-doctag {
+    @apply text-green-400;
+}
+
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-selector-id {
+    @apply text-purple-400 font-semibold;
+}
+
+.dark .hljs-type,
+.dark .hljs-class .hljs-title {
+    @apply text-orange-400;
+}
+
+.dark .hljs-tag,
+.dark .hljs-name,
+.dark .hljs-attribute {
+    @apply text-blue-300;
+}
+
+.dark .hljs-regexp,
+.dark .hljs-link {
+    @apply text-cyan-400;
+}
+
+.dark .hljs-symbol,
+.dark .hljs-bullet {
+    @apply text-purple-300;
+}
+
+.dark .hljs-built_in,
+.dark .hljs-builtin-name {
+    @apply text-orange-300;
+}
+
+.dark .hljs-meta {
+    @apply text-slate-400;
+}
+
+.dark .hljs-deletion {
+    @apply bg-red-900/30 text-red-300;
+}
+
+.dark .hljs-addition {
+    @apply bg-green-900/30 text-green-300;
+}
+
+.dark .hljs-emphasis {
+    @apply italic;
+}
+
+.dark .hljs-strong {
+    @apply font-bold;
+}

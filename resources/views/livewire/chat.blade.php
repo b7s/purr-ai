@@ -246,7 +246,6 @@
                         id="streaming-response"
                         class="stream-content"
                     >
-                        {{-- Content will be streamed here --}}
                     </div>
                 </x-chat.bubble>
             </div>
