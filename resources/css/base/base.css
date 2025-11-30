@@ -76,7 +76,7 @@ body.web-mode {
 }
 
 .empty-message {
-    @apply text-slate-600 dark:text-slate-400 text-sm mb-1;
+    @apply text-slate-600 dark:text-slate-400 italic text-sm mb-1;
 }
 
 .empty-hint {

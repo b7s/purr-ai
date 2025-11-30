@@ -26,8 +26,13 @@
                 <p class="empty-message">
                     {{ __('chat.widgets.upcoming_schedules.no_schedules') }}
                 </p>
-                <p class="empty-hint">
-                    {{ __('chat.widgets.upcoming_schedules.create_hint') }}
+                <p class="empty-hint pt-4">
+                    <button
+                        class="cursor-pointer button"
+                        @click="document.querySelector(`[x-ref='messageInput']`).focus();"
+                    >
+                        {{ __('chat.widgets.upcoming_schedules.create_hint') }}
+                    </button>
                 </p>
             </div>
         @else

@@ -68,4 +68,10 @@
     .dark .settings-alert-badge {
         @apply dark:border-slate-900;
     }
+
+    .button {
+        @apply w-full px-4 py-3 rounded-xl text-[15px] transition-all;
+        @apply border border-slate-300 bg-white hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700;
+        @apply font-medium text-slate-700 focus:outline-none focus:ring-2 ring-slate-300;
+    }
 }

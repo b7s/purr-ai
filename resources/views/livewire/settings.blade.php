@@ -223,7 +223,7 @@
                                     <button
                                         type="button"
                                         @click="refreshDevices()"
-                                        class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors dark:text-slate-400 dark:hover:bg-slate-700 mb-1"
+                                        class="w-10 h-10 mb-1 button"
                                         :disabled="loading"
                                         title="{{ __('settings.speech.refresh_devices') }}"
                                     >
