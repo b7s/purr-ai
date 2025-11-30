@@ -27,7 +27,7 @@
         class="relative"
         @click.away="open = false"
     >
-        <x-ui.button
+        <x-ui.form.button
             type="button"
             variant="ghost"
             icon="plus"

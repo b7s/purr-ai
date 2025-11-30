@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
-use App\Services\WhisperService;
 use Illuminate\Http\JsonResponse;
 
 final class ValidateSpeechConfigController extends Controller
@@ -26,7 +25,7 @@ final class ValidateSpeechConfigController extends Controller
 
         if ($useLocal) {
             // Validate local configuration
-            if (WhisperService::hasPendingConfiguration()) {
+            if (hasWhisperPendingAlert()) {
                 return response()->json([
                     'valid' => false,
                     'reason' => 'local_pending_configuration',

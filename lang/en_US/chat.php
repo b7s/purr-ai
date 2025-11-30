@@ -152,6 +152,15 @@ return [
         ],
     ],
 
+    'widgets' => [
+        'upcoming_schedules' => [
+            'title' => 'Upcoming Schedules',
+            'no_schedules' => 'No upcoming schedules',
+            'create_hint' => 'Chat with me to create a new schedule!',
+            'recurring' => 'Recurring',
+        ],
+    ],
+
     'filesystem' => [
         'path_required' => '🤔 I need a path to work with. Please specify which directory or file.',
         'not_directory' => '😕 ":path" is not a directory.',

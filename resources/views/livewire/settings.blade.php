@@ -74,14 +74,14 @@
         </div>
 
         {{-- Tabs --}}
-        <x-ui.tabs
+        <x-ui.form.tabs
             :tabs="$tabs"
             :active="request()->input('tab')"
         >
             {{-- Chat Settings Tab --}}
-            <x-ui.tab-content name="chat">
+            <x-ui.form.tab-content name="chat">
                 <div class="card">
-                    <x-ui.input
+                    <x-ui.form.input
                         :label="__('settings.chat.mascot_name')"
                         model="mascotName"
                         :placeholder="__('settings.chat.mascot_name_placeholder')"
@@ -89,13 +89,13 @@
                 </div>
 
                 <div class="card space-y-6">
-                    <x-ui.radio-group
+                    <x-ui.form.radio-group
                         :label="__('settings.chat.response_detail')"
                         :options="$responseDetailOptions"
                         model="responseDetail"
                     />
 
-                    <x-ui.radio-group
+                    <x-ui.form.radio-group
                         :label="__('settings.chat.response_tone')"
                         :options="$responseToneOptions"
                         model="responseTone"
@@ -104,12 +104,12 @@
                 </div>
 
                 <div class="card">
-                    <x-ui.toggle
+                    <x-ui.form.toggle
                         :label="new \Illuminate\Support\HtmlString('<img src=\'' . asset('images/mascot/logo.svg') . '\' alt=\'\' class=\'w-8 inline-block me-2\'>' . __('settings.chat.respond_as_cat'))"
                         :model="'respondAsACat'"
                         :checked="$respondAsACat"
                     >
-                    </x-ui.toggle>
+                    </x-ui.form.toggle>
                 </div>
 
                 {{-- Speech Recognition Settings --}}
@@ -121,7 +121,7 @@
                         {{ __('settings.other.speech_recognition') }}
                     </label>
 
-                    @if (\App\Services\WhisperService::hasPendingConfiguration())
+                    @if (hasWhisperPendingAlert())
                         <div class="whisper-alert">
                             <div class="whisper-alert-content">
                                 <i class="iconoir-warning-triangle whisper-alert-icon"></i>
@@ -144,7 +144,7 @@
                         </div>
                     @endif
 
-                    <x-ui.toggle
+                    <x-ui.form.toggle
                         :label="__('settings.speech.enable')"
                         :description="__('settings.speech.enable_description')"
                         model="speechToTextEnabled"
@@ -152,15 +152,15 @@
                     />
 
                     @if ($speechToTextEnabled)
-                        <x-ui.toggle
+                        <x-ui.form.toggle
                             :label="__('settings.speech.use_local')"
-                            :description="new \Illuminate\Support\HtmlString(view('components.ui.badge', ['slot' => __('settings.speech.private')])->render() . '&nbsp;&nbsp;' . __('settings.speech.use_local_description'))"
+                            :description="new \Illuminate\Support\HtmlString(view('components.ui.form.badge', ['slot' => __('settings.speech.private')])->render() . '&nbsp;&nbsp;' . __('settings.speech.use_local_description'))"
                             model="useLocalSpeech"
                             :checked="$useLocalSpeech"
                         />
 
                         @if (!$useLocalSpeech)
-                            <x-ui.select
+                            <x-ui.form.select
                                 :label="__('settings.speech.provider') . ' *'"
                                 :description="__('settings.speech.provider_description')"
                                 :placeholder="__('settings.speech.provider_placeholder')"
@@ -169,7 +169,7 @@
                             />
                         @endif
 
-                        <x-ui.toggle
+                        <x-ui.form.toggle
                             :label="__('settings.speech.auto_send')"
                             :description="__('settings.speech.auto_send_description')"
                             model="autoSendAfterTranscription"
@@ -237,7 +237,7 @@
                         </div>
 
                         {{-- Noise Suppression Level --}}
-                        <x-ui.radio-group
+                        <x-ui.form.radio-group
                             :label="__('settings.speech.noise_suppression')"
                             :description="__('settings.speech.noise_suppression_description')"
                             model="noiseSuppressionLevel"
@@ -272,24 +272,24 @@
                     <label class="settings-label">
                         {{ __('settings.chat.user_description') }}
                     </label>
-                    <x-ui.input
+                    <x-ui.form.input
                         type="text"
                         wire:model.blur="userName"
                         placeholder="{{ __('settings.chat.user_name_placeholder') }}"
                         class="settings-input"
-                    ></x-ui.input>
+                    ></x-ui.form.input>
 
-                    <x-ui.textarea
+                    <x-ui.form.textarea
                         wire:model.blur="userDescription"
                         placeholder="{{ __('settings.chat.user_description_placeholder') }}"
                         rows="3"
                         class="settings-input resize-none mt-4"
-                    ></x-ui.textarea>
+                    ></x-ui.form.textarea>
                 </div>
-            </x-ui.tab-content>
+            </x-ui.form.tab-content>
 
             {{-- AI Providers Tab --}}
-            <x-ui.tab-content name="ai_providers">
+            <x-ui.form.tab-content name="ai_providers">
                 <p class="settings-description">
                     {{ __('settings.ai_providers.description') }}
                 </p>
@@ -303,12 +303,12 @@
                                         <label class="settings-label">
                                             {{ __($field['label']) }}
                                         </label>
-                                        <x-ui.input
+                                        <x-ui.form.input
                                             type="{{ $field['type'] }}"
                                             wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
                                             placeholder="{{ __($field['placeholder']) }}"
                                             class="settings-input font-mono text-sm"
-                                        ></x-ui.input>
+                                        ></x-ui.form.input>
                                     </div>
                                     <button
                                         type="button"
@@ -336,12 +336,12 @@
                                 <label class="settings-label @if ($index > 0) mt-4 @endif">
                                     {{ __($field['label']) }}
                                 </label>
-                                <x-ui.input
+                                <x-ui.form.input
                                     type="{{ $field['type'] }}"
                                     wire:model.blur="providers.{{ $provider['key'] }}.{{ $field['name'] }}"
                                     placeholder="{{ __($field['placeholder']) }}"
                                     class="settings-input font-mono text-sm"
-                                ></x-ui.input>
+                                ></x-ui.form.input>
 
                                 @if (isset($field['helper']))
                                     <p class="help-text">{{ __($field['helper']) }}</p>
@@ -350,11 +350,11 @@
                         @endforeach
                     </div>
                 @endforeach
-            </x-ui.tab-content>
+            </x-ui.form.tab-content>
 
             {{-- Other Settings Tab --}}
-            <x-ui.tab-content name="other">
-                <x-ui.radio-group
+            <x-ui.form.tab-content name="other">
+                <x-ui.form.radio-group
                     :label="__('settings.other.theme_mode')"
                     :description="__('settings.other.theme_mode_description')"
                     :options="$themeModeOptions"
@@ -362,7 +362,7 @@
                 />
 
                 <div class="card">
-                    <x-ui.input
+                    <x-ui.form.input
                         type="number"
                         :label="__('settings.other.delete_old_messages')"
                         :description="__('settings.other.delete_old_messages_description')"
@@ -379,7 +379,7 @@
                     class="card"
                     x-data="timezoneSelector"
                 >
-                    <x-ui.input
+                    <x-ui.form.input
                         :label="__('settings.other.timezone')"
                         :description="__('settings.other.timezone_description')"
                         :helpText="__('settings.other.timezone_helper')"
@@ -390,7 +390,7 @@
                 </div>
 
                 @if (!is_linux())
-                    <x-ui.toggle
+                    <x-ui.form.toggle
                         :label="__('settings.other.open_at_login')"
                         :description="__('settings.other.open_at_login_description')"
                         model="openAtLogin"
@@ -399,7 +399,7 @@
                 @endif
 
                 <div class="card space-y-4">
-                    <x-ui.slider
+                    <x-ui.form.slider
                         :label="__('settings.other.window_opacity')"
                         :description="__('settings.other.window_opacity_description')"
                         model="windowOpacity"
@@ -409,7 +409,7 @@
                         suffix="%"
                     />
 
-                    <x-ui.slider
+                    <x-ui.form.slider
                         :label="__('settings.other.window_blur')"
                         :description="__('settings.other.window_blur_description')"
                         :helpText="__('settings.other.window_blur_helper')"
@@ -419,9 +419,9 @@
                         :value="$windowBlur"
                         suffix="px"
                     >
-                    </x-ui.slider>
+                    </x-ui.form.slider>
 
-                    <x-ui.toggle
+                    <x-ui.form.toggle
                         :label="__('settings.other.disable_transparency_maximized')"
                         :description="__('settings.other.disable_transparency_maximized_description')"
                         model="disableTransparencyMaximized"
@@ -447,7 +447,7 @@
                     </div>
 
                     <div class="pt-2 border-t border-red-500/20 dark:border-red-500/30">
-                        <x-ui.toggle
+                        <x-ui.form.toggle
                             :label="__('settings.danger_zone.allow_destructive_operations')"
                             :description="__('settings.danger_zone.allow_destructive_operations_description')"
                             model="allowDestructiveFileOperations"
@@ -455,8 +455,8 @@
                         />
                     </div>
                 </div>
-            </x-ui.tab-content>
-        </x-ui.tabs>
+            </x-ui.form.tab-content>
+        </x-ui.form.tabs>
     </div>
 
     {{-- Saving Indicator --}}

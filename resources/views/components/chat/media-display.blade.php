@@ -28,7 +28,7 @@
                         />
                     </div>
                     <div class="media-actions">
-                        <x-ui.download-button
+                        <x-ui.form.download-button
                             :url="$url"
                             filename="generated-image.png"
                             class="media-download-btn"
@@ -48,7 +48,7 @@
                         ></video>
                     </div>
                     <div class="media-actions">
-                        <x-ui.download-button
+                        <x-ui.form.download-button
                             :url="$url"
                             filename="generated-video.mp4"
                             class="media-download-btn"
@@ -65,7 +65,7 @@
                         ></audio>
                     </div>
                     <div class="media-actions">
-                        <x-ui.download-button
+                        <x-ui.form.download-button
                             :url="$url"
                             filename="generated-audio.mp3"
                             class="media-download-btn"

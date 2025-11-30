@@ -59,5 +59,9 @@
         <p class="welcome-message">
             {{ $message }}
         </p>
+
+        <div class="widgets">
+            <x-widgets.upcoming-schedules />
+        </div>
     </div>
 </div>

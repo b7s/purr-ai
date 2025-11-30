@@ -111,7 +111,7 @@
                         class="flex-1"
                         x-cloak
                     >
-                        <x-ui.input
+                        <x-ui.form.input
                             x-ref="filterInput"
                             x-model="filterText"
                             @keydown.escape="closeFilter()"

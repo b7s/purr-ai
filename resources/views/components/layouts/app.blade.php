@@ -1,21 +1,43 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="antialiased">
+<html
+    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    class="antialiased"
+>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <meta
+        name="csrf-token"
+        content="{{ csrf_token() }}"
+    >
     <title>{{ $title ?? config('app.name') }}</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
 
-<body id="app" class="flex items-center justify-center {{ !is_native() ? 'web-mode' : '' }}">
+<body
+    id="app"
+    class="flex items-center justify-center {{ !is_native() ? 'web-mode' : '' }}"
+>
     <script>
         function checkMaximized() {
             const tolerance = 5;
@@ -24,7 +46,7 @@
         }
 
         // Initialize window opacity, blur and transparency settings IMMEDIATELY (before any rendering)
-        (function () {
+        (function() {
             let opacity = {{ \App\Models\Setting::get('window_opacity', config('purrai.window.opacity')) }};
             let blur = {{ \App\Models\Setting::get('window_blur', config('purrai.window.blur', 48)) }};
             let disableTransparency = {{ \App\Models\Setting::get('disable_transparency_maximized', true) ? 'true' : 'false' }};
@@ -55,8 +77,8 @@
         })();
 
         // Initialize theme mode - MUST run before any rendering
-        (function () {
-            const themeMode = '{{ \App\Models\Setting::get("theme_mode", "automatic") }}';
+        (function() {
+            const themeMode = '{{ \App\Models\Setting::get('theme_mode', 'automatic') }}';
             const html = document.documentElement;
 
             // Force remove dark class first
@@ -75,16 +97,16 @@
     </script>
 
     <main class="glass-panel">
-        <x-app-header>
+        <x-ui.app-header>
             {{ $headerActions ?? '' }}
-        </x-app-header>
+        </x-ui.app-header>
 
         <div class="page-content">
             {{ $slot }}
         </div>
     </main>
 
-    <x-ui.toast />
+    <x-ui.form.toast />
 
     @livewireScripts
 
@@ -93,7 +115,7 @@
         var isWindowMaximized = localStorage.getItem('is_window_maximized') === 'true';
 
         // Check and apply transparency settings on page load (make it global)
-        window.checkTransparencySettings = function () {
+        window.checkTransparencySettings = function() {
             const disableTransparency = localStorage.getItem('disable_transparency_maximized') === 'true';
             const userOpacity = parseInt(localStorage.getItem('window_opacity')) || 90;
             const userBlur = parseInt(localStorage.getItem('window_blur')) || 48;

@@ -112,8 +112,8 @@ if (! function_exists('getUserName')) {
     }
 }
 
-if (! function_exists('hasSettingsAlert')) {
-    function hasSettingsAlert(): bool
+if (! function_exists('hasWhisperPendingAlert')) {
+    function hasWhisperPendingAlert(): bool
     {
         return WhisperService::hasPendingConfiguration();
     }

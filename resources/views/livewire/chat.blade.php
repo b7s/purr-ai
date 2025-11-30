@@ -7,14 +7,14 @@
             @click="startNewConversation()"
             x-transition
         >
-            <x-ui.icon-button
+            <x-ui.form.icon-button
                 icon="plus"
                 :title="__('ui.tooltips.new_chat')"
             />
         </span>
 
         <div class="relative">
-            <x-ui.icon-button
+            <x-ui.form.icon-button
                 @click="open = !open"
                 icon="clock-rotate-right"
                 :title="__('ui.tooltips.history')"
@@ -40,7 +40,7 @@
                             x-cloak
                             class="history-search-field flex items-center gap-2"
                         >
-                            <x-ui.input
+                            <x-ui.form.input
                                 type="search"
                                 @keydown.escape.stop.prevent="closeSearch()"
                                 autocomplete="off"
@@ -48,7 +48,7 @@
                                 x-ref="historySearchInput"
                                 x-model="searchTerm"
                                 class="rounded-lg px-2 py-1"
-                            ></x-ui.input>
+                            ></x-ui.form.input>
                         </div>
 
                         <button
@@ -291,6 +291,31 @@
                         if (!textarea) return;
                         $wire.set('message', textarea.value);
                         this.adjustHeight();
+                    },
+                    async handlePaste(event) {
+                        const items = event.clipboardData?.items;
+                        if (!items) return;
+                
+                        const files = [];
+                        for (let i = 0; i < items.length; i++) {
+                            const item = items[i];
+                            if (item.kind === 'file') {
+                                const file = item.getAsFile();
+                                if (file) {
+                                    files.push(file);
+                                }
+                            }
+                        }
+                
+                        if (files.length > 0) {
+                            event.preventDefault();
+                
+                            $wire.uploadMultiple('pendingFiles', files, () => {
+                                console.log('Files uploaded successfully');
+                            }, (error) => {
+                                console.error('Upload error:', error);
+                            });
+                        }
                     }
                 }"
                 x-init="const textarea = $refs.messageInput;
@@ -312,6 +337,7 @@
                     @input.debounce.200ms="syncValue()"
                     @input="adjustHeight()"
                     @change="$wire.call('saveDraft')"
+                    @paste="handlePaste($event)"
                     placeholder="{{ __('chat.placeholder') }}"
                     rows="1"
                     maxlength="{{ config('purrai.limits.max_message_length') }}"
@@ -321,21 +347,21 @@
             </div>
 
             <div class="flex gap-1">
-                <x-ui.button
+                <x-ui.form.button
                     type="button"
                     variant="ghost"
                     icon="microphone"
                     :title="__('ui.tooltips.record_audio')"
                     id="audio_device-button"
                 />
-                <x-ui.button
+                <x-ui.form.button
                     type="submit"
                     variant="primary"
                     :title="__('ui.tooltips.send_message')"
                     id="send-message-btn"
                 >
                     <i class="iconoir-arrow-up text-xl font-bold stroke-[3px]"></i>
-                </x-ui.button>
+                </x-ui.form.button>
             </div>
 
             {{-- Speech Recognition Translations --}}

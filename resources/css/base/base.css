@@ -45,3 +45,89 @@ body {
 body.web-mode {
     @apply bg-neutral-100 dark:bg-slate-950;
 }
+
+/* Widget Styles */
+.widgets {
+    @apply mt-6 flex justify-center;
+}
+
+.upcoming-schedules-widget {
+    @apply max-w-sm w-full;
+}
+
+.widget-header {
+    @apply mb-2;
+}
+
+.widget-title {
+    @apply text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5;
+}
+
+.widget-icon {
+    @apply text-slate-600 dark:text-slate-400 text-base;
+}
+
+.widget-content {
+    @apply space-y-2;
+}
+
+.empty-state {
+    @apply text-center py-4;
+}
+
+.empty-message {
+    @apply text-slate-600 dark:text-slate-400 text-sm mb-1;
+}
+
+.empty-hint {
+    @apply text-slate-500 dark:text-slate-500 text-xs;
+}
+
+.schedules-list {
+    @apply space-y-2;
+}
+
+.schedule-item {
+    @apply flex gap-2.5 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50;
+    @apply hover:bg-white/80 dark:hover:bg-slate-800/80 transition-colors duration-200;
+}
+
+.schedule-date {
+    @apply flex flex-col items-center justify-center min-w-[2.5rem] bg-slate-100 dark:bg-slate-700 rounded-md p-1.5;
+}
+
+.schedule-day {
+    @apply text-lg font-bold text-slate-800 dark:text-slate-100 leading-none;
+}
+
+.schedule-month {
+    @apply text-[10px] font-medium text-slate-600 dark:text-slate-400 uppercase mt-0.5;
+}
+
+.schedule-details {
+    @apply flex-1 min-w-0;
+}
+
+.schedule-name {
+    @apply text-sm font-semibold text-slate-800 dark:text-slate-100 truncate text-left;
+}
+
+.schedule-description {
+    @apply text-xs text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-1;
+}
+
+.schedule-meta {
+    @apply flex items-center gap-1.5 mt-1;
+}
+
+.schedule-time {
+    @apply text-[11px] text-slate-500 dark:text-slate-500 font-medium;
+}
+
+.schedule-badge {
+    @apply text-[10px] px-1.5 py-0.5 rounded-full font-medium;
+}
+
+.schedule-badge.recurring {
+    @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400;
+}
