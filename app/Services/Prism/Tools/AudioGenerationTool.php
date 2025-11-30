@@ -27,7 +27,7 @@ class AudioGenerationTool
             ->as('generate_audio')
             ->for(
                 'Generate audio/speech from text. Use this tool when the user asks to create audio, generate speech, or convert text to speech. '.
-                'The generated audio will be saved and displayed to the user.'
+                'The generated audio will be saved and displayed to the user. If the user does not specify the voice, use "alloy" voice.'
             )
             ->withParameter(new StringSchema(
                 'text',
@@ -99,23 +99,17 @@ class AudioGenerationTool
                 ]);
             }
 
-            $providerOptions = [];
-
-            if ($voice) {
-                $providerOptions['voice'] = $voice;
-            }
-
             $request = Prism::audio()
                 ->using($provider, $config['model'], ['api_key' => $config['api_key']])
-                ->withPrompt($text);
+                ->withInput($text);
 
-            if (! empty($providerOptions)) {
-                $request->withProviderOptions($providerOptions);
+            if ($voice) {
+                $request->withVoice($voice);
             }
 
-            $response = $request->generate();
+            $response = $request->asAudio();
 
-            $audioData = $response->audio;
+            $audioData = $response->audio->rawContent();
 
             if (empty($audioData)) {
                 return json_encode([
