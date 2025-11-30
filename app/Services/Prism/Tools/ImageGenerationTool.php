@@ -36,7 +36,7 @@ class ImageGenerationTool
             ->withParameter(new EnumSchema(
                 'size',
                 'Image size/dimensions',
-                ['1024x1024', '1024x1536', '1536x1024']
+                ['1024x1024', '1024x1536', '1536x1024', '2048x2048']
             ), required: false)
             ->using(function (string $prompt, ?string $size = null): string {
                 return self::generateImage($prompt, $size);
@@ -105,7 +105,7 @@ class ImageGenerationTool
                 ->using($provider, $config['model'], ['api_key' => $config['api_key']])
                 ->withPrompt($prompt)
                 ->withClientOptions([
-                    'timeout' => 300, // 5 minutes for image generation
+                    'timeout' => config('purrai.limits.timeout'),
                     'connect_timeout' => 30,
                 ]);
 
@@ -147,11 +147,6 @@ class ImageGenerationTool
                     ];
                 }
             }
-
-            Log::info('ImageGenerationTool: Image generated successfully', [
-                'prompt' => $prompt,
-                'images_count' => \count($savedImages),
-            ]);
 
             return json_encode([
                 'success' => true,
