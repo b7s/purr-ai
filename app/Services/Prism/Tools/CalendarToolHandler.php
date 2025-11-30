@@ -91,12 +91,12 @@ class CalendarToolHandler
                 $now = \Carbon\Carbon::now();
 
                 if ($order === 'upcoming') {
-                    $schedules = $query->get()->filter(fn ($schedule) => $schedule->periods->contains(fn ($period) => $period->start_date_time->gte($now)))
-                        ->sortBy(fn ($schedule) => $schedule->periods->min('start_date_time'))
+                    $schedules = $query->get()->filter(fn($schedule) => $schedule->periods->contains(fn($period) => $period->start_date_time->gte($now)))
+                        ->sortBy(fn($schedule) => $schedule->periods->min('start_date_time'))
                         ->take($limit);
                 } else {
-                    $schedules = $query->get()->filter(fn ($schedule) => $schedule->periods->contains(fn ($period) => $period->end_date_time->lte($now)))
-                        ->sortByDesc(fn ($schedule) => $schedule->periods->max('end_date_time'))
+                    $schedules = $query->get()->filter(fn($schedule) => $schedule->periods->contains(fn($period) => $period->end_date_time->lte($now)))
+                        ->sortByDesc(fn($schedule) => $schedule->periods->max('end_date_time'))
                         ->take($limit);
                 }
             } else {
@@ -104,21 +104,21 @@ class CalendarToolHandler
 
                 if (! empty($start_date)) {
                     $startDate = \Carbon\Carbon::parse($start_date);
-                    $schedules = $schedules->filter(fn ($schedule) => $schedule->periods->contains(fn ($period) => $period->start_date_time->gte($startDate)));
+                    $schedules = $schedules->filter(fn($schedule) => $schedule->periods->contains(fn($period) => $period->start_date_time->gte($startDate)));
                 }
 
                 if (! empty($end_date)) {
                     $endDate = \Carbon\Carbon::parse($end_date);
-                    $schedules = $schedules->filter(fn ($schedule) => $schedule->periods->contains(fn ($period) => $period->end_date_time->lte($endDate)));
+                    $schedules = $schedules->filter(fn($schedule) => $schedule->periods->contains(fn($period) => $period->end_date_time->lte($endDate)));
                 }
             }
 
-            $appointments = $schedules->map(fn ($schedule) => [
+            $appointments = $schedules->map(fn($schedule) => [
                 'id' => $schedule->id,
                 'title' => $schedule->name,
                 'description' => $schedule->metadata['description'] ?? null,
                 'type' => $schedule->schedule_type?->value ?? 'custom',
-                'periods' => $schedule->periods->map(fn ($period) => [
+                'periods' => $schedule->periods->map(fn($period) => [
                     'start' => $period->start_date_time->toIso8601String(),
                     'end' => $period->end_date_time->toIso8601String(),
                 ])->toArray(),
@@ -303,15 +303,15 @@ class CalendarToolHandler
             $slots = $calendar->getBookableSlots($date, 60, 0);
 
             $busySlots = collect($slots)
-                ->filter(fn ($slot) => ! $slot['is_available'])
-                ->map(fn ($slot) => [
+                ->filter(fn($slot) => ! $slot['is_available'])
+                ->map(fn($slot) => [
                     'start' => $slot['start_time'],
                     'end' => $slot['end_time'],
                 ])
                 ->values()
                 ->toArray();
 
-            $availableCount = collect($slots)->filter(fn ($slot) => $slot['is_available'])->count();
+            $availableCount = collect($slots)->filter(fn($slot) => $slot['is_available'])->count();
             $busyCount = \count($busySlots);
 
             $summary = $busyCount === 0
@@ -400,6 +400,7 @@ class CalendarToolHandler
         } catch (\Throwable $e) {
             Log::error('CalendarTool: Failed to create reminder', [
                 'schedule_id' => $schedule_id,
+                'minutes_before' => $minutes_before,
                 'error' => $e->getMessage(),
             ]);
 
@@ -421,7 +422,7 @@ class CalendarToolHandler
 
             $reminders = $query->orderBy('remind_at')->get();
 
-            $remindersList = $reminders->map(fn ($reminder) => [
+            $remindersList = $reminders->map(fn($reminder) => [
                 'id' => $reminder->id,
                 'schedule_id' => $reminder->schedule_id,
                 'schedule_title' => $reminder->schedule->name ?? 'Unknown',

@@ -76,40 +76,28 @@ class PrismService
                 if ($event instanceof TextDeltaEvent) {
                     yield $event->delta;
                 } elseif ($event instanceof ToolCallEvent) {
-                    Log::info('PrismService: Tool call detected', [
-                        'tool_name' => $event->toolCall->name,
-                        'tool_id' => $event->toolCall->id,
-                        'arguments' => $event->toolCall->arguments(),
-                        'message_id' => $event->messageId,
-                    ]);
+                    // Tool call detected
 
-                    yield "\n\n<span class=\"tool-calling\">🪄 ".__('chat.tool_calling', ['tool' => str($event->toolCall->name)->headline()])."</span>\n\n";
+                    yield "\n\n<span class=\"tool-calling\">🪄 " . __('chat.tool_calling', ['tool' => str($event->toolCall->name)->headline()]) . "</span>\n\n";
                 } elseif ($event instanceof ToolResultEvent) {
-                    Log::info('PrismService: Tool result received', [
-                        'tool_id' => $event->toolResult->toolCallId,
-                        'success' => $event->success,
-                        'result' => $event->toolResult->result,
-                        'error' => $event->error,
-                    ]);
+                    // Tool result received
 
                     $result = $event->toolResult->result;
                     if (\is_string($result)) {
                         $decoded = json_decode($result, true);
 
                         if (isset($decoded['media']) && \is_array($decoded['media'])) {
-                            yield "\n\n<!-- MEDIA_START -->".json_encode($decoded['media'])."<!-- MEDIA_END -->\n\n";
+                            yield "\n\n<!-- MEDIA_START -->" . json_encode($decoded['media']) . "<!-- MEDIA_END -->\n\n";
                         } elseif (isset($decoded['user_message'])) {
                             yield "\n\n{$decoded['user_message']}\n\n";
                         } elseif ($event->success && ! isset($decoded['media'])) {
-                            yield "\n\n✅ ".__('chat.tool_success')."\n\n";
+                            yield "\n\n✅ " . __('chat.tool_success') . "\n\n";
                         } elseif (! $event->success) {
-                            yield "\n\n❌ ".__('chat.tool_failed', ['error' => $event->error])."\n\n";
+                            yield "\n\n❌ " . __('chat.tool_failed', ['error' => $event->error]) . "\n\n";
                         }
                     }
                 } elseif ($event instanceof StreamEndEvent) {
-                    Log::info('PrismService: Stream ended', [
-                        'message_id' => $event->id ?? null,
-                    ]);
+                    // Stream ended
                     // Don't break here - tool calls may follow
                 }
             }
@@ -141,7 +129,7 @@ class PrismService
             ->withTools($this->buildTools())
             ->withMaxSteps(3)
             ->withClientOptions([
-                'timeout' => 600, // timeout for AI requests
+                'timeout' => config('purrai.limits.timeout'), // timeout for AI requests
                 'connect_timeout' => 30,
             ]);
     }
@@ -250,13 +238,6 @@ class PrismService
 
             return null;
         }
-
-        Log::info('PrismService: Creating media from attachment', [
-            'type' => $mediaType,
-            'path' => $path,
-            'filename' => $attachment->filename,
-            'mime_type' => $attachment->mime_type,
-        ]);
 
         return match ($mediaType) {
             'image' => Image::fromLocalPath($path),

@@ -7,6 +7,7 @@ return [
         'max_message_length' => env('PURRAI_MAX_MESSAGE_LENGTH', 10000),
         'truncate_words' => 45,
         'conversations_per_page' => 10,
+        'timeout' => env('PURRAI_TIMEOUT', 600),
     ],
 
     'ui' => [
