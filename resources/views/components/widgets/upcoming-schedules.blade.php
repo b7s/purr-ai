@@ -72,10 +72,15 @@
                                             $startTime = Carbon::parse($firstPeriod->start_time);
                                             $now = now();
                                             $isToday = $schedule->start_date->isToday() && $now->lt($startTime);
+                                            $isTomorrow = $schedule->start_date->isTomorrow();
                                         @endphp
                                         @if ($isToday)
                                             <span class="schedule-badge today">
                                                 {{ __('chat.widgets.upcoming_schedules.today') }}
+                                            </span>
+                                        @elseif ($isTomorrow)
+                                            <span class="schedule-badge tomorrow">
+                                                {{ __('chat.widgets.upcoming_schedules.tomorrow') }}
                                             </span>
                                         @endif
                                     </span>

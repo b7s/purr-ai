@@ -159,6 +159,7 @@ return [
             'create_hint' => 'Chat with me to create a new schedule!',
             'recurring' => 'Recurring',
             'today' => 'Today',
+            'tomorrow' => 'Tomorrow',
             'tell_me_more_abour_schedule' => 'Tell me more about this appointment: :name',
         ],
     ],
