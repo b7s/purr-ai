@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Native\Desktop\Facades\System;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
             $timezone = \App\Models\Setting::get('timezone');
 
             if (empty($timezone)) {
-                return;
+                $timezone = System::timezone();
             }
 
             // Validate timezone
@@ -35,7 +36,6 @@ class AppServiceProvider extends ServiceProvider
             config(['app.timezone' => $timezone]);
             date_default_timezone_set($timezone);
         } catch (\Exception) {
-            // Silently fail if settings table doesn't exist yet
         }
     }
 }

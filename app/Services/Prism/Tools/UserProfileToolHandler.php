@@ -6,6 +6,7 @@ namespace App\Services\Prism\Tools;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
+use Native\Desktop\Facades\System;
 
 class UserProfileToolHandler
 {
@@ -18,7 +19,7 @@ class UserProfileToolHandler
                 'mascot_name' => Setting::get('mascot_name', config('app.name')),
                 'response_detail' => Setting::get('response_detail', 'detailed'),
                 'response_tone' => Setting::get('response_tone', 'normal'),
-                'timezone' => Setting::get('timezone', config('app.timezone')),
+                'timezone' => Setting::get('timezone', System::timezone() ?? config('app.timezone')),
                 'respond_as_cat' => (bool) Setting::get('respond_as_cat', false),
             ];
 

@@ -19,9 +19,9 @@ class UserProfileTool
         return (new Tool)
             ->as('user_profile')
             ->for(
-                'Manage user profile settings and preferences. Use this tool to get or update user information like name, description, response preferences, and timezone. '.
-                'When the user asks about their profile or wants to update their preferences, use this tool. '.
-                'If user information is missing and needed, ask the user to provide it.'
+                'Manage user profile settings and preferences. Use this tool to get or update user information like name, description, response preferences, and timezone. ' .
+                    'When the user asks about their profile or wants to update their preferences, use this tool. ' .
+                    'If user information is missing and needed, ask the user to provide it.'
             )
             ->withParameter(new EnumSchema(
                 'action',
@@ -48,7 +48,7 @@ class UserProfileTool
             ), required: false)
             ->withParameter(new StringSchema(
                 'timezone',
-                'User timezone in IANA format (e.g., America/New_York, Europe/London, Asia/Tokyo)'
+                'User timezone in IANA format (e.g., America/New_York, Europe/London, Asia/Tokyo, America/Sao_Paulo)'
             ), required: false)
             ->using(function (
                 string $action,

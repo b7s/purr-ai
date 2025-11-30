@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Services\WhisperService;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
+use Native\Desktop\Facades\System;
 
 class Settings extends Component
 {
@@ -223,7 +224,7 @@ class Settings extends Component
     {
         // Validate timezone
         if (! empty($this->timezone) && ! in_array($this->timezone, timezone_identifiers_list(), true)) {
-            $this->timezone = config('app.timezone');
+            $this->timezone = System::timezone() ?? config('app.timezone');
         }
 
         $this->save();
@@ -320,7 +321,7 @@ class Settings extends Component
         }
 
         return array_values(array_unique(array_filter(array_map(
-            fn ($model) => trim($model),
+            fn($model) => trim($model),
             explode(',', $models)
         ))));
     }
