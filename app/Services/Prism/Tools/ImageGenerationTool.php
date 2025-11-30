@@ -26,8 +26,8 @@ class ImageGenerationTool
         return (new Tool)
             ->as('generate_image')
             ->for(
-                'Generate images based on text descriptions. Use this tool when the user asks to create, generate, or draw an image. '.
-                'Provide detailed descriptions for better results. The generated image will be saved and displayed to the user.'
+                'Generate images based on text descriptions. Use this tool when the user asks to create, generate, or draw an image. ' .
+                    'Provide detailed descriptions for better results. The generated image will be saved and displayed to the user.'
             )
             ->withParameter(new StringSchema(
                 'prompt',
@@ -36,7 +36,7 @@ class ImageGenerationTool
             ->withParameter(new EnumSchema(
                 'size',
                 'Image size/dimensions',
-                ['1024x1024', '1024x1536', '1536x1024', '2048x2048']
+                ['1024x1024', '1024x1536', '1536x1024', 'auto']
             ), required: false)
             ->using(function (string $prompt, ?string $size = null): string {
                 return self::generateImage($prompt, $size);
@@ -127,7 +127,7 @@ class ImageGenerationTool
             $savedImages = [];
 
             foreach ($images as $index => $image) {
-                $filename = 'generated_'.time().'_'.$index.'.png';
+                $filename = 'generated_' . time() . '_' . $index . '.png';
                 $path = "generated_images/{$filename}";
 
                 if ($image->base64) {

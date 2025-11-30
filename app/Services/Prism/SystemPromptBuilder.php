@@ -23,7 +23,7 @@ class SystemPromptBuilder
 
     public function __construct()
     {
-        $this->mascotName = Setting::get('mascot_name', '') ?: config('app.name');
+        $this->mascotName = Setting::get('mascot_name', config('app.name'));
         $this->userName = Setting::get('user_name', '');
         $this->userDescription = Setting::get('user_description', '');
         $this->responseDetail = Setting::get('response_detail', 'detailed');
@@ -57,6 +57,10 @@ class SystemPromptBuilder
     {
         $prompt = "You are {$this->mascotName}, a helpful and friendly AI assistant mascot.";
 
+        if ($this->mascotName === config('app.name')) {
+            $prompt .= 'A cute little black kitten.';
+        }
+
         if (! empty($this->userName)) {
             $prompt .= " You are always ready to help your owner and tutor, {$this->userName} (his/her name), with whatever they need.";
         }
@@ -84,9 +88,9 @@ class SystemPromptBuilder
 
     private function buildGeneralInstructions(): string
     {
-        return 'Always be helpful and accurate. If you are unsure about something, say so. '.
-        'Never remove, delete, or wipe anything without the user\'s direct permission. '.
-        'Format your responses using Markdown when appropriate for better readability.';
+        return 'Always be helpful and accurate. If you are unsure about something, say so. ' .
+            'Never remove, delete, or wipe anything without the user\'s direct permission. ' .
+            'Format your responses using Markdown when appropriate for better readability.';
     }
 
     private function buildMissingProfileInstructions(): string
@@ -105,11 +109,11 @@ class SystemPromptBuilder
             return '';
         }
 
-        return 'IMPORTANT: If the user profile is incomplete (missing: '.implode(', ', $missing).'). '.
-            'When the user asks personal questions like "what is my name?" or similar, '.
-            'use the user_profile tool with action "get" first to check current data, '.
-            'then politely ask them to provide the missing information. '.
-            'Once they provide it, use the user_profile tool with action "update" to save it.'.
+        return 'IMPORTANT: If the user profile is incomplete (missing: ' . implode(', ', $missing) . '). ' .
+            'When the user asks personal questions like "what is my name?" or similar, ' .
+            'use the user_profile tool with action "get" first to check current data, ' .
+            'then politely ask them to provide the missing information. ' .
+            'Once they provide it, use the user_profile tool with action "update" to save it.' .
             'Inform him that he can adjust the options by going to "Settings".';
     }
 
@@ -143,9 +147,9 @@ class SystemPromptBuilder
         $datetime = Carbon::now(date_default_timezone_get())->toIso8601String();
         $osInfo = $this->getOperatingSystemInfo();
 
-        return "User's datetime now in ISO 8601 format is: $datetime. ".
-            "User's operating system: {$osInfo}. ".
-            'Format the returned text with markdown in important places with bold, italics, link, quote, etc. '.
+        return "User's datetime now in ISO 8601 format is: $datetime. " .
+            "User's operating system: {$osInfo}. " .
+            'Format the returned text with markdown in important places with bold, italics, link, quote, etc. ' .
             'Never return technical system information, such as column names, variables, functions, etc.';
     }
 

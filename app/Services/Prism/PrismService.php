@@ -76,24 +76,20 @@ class PrismService
                 if ($event instanceof TextDeltaEvent) {
                     yield $event->delta;
                 } elseif ($event instanceof ToolCallEvent) {
-                    // Tool call detected
-
-                    yield "\n\n<span class=\"tool-calling\">🪄 ".__('chat.tool_calling', ['tool' => str($event->toolCall->name)->headline()])."</span>\n\n";
+                    yield "\n\n<span class=\"tool-calling\">🪄 " . __('chat.tool_calling', ['tool' => str($event->toolCall->name)->headline()]) . "</span>\n\n";
                 } elseif ($event instanceof ToolResultEvent) {
-                    // Tool result received
-
                     $result = $event->toolResult->result;
                     if (\is_string($result)) {
                         $decoded = json_decode($result, true);
 
                         if (isset($decoded['media']) && \is_array($decoded['media'])) {
-                            yield "\n\n<!-- MEDIA_START -->".json_encode($decoded['media'])."<!-- MEDIA_END -->\n\n";
+                            yield "\n\n<!-- MEDIA_START -->" . json_encode($decoded['media']) . "<!-- MEDIA_END -->\n\n";
                         } elseif (isset($decoded['user_message'])) {
                             yield "\n\n{$decoded['user_message']}\n\n";
                         } elseif ($event->success && ! isset($decoded['media'])) {
-                            yield "\n\n✅ ".__('chat.tool_success')."\n\n";
+                            yield "\n\n✅ " . __('chat.tool_success') . "\n\n";
                         } elseif (! $event->success) {
-                            yield "\n\n❌ ".__('chat.tool_failed', ['error' => $event->error])."\n\n";
+                            yield "\n\n❌ " . __('chat.tool_failed', ['error' => $event->error]) . "\n\n";
                         }
                     }
                 } elseif ($event instanceof StreamEndEvent) {

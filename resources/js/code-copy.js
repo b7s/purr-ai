@@ -89,9 +89,11 @@ async function copyCode(preElement, button) {
     const labels = clone.querySelectorAll(".code-language-label");
     labels.forEach((label) => label.remove());
 
-    // Get the text content (this will be plain text without HTML formatting)
-    const text = clone.textContent || clone.innerText;
-    const cleanText = text.trim();
+    // Get the text content (plain text, preserving indentation/line breaks)
+    const textContent = clone.textContent || clone.innerText || "";
+
+    // Normalize non-breaking spaces but keep original spacing/newlines
+    const cleanText = textContent.replace(/\u00A0/g, " ");
 
     try {
         await navigator.clipboard.writeText(cleanText);

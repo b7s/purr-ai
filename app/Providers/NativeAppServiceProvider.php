@@ -12,6 +12,7 @@ use Native\Desktop\Facades\Dock;
 use Native\Desktop\Facades\Menu;
 use Native\Desktop\Facades\MenuBar;
 use Native\Desktop\Facades\Window;
+use App\Events\StreamCompletedNotificationClicked;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {
@@ -29,6 +30,10 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
+        Event::listen(StreamCompletedNotificationClicked::class, function (StreamCompletedNotificationClicked $event) {
+            $event->handle();
+        });
+
         Dock::icon(public_path('icon.png'));
 
         // $this->createMenuBar();

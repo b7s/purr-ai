@@ -52,7 +52,7 @@ body.web-mode {
 }
 
 .upcoming-schedules-widget {
-    @apply max-w-sm w-full bg-slate-50/60 dark:bg-slate-800/60;
+    @apply max-w-sm w-full bg-slate-50/60 dark:bg-slate-800/60 p-3;
 }
 
 .widget-header {

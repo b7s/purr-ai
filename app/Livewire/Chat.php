@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Events\StreamCompletedNotificationClicked;
 use App\Models\Attachment;
 use App\Models\Conversation;
 use App\Models\Message;
@@ -13,10 +14,20 @@ use App\Services\Prism\ProviderConfig;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
+use Native\Desktop\Facades\Notification;
+use Native\Desktop\Facades\Window;
+use Native\Desktop\Facades\Shell;
 
 class Chat extends Component
 {
     use WithFileUploads;
+
+    /**
+     * @var array<string, string>
+     */
+    protected $listeners = [
+        'open-external-link' => 'openExternalLink',
+    ];
 
     public ?int $conversationId = null;
 
@@ -90,6 +101,22 @@ class Chat extends Component
         $this->conversationId = $conversationId;
         $this->loadDraft();
         $this->redirect(route('chat', ['conversationId' => $conversationId]));
+    }
+
+    /**
+     * Open an external link using NativePHP's Shell
+     */
+    public function openExternalLink(string $url): void
+    {
+        try {
+            Shell::openExternal($url);
+        } catch (\Exception $e) {
+            if (function_exists('shell_exec') && !is_windows()) {
+                shell_exec('xdg-open ' . escapeshellarg($url));
+            } else {
+                shell_exec('start ' . escapeshellarg($url));
+            }
+        }
     }
 
     public function loadMoreHistoryConversations(): array
@@ -216,7 +243,7 @@ class Chat extends Component
         $hasAttachments = \count($this->pendingAttachments) > 0;
 
         $this->validate([
-            'message' => $hasAttachments ? 'nullable|string|max:'.config('purrai.limits.max_message_length') : 'required|string|max:'.config('purrai.limits.max_message_length'),
+            'message' => $hasAttachments ? 'nullable|string|max:' . config('purrai.limits.max_message_length') : 'required|string|max:' . config('purrai.limits.max_message_length'),
         ]);
 
         if (empty($this->selectedModel)) {
@@ -301,9 +328,17 @@ class Chat extends Component
         return 'document';
     }
 
-    public function streamComplete(): void
+    public function streamComplete(bool $isFocused = true): void
     {
         $this->isProcessing = false;
+
+        // Only show notification if the document is not focused
+        if (!$isFocused) {
+            Notification::title(__('chat.stream_complete'))
+                ->message(__('chat.stream_complete_click_to_open'))
+                ->event(StreamCompletedNotificationClicked::class)
+                ->show();
+        }
     }
 
     public function updatedPendingFiles(): void
@@ -355,7 +390,7 @@ class Chat extends Component
             ->selectRaw('id, SUBSTR(title, 1, 60) as title, created_at, updated_at');
 
         if (! empty($this->searchQuery)) {
-            $query->where('title', 'like', '%'.$this->searchQuery.'%');
+            $query->where('title', 'like', '%' . $this->searchQuery . '%');
         }
 
         return $query
@@ -363,7 +398,7 @@ class Chat extends Component
             ->skip($offset)
             ->take($limit)
             ->get()
-            ->map(fn ($conv) => [
+            ->map(fn($conv) => [
                 'id' => $conv->id,
                 'title' => $conv->title,
                 'created_at' => $conv->created_at->format(__('chat.date_format')),

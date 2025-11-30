@@ -27,7 +27,7 @@
     }
 
     .welcome-logo {
-        @apply w-42! h-42! mb-4;
+        @apply w-38! h-38! mb-4;
     }
 
     .animate-welcome-logo {
