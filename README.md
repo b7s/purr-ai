@@ -76,7 +76,7 @@ cp .env.example .env
 php artisan native:install --publish
 ```
 
-#### Fix Linux Permissions
+#### Fix Linux Permissions for production
 
 After run `native:install`, add "afterInstall" to your `nativephp/electron/electron-builder.mjs` (if "deb" not exists, add it after "linux"):
 
@@ -98,11 +98,22 @@ Make sure to run `sudo chmod +x nativephp/electron/electron-builder.mjs` after i
 
 ```bash
 # Development mode
-php artisan native:serve
+composer native:dev
 
 # Production build
 php artisan native:build
 ```
+
+#### Linux permissions for development
+
+Ensure the correct privileges for Electron while performing your tests. Use the command:
+
+```bash
+bash scripts/fix-electron-sandbox.sh
+```
+
+> _Make the file executable before running it: `chmod +x scripts/fix-electron-sandbox.sh`_
+
 
 ### First Time Setup
 
@@ -200,7 +211,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Made with ❤️ and 🐱 by the PurrAI Team**
+**Made with ❤️ and 🐱 by the Bruno**
 
 [Report Bug](https://github.com/yourusername/purrai/issues) • [Request Feature](https://github.com/yourusername/purrai/issues)
 

@@ -95,6 +95,10 @@
         </x-ui.form.tabs>
     </div>
 
+    <div class="mt-auto mb-8 text-center text-sm text-slate-500">
+        Made with ❤️ and 🐱 by the Bruno
+    </div>
+
     {{-- Saving Indicator --}}
     <div
         wire:loading
