@@ -73,7 +73,7 @@ php artisan native:install --publish
 
 After run `native:install`, add "afterInstall" to your `nativephp/electron/electron-builder.mjs` (if "deb" not exists, add it after "linux"):
 
-```json
+```js
    linux: {
       /*...*/
    },
