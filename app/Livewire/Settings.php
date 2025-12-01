@@ -7,6 +7,7 @@ namespace App\Livewire;
 use App\Models\Setting;
 use App\Services\UpdateService;
 use App\Services\WhisperService;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
@@ -27,6 +28,8 @@ class Settings extends Component
     public string $responseDetail = 'detailed';
 
     public string $responseTone = 'normal';
+
+    public string $responseLanguage = '';
 
     public bool $respondAsACat = false;
 
@@ -78,6 +81,7 @@ class Settings extends Component
         $this->userDescription = Setting::get('user_description', '');
         $this->responseDetail = Setting::get('response_detail', 'detailed');
         $this->responseTone = Setting::get('response_tone', 'normal');
+        $this->responseLanguage = Setting::get('response_language', config('app.locale'));
         $this->respondAsACat = (bool) Setting::get('respond_as_cat', false);
         $this->timezone = Setting::get('timezone', config('app.timezone'));
 
@@ -100,6 +104,7 @@ class Settings extends Component
         Setting::set('user_description', $this->userDescription);
         Setting::set('response_detail', $this->responseDetail);
         Setting::set('response_tone', $this->responseTone);
+        Setting::set('response_language', $this->responseLanguage);
         Setting::set('respond_as_cat', $this->respondAsACat);
         Setting::set('timezone', $this->timezone);
 
@@ -142,6 +147,17 @@ class Settings extends Component
     public function updatedResponseTone(): void
     {
         $this->save();
+    }
+
+    public function updatedResponseLanguage(): void
+    {
+        $this->save();
+
+        if (! empty($this->responseLanguage) && is_dir(lang_path($this->responseLanguage))) {
+            app()->setLocale($this->responseLanguage);
+        }
+
+        $this->dispatch('locale-changed', locale: $this->responseLanguage);
     }
 
     public function updatedRespondAsACat(): void
@@ -449,6 +465,44 @@ class Settings extends Component
         return Setting::getSpeechProviderOptions();
     }
 
+    public function getResponseLanguageOptions(): array
+    {
+        return Cache::rememberForever('app-locales-availible', function () {
+            $languages = [];
+            $langPath = lang_path();
+
+            if (! is_dir($langPath)) {
+                return $languages;
+            }
+
+            $directories = array_filter(scandir($langPath), function ($item) use ($langPath) {
+                return $item !== '.' && $item !== '..' && is_dir($langPath.'/'.$item);
+            });
+
+            $currentLocale = app()->getLocale();
+
+            foreach ($directories as $locale) {
+                // Temporarily switch locale to get translations
+                app()->setLocale($locale);
+
+                $flag = trans('chat.lang_flag');
+                $name = trans('chat.lang');
+
+                // Restore original locale
+                app()->setLocale($currentLocale);
+
+                // Build label with flag and name
+                if ($flag !== 'chat.lang_flag' && $name !== 'chat.lang') {
+                    $languages[$locale] = $flag.' '.$name;
+                } else {
+                    $languages[$locale] = $locale;
+                }
+            }
+
+            return $languages;
+        });
+    }
+
     public function openExternal(string $url): void
     {
         Shell::openExternal($url);
@@ -481,5 +535,10 @@ class Settings extends Component
     public function render(): mixed
     {
         return view('livewire.settings');
+    }
+
+    public static function deleteCaches(): void
+    {
+        Cache::forget('app-locales-availible');
     }
 }

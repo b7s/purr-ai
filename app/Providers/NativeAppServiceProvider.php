@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Events\StreamCompletedNotificationClicked;
+use App\Livewire\Settings;
 use App\Services\ChatService;
 use App\Services\UpdateService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Native\Desktop\Contracts\ProvidesPhpIni;
+use Native\Desktop\Events\Windows\WindowClosed;
 use Native\Desktop\Facades\Dock;
 use Native\Desktop\Facades\Menu;
 use Native\Desktop\Facades\MenuBar;
@@ -17,13 +19,13 @@ use Native\Desktop\Facades\Window;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {
-    private const MENUBAR_WIDTH = 480;
+    private const int MENUBAR_WIDTH = 480;
 
-    private const MENUBAR_HEIGHT = 550;
+    private const int MENUBAR_HEIGHT = 550;
 
-    private const MAIN_WINDOW_WIDTH = 900;
+    private const int MAIN_WINDOW_WIDTH = 900;
 
-    private const MAIN_WINDOW_HEIGHT = 650;
+    private const int MAIN_WINDOW_HEIGHT = 650;
 
     /**
      * Executed once the native application has been booted.
@@ -31,15 +33,13 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
-        Event::listen(StreamCompletedNotificationClicked::class, function (StreamCompletedNotificationClicked $event) {
-            $event->handle();
-        });
-
+        $this->setGlobalEventListener();
         $this->registerUpdateEvents();
         $this->checkForUpdatesIfNeeded();
 
         Dock::icon(public_path('icon.png'));
 
+        // @todo How do I make this work?
         // $this->createMenuBar();
         // $this->registerMenuEvents();
         $this->openMainWindow();
@@ -154,6 +154,17 @@ class NativeAppServiceProvider implements ProvidesPhpIni
         if ($updateService->shouldCheckForUpdates()) {
             $updateService->checkForUpdates();
         }
+    }
+
+    private function setGlobalEventListener(): void
+    {
+        Event::listen(StreamCompletedNotificationClicked::class, function (StreamCompletedNotificationClicked $event) {
+            $event->handle();
+        });
+
+        Event::listen(WindowClosed::class, function () {
+            Settings::deleteCaches();
+        });
     }
 
     /**

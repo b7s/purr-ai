@@ -5,6 +5,8 @@ declare(strict_types=1);
 return [
     'date_format' => 'm/d/Y H:i',
     'date_format_full' => 'l, d F, Y · H:i',
+    'lang' => 'English',
+    'lang_flag' => '🇺🇸',
 
     'title' => 'PurrAI',
     'welcome_title' => 'Welcome to :name',
@@ -47,7 +49,6 @@ return [
         'filter_models' => 'Filter models',
         'filter_placeholder' => 'Filter...',
     ],
-    'stream_complete' => 'Stream completed',
     'stream_complete_click_to_open' => 'Click to open the conversation',
 
     'speech_recognition' => [

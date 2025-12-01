@@ -8,6 +8,9 @@ use App\Models\Setting;
 use Carbon\Carbon;
 use Native\Desktop\Facades\AutoUpdater;
 
+/**
+ * Update App Service
+ */
 class UpdateService
 {
     private const int CHECK_INTERVAL_HOURS = 6;

@@ -53,12 +53,12 @@ final class SetupWhisperCommand extends Command
         }
 
         if (! $status['binary'] || $force) {
-            $this->info('Downloading Whisper binary...');
+            $this->info(__('settings.other.downloading_whisper_binary'));
 
             if ($whisperService->downloadBinary()) {
-                $this->info('✓ Whisper binary downloaded successfully');
+                $this->info('✓ Whisper: '.__('settings.other.download_complete'));
             } else {
-                $this->error('✗ Failed to download Whisper binary');
+                $this->error('✗ '.__('settings.other.whisper_binary_download_failed'));
 
                 return self::FAILURE;
             }

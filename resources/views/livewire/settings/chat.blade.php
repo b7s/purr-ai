@@ -6,7 +6,15 @@
     />
 </div>
 
-<div class="card space-y-6">
+<div class="card ai-response space-y-6">
+    <x-ui.form.select
+        :label="__('settings.chat.response_language')"
+        :description="__('settings.chat.response_language_description')"
+        :placeholder="__('settings.chat.response_language_placeholder')"
+        model="responseLanguage"
+        :options="$this->getResponseLanguageOptions()"
+    />
+
     <x-ui.form.radio-group
         :label="__('settings.chat.response_detail')"
         :options="$responseDetailOptions"
