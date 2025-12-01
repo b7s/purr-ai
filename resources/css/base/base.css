@@ -2,6 +2,10 @@
  * Base Styles for PurrAI
  */
 
+.link {
+    @apply no-underline border-0 border-b mb-px hover:border-b-2 hover:mb-0 cursor-pointer;
+}
+
 .page-content {
     @apply flex-1 overflow-y-auto;
     animation: fadeIn 0.3s ease-in-out;

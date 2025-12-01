@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Services\WhisperService;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
+use Native\Desktop\Facades\Shell;
 use Native\Desktop\Facades\System;
 
 class Settings extends Component
@@ -321,7 +322,7 @@ class Settings extends Component
         }
 
         return array_values(array_unique(array_filter(array_map(
-            fn($model) => trim($model),
+            fn ($model) => trim($model),
             explode(',', $models)
         ))));
     }
@@ -443,6 +444,13 @@ class Settings extends Component
     public function getSpeechProviderOptions(): array
     {
         return Setting::getSpeechProviderOptions();
+    }
+
+    public function openExternal(string $url): void
+    {
+        if (class_exists(Shell::class)) {
+            Shell::openExternal($url);
+        }
     }
 
     public function render(): mixed

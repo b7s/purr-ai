@@ -95,8 +95,12 @@
         </x-ui.form.tabs>
     </div>
 
-    <div class="mt-auto mb-8 text-center text-sm text-slate-500">
-        Made with ❤️ and 🐱 by the Bruno
+    <div class="mt-auto mb-8 text-center text-sm text-slate-500 select-none">
+        Made with ❤️ and 🐱 by <button
+            type="button"
+            wire:click="openExternal('https://github.com/b7s')"
+            class="link"
+        >Bruno</button>
     </div>
 
     {{-- Saving Indicator --}}
