@@ -145,7 +145,7 @@ return [
         'enable' => 'Enable Speech-to-Text',
         'enable_description' => 'Use voice input to send messages',
         'use_local' => 'Use Local Processing',
-        'use_local_description' => 'Process audio on your device for maximum privacy',
+        'use_local_description' => 'Process audio on your device for maximum privacy (try to auto detect)',
         'provider' => 'Speech Provider',
         'provider_description' => 'Select which AI provider to use for speech recognition',
         'provider_placeholder' => 'Select a provider...',
