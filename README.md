@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/images/mascot/logo.svg" width="120" alt="PurrAI">
+<img src="public/images/banner.webp" width="99%" alt="PurrAI">
 
 # {PurrAI}
 
@@ -16,15 +16,9 @@
 
 </div>
 
----
-
-> ⚠️ Attention: Under construction!
-
----
-
 ## 🌟 Overview
 
-**PurrAI** is a lightweight, cross-platform desktop application that brings the power of AI to your fingertips. With a cute black kitten mascot living in your system's menu bar, you can instantly access AI assistance for any task—from answering questions to analyzing images and documents.
+**PurrAI** is a lightweight, cross-platform desktop application that brings the power of AI to your fingertips. With a cute black kitten mascot living in your system's, you can instantly access AI assistance for any task—from answering questions to analyzing images and documents.
 
 Built with modern web technologies and packaged as a native application, PurrAI runs seamlessly on **Linux**, **Windows**, and **macOS** while maintaining a minimal footprint.
 
@@ -34,15 +28,14 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 
 ### 🎯 Core Capabilities
 
-- **🖱️ Menu Bar Integration** - Always accessible from your system tray/menu bar
+- **🔑 Multi-Provider Support** - Configure multiple AI providers (OpenAI, Anthropic, Ollama, etc.)
 - **💬 Intelligent Chat Interface** - Natural conversation with AI powered by PrismPHP
-- **📸 Screenshot Support** - Capture and analyze screen content instantly
 - **🖼️ Image Analysis** - Paste images for AI processing
-- **📎 Document Attachment** - Upload and analyze documents of any type
+- **📎 Document Attachment** - Upload and analyze documents of any type (past, drag  and drop, etc.)
+- **📝 Text Analysis** - Analyze text from any source.
 - **💾 Conversation History** - All chats saved locally in SQLite with search
 - **🌓 Dark/Light Mode** - Beautiful interface that adapts to your system theme
-- **🔑 Multi-Provider Support** - Configure multiple AI providers (OpenAI, Anthropic, Ollama, etc.)
-- **🔒 Privacy-Focused** - Local Ollama models run in your system without exposing your API keys
+- **🔒 Privacy-Focused** - Local Ollama models and WhisperCPP (for audio) run in your system without exposing your data
 - **🌐 i18n Support** - Available in multiple languages
 
 ---
@@ -167,7 +160,7 @@ For privacy-focused users, configure Ollama to run AI models locally:
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack (🙏 Acknowledgments)
 
 ### Backend
 - **[Laravel 12](https://laravel.com)** - Modern PHP framework
@@ -183,7 +176,7 @@ For privacy-focused users, configure Ollama to run AI models locally:
 
 ### Native Application
 - **[NativePHP 2](https://nativephp.com)** - Cross-platform desktop wrapper
-- **Electron** - Native application runtime
+- **[Electron](https://www.electronjs.org/)** - Native application runtime
 
 ---
 
@@ -202,16 +195,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **[Laravel](https://laravel.com)** - The PHP framework for web artisans
-- **[NativePHP](https://nativephp.com)** - Native desktop applications with PHP
-- **[PrismPHP](https://prismphp.com)** - Unified AI provider interface
-- **[Tailwind CSS](https://tailwindcss.com)** - Beautiful, responsive design
-- **[Alpine.js](https://alpinejs.dev)** - Lightweight JavaScript framework
 
 ---
 

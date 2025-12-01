@@ -79,8 +79,8 @@
 
     {{-- Drag & Drop Overlay --}}
     <div
-        x-show="isDragging"
         x-transition
+        x-show="isDragging"
         class="absolute inset-0 z-50 flex items-center justify-center purrai-opacity-box bg-slate-900/80! dark:bg-slate-950/90! pointer-events-none"
         style="display: none;"
     >
