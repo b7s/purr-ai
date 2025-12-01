@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/images/banner.webp" width="99%" alt="PurrAI">
+<img src="public/images/purrai-screen.webp" width="99%" alt="PurrAI">
 
 # {PurrAI}
 
@@ -178,6 +178,14 @@ For privacy-focused users, configure Ollama to run AI models locally:
 ### Native Application
 - **[NativePHP 2](https://nativephp.com)** - Cross-platform desktop wrapper
 - **[Electron](https://www.electronjs.org/)** - Native application runtime
+
+---
+
+## 🧪 Tests
+
+```bash
+composer test
+```
 
 ---
 
