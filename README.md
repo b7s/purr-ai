@@ -111,7 +111,7 @@ Ensure the correct privileges for Electron while performing your tests. Use the 
 bash scripts/fix-electron-sandbox.sh
 ```
 
-> _Make the file executable before running it: `chmod +x scripts/fix-electron-sandbox.sh`_
+> _Make the file executable before running it: `chmod +x scripts/fix-electron-sandbox.sh`. Sometimes you will need to run this command again as permissions may be lost after updating the project._
 
 
 ### First Time Setup
