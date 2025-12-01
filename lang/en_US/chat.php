@@ -27,6 +27,8 @@ return [
     'days_ago' => 'days ago',
     'attach_file' => 'Attach file',
     'take_screenshot' => 'Take screenshot',
+    'drop_files_here' => 'Drop files here',
+    'drop_files_description' => 'Release to attach files to your message',
     'recent_conversation' => 'Recent conversation :number',
     'created' => 'Created',
     'updated' => 'Updated',

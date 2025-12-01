@@ -81,7 +81,6 @@ class Setting extends Model
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        // Check cache first
         $cacheKey = "settings.{$key}";
         $cached = cache()->get($cacheKey);
 
@@ -92,7 +91,6 @@ class Setting extends Model
         $setting = static::where('key', $key)->first();
         $value = $setting ? $setting->value : $default;
 
-        // Cache for 1 hour
         cache()->put($cacheKey, $value, 3600);
 
         return $value;
@@ -105,7 +103,6 @@ class Setting extends Model
             ['value' => $value]
         );
 
-        // Update cache
         cache()->put("settings.{$key}", $value, 3600);
     }
 
@@ -152,7 +149,6 @@ class Setting extends Model
             $encoded = json_encode($value, JSON_THROW_ON_ERROR);
             static::set($key, $encoded);
         } catch (\Exception) {
-            // If encoding fails, don't save
         }
     }
 
@@ -191,7 +187,6 @@ class Setting extends Model
             $encoded = json_encode($value, JSON_THROW_ON_ERROR);
             static::set($key, $encoded);
         } catch (\Exception) {
-            // If encoding fails, don't save
         }
     }
 
@@ -214,7 +209,6 @@ class Setting extends Model
 
         [$provider, $model] = $parts;
 
-        // Find provider in config
         $providers = config('purrai.ai_providers', []);
         $providerConfig = collect($providers)->firstWhere('key', $provider);
 
@@ -222,13 +216,11 @@ class Setting extends Model
             return false;
         }
 
-        // Validate model exists in provider's speech_to_text models
         $availableModels = $providerConfig['models']['speech_to_text'] ?? [];
         if (! \in_array($model, $availableModels, true)) {
             return false;
         }
 
-        // Check if provider has configuration
         $configKey = $providerConfig['config_key'];
         $encrypted = $providerConfig['encrypted'];
 
@@ -254,7 +246,6 @@ class Setting extends Model
      */
     public static function getProviderApiKey(string $provider): ?string
     {
-        // Find provider in config
         $providers = config('purrai.ai_providers', []);
         $providerConfig = collect($providers)->firstWhere('key', $provider);
 
@@ -295,7 +286,6 @@ class Setting extends Model
                 continue;
             }
 
-            // Check if provider has configuration
             $configKey = $provider['config_key'];
             $encrypted = $provider['encrypted'];
 
@@ -307,7 +297,6 @@ class Setting extends Model
                 $hasConfig = ! empty($config['url']);
             }
 
-            // Skip providers without configuration
             if (! $hasConfig) {
                 continue;
             }
@@ -315,7 +304,6 @@ class Setting extends Model
             $providerKey = $provider['key'];
             $providerName = static::getProviderDisplayName($providerKey.'_config');
 
-            // Create grouped options for this provider
             $result[$providerName] = [];
             foreach ($speechModels as $model) {
                 $result[$providerName]["{$providerKey}:{$model}"] = $model;

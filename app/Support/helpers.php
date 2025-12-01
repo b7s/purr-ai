@@ -132,13 +132,6 @@ if (! function_exists('getUpdateVersion')) {
     }
 }
 
-if (! function_exists('hasAnyAlert')) {
-    function hasAnyAlert(): bool
-    {
-        return hasWhisperPendingAlert() || hasUpdateAvailable();
-    }
-}
-
 if (! function_exists('getAlertsList')) {
     /**
      * @return array<string>
@@ -157,5 +150,12 @@ if (! function_exists('getAlertsList')) {
         }
 
         return $alerts;
+    }
+}
+
+if (! function_exists('hasAnyAlert')) {
+    function hasAnyAlert(): bool
+    {
+        return hasWhisperPendingAlert() || hasUpdateAvailable();
     }
 }
