@@ -18,27 +18,31 @@
                             class="settings-input font-mono text-sm"
                         ></x-ui.form.input>
                     </div>
-                    <button
-                        type="button"
-                        wire:click="fetchModels('{{ $provider['key'] }}')"
-                        wire:loading.attr="disabled"
-                        wire:target="fetchModels('{{ $provider['key'] }}')"
-                        class="settings-button"
-                        title="{{ __('settings.ai_providers.fetch_models') }}"
-                    >
-                        <span
-                            wire:loading.remove
+                    <div class="flex h-full items-center justify-center">
+                        <button
+                            type="button"
+                            wire:click="fetchModels('{{ $provider['key'] }}')"
+                            wire:loading.attr="disabled"
                             wire:target="fetchModels('{{ $provider['key'] }}')"
+                            class="button"
+                            title="{{ __('settings.ai_providers.fetch_models') }}"
                         >
-                            <i class="iconoir-refresh text-base"></i>
-                        </span>
-                        <span
-                            wire:loading
-                            wire:target="fetchModels('{{ $provider['key'] }}')"
-                        >
-                            <i class="iconoir-refresh text-base animate-spin"></i>
-                        </span>
-                    </button>
+                            <span
+                                wire:loading.remove
+                                wire:target="fetchModels('{{ $provider['key'] }}')"
+                                class="flex h-full items-center justify-center"
+                            >
+                                <i class="iconoir-refresh text-base"></i>
+                            </span>
+                            <span
+                                wire:loading
+                                wire:target="fetchModels('{{ $provider['key'] }}')"
+                                class="flex h-full items-center justify-center"
+                            >
+                                <i class="iconoir-refresh text-base animate-spin"></i>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             @else
                 <label class="settings-label @if ($index > 0) mt-4 @endif">

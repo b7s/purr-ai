@@ -33,3 +33,4 @@ Thumbs.db
 /build/*.ico
 /build/*.icns
 /nativephp/
+!/nativephp/electron/build/after-install.tpl

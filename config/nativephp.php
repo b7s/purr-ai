@@ -154,19 +154,17 @@ return [
      * Define your own scripts to run before and after the build process.
      */
     'prebuild' => [
-        // 'npm run build',
+        'npm run build', // Run a command before the build
     ],
 
-    'postbuild' => [
-        // 'rm -rf public/build',
-    ],
+    'postbuild' => [],
 
     /**
      * Custom PHP binary path.
      */
     'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
 
-/**
+    /**
  * Application icons configuration.
  *
  * NativePHP automatically looks for these files in the public/ directory:

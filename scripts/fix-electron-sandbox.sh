@@ -3,7 +3,7 @@
 # Fix Electron sandbox permissions for NativePHP
 # This script sets the correct permissions for the chrome-sandbox binary
 
-SANDBOX_PATH="vendor/nativephp/desktop/resources/electron/node_modules/electron/dist/chrome-sandbox"
+SANDBOX_PATH="nativephp/electron/node_modules/electron/dist/chrome-sandbox"
 
 if [ ! -f "$SANDBOX_PATH" ]; then
     echo "❌ Error: chrome-sandbox not found at $SANDBOX_PATH"

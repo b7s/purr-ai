@@ -4,7 +4,7 @@
 
 # {PurrAI}
 
-**Your adorable AI companion living in your menu bar**
+**Your adorable AI companion living in your machine**
 
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
 [![NativePHP](https://img.shields.io/badge/NativePHP-2.0-6366F1?style=flat)](https://nativephp.com)
@@ -72,18 +72,23 @@ npm install
 # Copy environment file
 cp .env.example .env
 
-# Generate application key
-php artisan key:generate
-
-# Run database migrations
-php artisan migrate
-
-# Build assets
-npm run build
-
-# Build native application
-php artisan native:build
+# Publishing the Electron project
+php artisan native:install --publish
 ```
+
+#### Fix Linux Permissions
+
+After run `native:install`, add "afterInstall" to your `nativephp/electron/electron-builder.mjs` (if "deb" not exists, add it after "linux"):
+
+```javascript
+   linux: {...},
+   deb: {
+      afterInstall: "build/after-install.tpl",
+   },
+```
+> _It will attempt to correct permission issues when installing the builded app in "/opt"._
+
+Make sure to run `sudo chmod +x nativephp/electron/electron-builder.mjs` after install.
 
 ---
 

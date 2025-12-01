@@ -140,18 +140,20 @@
                         </p>
                     </div>
 
-                    <button
-                        type="button"
-                        @click="refreshDevices()"
-                        class="w-10 h-10 mb-1 button"
-                        :disabled="loading"
-                        title="{{ __('settings.speech.refresh_devices') }}"
-                    >
-                        <i
-                            class="iconoir-refresh text-lg"
-                            :class="{ 'animate-spin': loading }"
-                        ></i>
-                    </button>
+                    <div class="flex items-center justify-center">
+                        <button
+                            type="button"
+                            @click="refreshDevices()"
+                            class="button"
+                            :disabled="loading"
+                            title="{{ __('settings.speech.refresh_devices') }}"
+                        >
+                            <i
+                                class="iconoir-refresh text-lg"
+                                :class="{ 'animate-spin': loading }"
+                            ></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

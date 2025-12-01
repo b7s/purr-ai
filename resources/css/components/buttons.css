@@ -70,8 +70,10 @@
     }
 
     .button {
-        @apply w-full px-4 py-3 rounded-xl text-[15px] transition-all;
-        @apply border border-slate-300 bg-white hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700;
-        @apply font-medium text-slate-700 focus:outline-none focus:ring-2 ring-slate-300;
+        @apply w-full px-4 py-3 rounded-xl text-[15px] transition-all font-semibold inline-flex items-center justify-center gap-2 cursor-pointer;
+        @apply border border-slate-200/80 bg-linear-to-br from-white to-slate-50 hover:from-slate-50 hover:to-slate-100 shadow-sm;
+        @apply text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1;
+        @apply dark:border-slate-600/70 dark:bg-linear-to-br dark:from-slate-700 dark:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500;
+        @apply dark:text-slate-100 dark:focus:ring-slate-500 dark:focus:ring-offset-slate-900;
     }
 }
