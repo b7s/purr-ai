@@ -1,3 +1,5 @@
+<x-ui.update-system />
+
 <x-ui.form.radio-group
     :label="__('settings.other.theme_mode')"
     :description="__('settings.other.theme_mode_description')"

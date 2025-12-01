@@ -164,7 +164,7 @@ return [
      */
     'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
 
-    /**
+/**
  * Application icons configuration.
  *
  * NativePHP automatically looks for these files in the public/ directory:

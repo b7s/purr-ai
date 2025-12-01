@@ -21,12 +21,12 @@
             href="{{ route('settings') }}"
             wire:navigate
             class="relative"
+            @if (hasAnyAlert()) title="{{ implode(' • ', getAlertsList()) }}"
+            @else
+                title="{{ __('ui.tooltips.settings') }}" @endif
         >
-            <x-ui.form.icon-button
-                icon="settings"
-                :title="__('ui.tooltips.settings')"
-            />
-            @if (hasWhisperPendingAlert())
+            <x-ui.form.icon-button icon="settings" />
+            @if (hasAnyAlert())
                 <span class="settings-alert-badge"></span>
             @endif
         </a>

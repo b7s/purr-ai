@@ -30,6 +30,7 @@
 @import "./components/window-controls.css";
 @import "./components/menubar.css";
 @import "./components/code-highlight.css";
+@import "./components/update-card.css";
 
 /* Vendor */
 @import "./iconoir.css";

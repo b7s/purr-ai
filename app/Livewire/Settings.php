@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire;
 
 use App\Models\Setting;
+use App\Services\UpdateService;
 use App\Services\WhisperService;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
+use Native\Desktop\Facades\AutoUpdater;
 use Native\Desktop\Facades\Shell;
 use Native\Desktop\Facades\System;
 
@@ -448,9 +451,31 @@ class Settings extends Component
 
     public function openExternal(string $url): void
     {
-        if (class_exists(Shell::class)) {
-            Shell::openExternal($url);
-        }
+        Shell::openExternal($url);
+    }
+
+    public function checkForPurrAiAppUpdate(): void
+    {
+        $updateService = app(UpdateService::class);
+        $updateService->checkForUpdates();
+    }
+
+    public function installUpdate(): void
+    {
+        AutoUpdater::quitAndInstall();
+    }
+
+    #[Computed]
+    public function updateInfo(): array
+    {
+        $updateService = app(UpdateService::class);
+
+        return [
+            'available' => $updateService->isUpdateAvailable(),
+            'current_version' => $updateService->getCurrentVersion(),
+            'new_version' => $updateService->getUpdateVersion(),
+            'last_check' => $updateService->getLastCheckTime()?->diffForHumans(),
+        ];
     }
 
     public function render(): mixed

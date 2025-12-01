@@ -145,6 +145,7 @@
             x-transition.opacity
             @click="cancelEdit()"
             class="edit-modal-overlay"
+            style="display:none;"
         >
             <div
                 @click.stop

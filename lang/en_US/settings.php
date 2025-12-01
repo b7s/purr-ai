@@ -83,6 +83,18 @@ return [
 
     'other' => [
         'title' => 'Other Settings',
+        'update_section_title' => 'Application Updates',
+        'check_for_update' => 'Check for Updates',
+        'install_update' => 'Install Update',
+        'checking_update' => 'Checking...',
+        'installing_update' => 'Installing...',
+        'no_update_available' => 'You are using the latest version',
+        'update_available' => 'Update available',
+        'update_available_version' => 'Update available: v:version',
+        'current_version' => 'Current version',
+        'new_version' => 'New version',
+        'last_check' => 'Last check',
+        'never_checked' => 'Never',
         'delete_old_messages' => 'Delete Old Messages (Days)',
         'delete_old_messages_description' => 'Automatically delete messages older than the specified number of days',
         'delete_old_messages_helper' => 'Enter 0 to disable automatic deletion',

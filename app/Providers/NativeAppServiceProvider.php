@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Events\StreamCompletedNotificationClicked;
 use App\Services\ChatService;
+use App\Services\UpdateService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Native\Desktop\Contracts\ProvidesPhpIni;
@@ -12,7 +14,6 @@ use Native\Desktop\Facades\Dock;
 use Native\Desktop\Facades\Menu;
 use Native\Desktop\Facades\MenuBar;
 use Native\Desktop\Facades\Window;
-use App\Events\StreamCompletedNotificationClicked;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {
@@ -33,6 +34,9 @@ class NativeAppServiceProvider implements ProvidesPhpIni
         Event::listen(StreamCompletedNotificationClicked::class, function (StreamCompletedNotificationClicked $event) {
             $event->handle();
         });
+
+        $this->registerUpdateEvents();
+        $this->checkForUpdatesIfNeeded();
 
         Dock::icon(public_path('icon.png'));
 
@@ -114,6 +118,42 @@ class NativeAppServiceProvider implements ProvidesPhpIni
         $ChatService = app(ChatService::class);
 
         return $ChatService->getInitialRoute($type);
+    }
+
+    /**
+     * Register update-related event listeners.
+     */
+    private function registerUpdateEvents(): void
+    {
+        Event::listen('Native\\Desktop\\Events\\Updater\\UpdateAvailable', function ($event): void {
+            $updateService = app(UpdateService::class);
+            $updateService->markUpdateAvailable($event->version ?? 'unknown');
+
+            Log::info('Update available', ['version' => $event->version ?? 'unknown']);
+        });
+
+        Event::listen('Native\\Desktop\\Events\\Updater\\UpdateDownloaded', function ($event): void {
+            Log::info('Update downloaded', ['version' => $event->version ?? 'unknown']);
+        });
+
+        Event::listen('Native\\Desktop\\Events\\Updater\\UpdateNotAvailable', function (): void {
+            $updateService = app(UpdateService::class);
+            $updateService->clearUpdateAvailable();
+
+            Log::info('No update available');
+        });
+    }
+
+    /**
+     * Check for updates if the interval has passed.
+     */
+    private function checkForUpdatesIfNeeded(): void
+    {
+        $updateService = app(UpdateService::class);
+
+        if ($updateService->shouldCheckForUpdates()) {
+            $updateService->checkForUpdates();
+        }
     }
 
     /**

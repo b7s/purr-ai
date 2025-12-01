@@ -19,7 +19,6 @@ if (! function_exists('is_native')) {
 
         try {
             return app()->bound('native') ||
-                   defined('NATIVE_PHP_RUNNING') && NATIVE_PHP_RUNNING === true ||
                    isset($_SERVER['NATIVE_PHP']) && $_SERVER['NATIVE_PHP'] === '1' ||
                    isset($_ENV['NATIVE_PHP']) && $_ENV['NATIVE_PHP'] === '1' ||
                    str_contains(request()->userAgent() ?? '', 'Electron');
@@ -116,5 +115,47 @@ if (! function_exists('hasWhisperPendingAlert')) {
     function hasWhisperPendingAlert(): bool
     {
         return WhisperService::hasPendingConfiguration();
+    }
+}
+
+if (! function_exists('hasUpdateAvailable')) {
+    function hasUpdateAvailable(): bool
+    {
+        return (bool) Setting::get('update_available', false);
+    }
+}
+
+if (! function_exists('getUpdateVersion')) {
+    function getUpdateVersion(): ?string
+    {
+        return Setting::get('update_version');
+    }
+}
+
+if (! function_exists('hasAnyAlert')) {
+    function hasAnyAlert(): bool
+    {
+        return hasWhisperPendingAlert() || hasUpdateAvailable();
+    }
+}
+
+if (! function_exists('getAlertsList')) {
+    /**
+     * @return array<string>
+     */
+    function getAlertsList(): array
+    {
+        $alerts = [];
+
+        if (hasWhisperPendingAlert()) {
+            $alerts[] = __('settings.speech.requires_setup');
+        }
+
+        if (hasUpdateAvailable()) {
+            $version = getUpdateVersion();
+            $alerts[] = __('settings.other.update_available_version', ['version' => $version]);
+        }
+
+        return $alerts;
     }
 }

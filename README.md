@@ -80,15 +80,21 @@ php artisan native:install --publish
 
 After run `native:install`, add "afterInstall" to your `nativephp/electron/electron-builder.mjs` (if "deb" not exists, add it after "linux"):
 
-```javascript
-   linux: {...},
+```json
+   linux: {
+      /*...*/
+   },
    deb: {
-      afterInstall: "build/after-install.tpl",
+      afterInstall: "../../scripts/fix-permission-linux-app-after-install.tpl",
    },
 ```
-> _It will attempt to correct permission issues when installing the builded app in "/opt"._
 
-Make sure to run `sudo chmod +x nativephp/electron/electron-builder.mjs` after install.
+_It will attempt to correct permission issues when installing the builded app in "/opt"._
+
+> **Attention:** Whenever you update the project (`composer update`), the files in "nativephp" will be overwritten and you will need to add the script again.
+
+
+Make sure to run `sudo chmod +x scripts/fix-permission-linux-app-after-install.tpl` after install.
 
 ---
 
