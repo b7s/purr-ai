@@ -16,6 +16,9 @@ final class WhisperDownloader
         private readonly WhisperPathResolver $paths,
     ) {}
 
+    /**
+     * @throws WhisperDownloadException
+     */
     public function downloadFfmpeg(): bool
     {
         $ffmpegPath = $this->paths->getFfmpegPath();
@@ -33,12 +36,15 @@ final class WhisperDownloader
         $downloadUrl = $this->getFfmpegDownloadUrl();
 
         if (! $downloadUrl) {
-            Log::error('No FFmpeg download URL for this platform', [
-                'os' => $this->platform->getOS(),
-                'arch' => $this->platform->getArch(),
-            ]);
+            $os = $this->platform->getOS();
+            $arch = $this->platform->getArch();
 
-            return false;
+            Log::error('No FFmpeg download URL for this platform', ['os' => $os, 'arch' => $arch]);
+
+            throw new WhisperDownloadException(
+                'FFmpeg download not available for this platform',
+                "OS: {$os}, Architecture: {$arch}. Please install FFmpeg manually."
+            );
         }
 
         Log::info('Downloading FFmpeg', ['url' => $downloadUrl]);
@@ -46,9 +52,7 @@ final class WhisperDownloader
         $extension = str_ends_with($downloadUrl, '.tar.xz') ? '.tar.xz' : '.zip';
         $tempFile = $this->paths->getTempPath('ffmpeg_download_').$extension;
 
-        if (! $this->downloadFile($downloadUrl, $tempFile)) {
-            return false;
-        }
+        $this->downloadFile($downloadUrl, $tempFile, 'FFmpeg');
 
         if (str_ends_with($downloadUrl, '.zip')) {
             return $this->extractFfmpegZip($tempFile);
@@ -63,6 +67,9 @@ final class WhisperDownloader
         return false;
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     public function downloadBinary(): bool
     {
         $binaryPath = $this->paths->getBinaryPath();
@@ -81,12 +88,13 @@ final class WhisperDownloader
                 return $this->compileFromSource();
             }
 
-            Log::error('No binary download URL for this platform', [
-                'os' => $os,
-                'arch' => $this->platform->getArch(),
-            ]);
+            $arch = $this->platform->getArch();
+            Log::error('No binary download URL for this platform', ['os' => $os, 'arch' => $arch]);
 
-            return false;
+            throw new WhisperDownloadException(
+                'Whisper binary download not found for this platform',
+                "OS: {$os}, Architecture: {$arch}"
+            );
         }
 
         Log::info('Downloading whisper binary', ['url' => $downloadUrl]);
@@ -94,9 +102,7 @@ final class WhisperDownloader
         $extension = str_ends_with($downloadUrl, '.tar.gz') ? '.tar.gz' : '.zip';
         $tempFile = $this->paths->getTempPath('whisper_download_').$extension;
 
-        if (! $this->downloadFile($downloadUrl, $tempFile)) {
-            return false;
-        }
+        $this->downloadFile($downloadUrl, $tempFile, 'Whisper binary');
 
         if (str_ends_with($downloadUrl, '.zip')) {
             return $this->extractBinaryZip($tempFile);
@@ -112,6 +118,9 @@ final class WhisperDownloader
         return true;
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     public function downloadModel(string $model = 'base.en'): bool
     {
         $modelPath = $this->paths->getModelPath();
@@ -135,23 +144,25 @@ final class WhisperDownloader
         ]);
 
         if (! $result->successful()) {
-            Log::error('Failed to download whisper model', [
-                'error' => $result->errorOutput(),
-                'output' => $result->output(),
-            ]);
+            $error = trim($result->errorOutput());
+            Log::error('Failed to download whisper model', ['error' => $error, 'output' => $result->output()]);
             @unlink($modelPath);
 
-            return false;
+            throw new WhisperDownloadException(
+                'Failed to download Whisper model',
+                $error ?: 'Network error or server unavailable'
+            );
         }
 
         if (! file_exists($modelPath) || filesize($modelPath) < 10000000) {
-            Log::error('Downloaded model file is invalid or too small', [
-                'path' => $modelPath,
-                'size' => file_exists($modelPath) ? filesize($modelPath) : 0,
-            ]);
+            $size = file_exists($modelPath) ? filesize($modelPath) : 0;
+            Log::error('Downloaded model file is invalid or too small', ['path' => $modelPath, 'size' => $size]);
             @unlink($modelPath);
 
-            return false;
+            throw new WhisperDownloadException(
+                'Downloaded model file is invalid',
+                "File size: {$size} bytes (expected > 10MB). Download may have been interrupted."
+            );
         }
 
         return true;
@@ -171,7 +182,10 @@ final class WhisperDownloader
         return $result->successful();
     }
 
-    private function downloadFile(string $url, string $destination): bool
+    /**
+     * @throws WhisperDownloadException
+     */
+    private function downloadFile(string $url, string $destination, string $component): void
     {
         $result = Process::timeout(600)->run([
             'curl', '-L', '-f',
@@ -182,31 +196,31 @@ final class WhisperDownloader
         ]);
 
         if (! $result->successful()) {
-            Log::error('Failed to download file', [
-                'url' => $url,
-                'error' => $result->errorOutput(),
-            ]);
+            $error = trim($result->errorOutput());
+            Log::error("Failed to download {$component}", ['url' => $url, 'error' => $error]);
             @unlink($destination);
 
-            return false;
+            throw new WhisperDownloadException(
+                "Failed to download {$component}",
+                $error ?: 'Network error or server unavailable'
+            );
         }
 
         if (! file_exists($destination) || filesize($destination) < 1000) {
-            Log::error('Downloaded file is invalid or empty', [
-                'path' => $destination,
-                'size' => file_exists($destination) ? filesize($destination) : 0,
-            ]);
+            $size = file_exists($destination) ? filesize($destination) : 0;
+            Log::error("Downloaded {$component} file is invalid or empty", ['path' => $destination, 'size' => $size]);
             @unlink($destination);
 
-            return false;
+            throw new WhisperDownloadException(
+                "Downloaded {$component} file is invalid",
+                "File size: {$size} bytes. Download may have been interrupted."
+            );
         }
-
-        return true;
     }
 
     private function getFfmpegDownloadUrl(): ?string
     {
-        $baseUrl = 'https://github.com/BtbN/FFmpeg-Builds/releases/tag/latest';
+        $baseUrl = 'https://github.com/BtbN/FFmpeg-Builds/releases/download/latest';
         $os = $this->platform->getOS();
         $arch = $this->platform->getArch();
 
@@ -239,6 +253,9 @@ final class WhisperDownloader
         };
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     private function extractFfmpegZip(string $zipPath): bool
     {
         $extractDir = dirname($this->paths->getFfmpegPath());
@@ -250,9 +267,10 @@ final class WhisperDownloader
         @unlink($zipPath);
 
         if (! $result->successful()) {
-            Log::error('Failed to extract FFmpeg zip', ['error' => $result->errorOutput()]);
+            $error = trim($result->errorOutput());
+            Log::error('Failed to extract FFmpeg zip', ['error' => $error]);
 
-            return false;
+            throw new WhisperDownloadException('Failed to extract FFmpeg', $error);
         }
 
         $this->findAndRenameFfmpeg($extractDir);
@@ -260,6 +278,9 @@ final class WhisperDownloader
         return file_exists($this->paths->getFfmpegPath());
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     private function extractFfmpegTarXz(string $tarPath): bool
     {
         $extractDir = dirname($this->paths->getFfmpegPath());
@@ -269,9 +290,10 @@ final class WhisperDownloader
         @unlink($tarPath);
 
         if (! $result->successful()) {
-            Log::error('Failed to extract FFmpeg tar.xz', ['error' => $result->errorOutput()]);
+            $error = trim($result->errorOutput());
+            Log::error('Failed to extract FFmpeg tar.xz', ['error' => $error]);
 
-            return false;
+            throw new WhisperDownloadException('Failed to extract FFmpeg', $error);
         }
 
         $this->findAndRenameFfmpeg($extractDir);
@@ -300,6 +322,9 @@ final class WhisperDownloader
         }
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     private function extractBinaryZip(string $zipPath): bool
     {
         $extractDir = dirname($this->paths->getBinaryPath());
@@ -311,9 +336,10 @@ final class WhisperDownloader
         @unlink($zipPath);
 
         if (! $result->successful()) {
-            Log::error('Failed to extract zip', ['error' => $result->errorOutput()]);
+            $error = trim($result->errorOutput());
+            Log::error('Failed to extract Whisper zip', ['error' => $error]);
 
-            return false;
+            throw new WhisperDownloadException('Failed to extract Whisper binary', $error);
         }
 
         $this->findAndRenameBinary($extractDir);
@@ -321,6 +347,9 @@ final class WhisperDownloader
         return file_exists($this->paths->getBinaryPath());
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     private function extractBinaryTarGz(string $tarPath): bool
     {
         $extractDir = dirname($this->paths->getBinaryPath());
@@ -330,9 +359,10 @@ final class WhisperDownloader
         @unlink($tarPath);
 
         if (! $result->successful()) {
-            Log::error('Failed to extract tar.gz', ['error' => $result->errorOutput()]);
+            $error = trim($result->errorOutput());
+            Log::error('Failed to extract Whisper tar.gz', ['error' => $error]);
 
-            return false;
+            throw new WhisperDownloadException('Failed to extract Whisper binary', $error);
         }
 
         $this->findAndRenameBinary($extractDir);
@@ -369,8 +399,13 @@ final class WhisperDownloader
         }
     }
 
+    /**
+     * @throws WhisperDownloadException
+     */
     private function compileFromSource(): bool
     {
+        $this->checkBuildDependencies();
+
         $tempDir = sys_get_temp_dir().'/whisper-cpp-'.uniqid();
 
         try {
@@ -382,34 +417,316 @@ final class WhisperDownloader
             ]);
 
             if (! $result->successful()) {
-                Log::error('Failed to clone whisper.cpp', ['error' => $result->errorOutput()]);
+                $error = trim($result->errorOutput());
+                Log::error('Failed to clone whisper.cpp', ['error' => $error]);
 
-                return false;
+                throw new WhisperDownloadException(
+                    'Failed to clone whisper.cpp repository',
+                    $error ?: 'Git clone failed. Install git: sudo apt install git'
+                );
             }
 
             Log::info('Compiling whisper.cpp');
             $makeResult = Process::timeout(600)->path($tempDir)->run(['make']);
 
             if (! $makeResult->successful()) {
-                Log::error('Failed to compile whisper.cpp', ['error' => $makeResult->errorOutput()]);
+                $error = trim($makeResult->errorOutput());
+                Log::error('Failed to compile whisper.cpp', ['error' => $error]);
 
-                return false;
+                throw new WhisperDownloadException(
+                    'Failed to compile whisper.cpp',
+                    $this->getBuildErrorMessage($error)
+                );
             }
 
-            $sourceBinary = "{$tempDir}/main";
-            if (file_exists($sourceBinary)) {
-                $binaryPath = $this->paths->getBinaryPath();
-                copy($sourceBinary, $binaryPath);
-                chmod($binaryPath, 0755);
+            $possibleBinaries = [
+                'whisper-cli' => [
+                    "{$tempDir}/build/bin/whisper-cli",
+                    "{$tempDir}/whisper-cli",
+                ],
+                'main' => [
+                    "{$tempDir}/build/bin/main",
+                    "{$tempDir}/main",
+                    "{$tempDir}/build/main",
+                ],
+            ];
 
+            $binDir = dirname($this->paths->getBinaryPath());
+            $libDir = "{$binDir}/../lib";
+
+            if (! is_dir($libDir)) {
+                mkdir($libDir, 0755, true);
+            }
+
+            $this->copySharedLibraries($tempDir, $libDir);
+
+            foreach ($possibleBinaries as $targetName => $sources) {
+                foreach ($sources as $sourceBinary) {
+                    if (file_exists($sourceBinary)) {
+                        $targetPath = "{$binDir}/{$targetName}";
+                        copy($sourceBinary, $targetPath);
+                        chmod($targetPath, 0755);
+                        Log::info("Whisper binary '{$targetName}' compiled and installed", [
+                            'source' => $sourceBinary,
+                            'destination' => $targetPath,
+                        ]);
+                        break;
+                    }
+                }
+            }
+
+            $this->fixLibrarySymlinks();
+
+            if (file_exists($this->paths->getBinaryPath())) {
                 return true;
             }
 
-            return false;
+            throw new WhisperDownloadException(
+                'Whisper binary not found after compilation',
+                'Compilation completed but binary not found in expected locations. Check logs for details.'
+            );
         } finally {
             if (is_dir($tempDir)) {
                 Process::run(['rm', '-rf', $tempDir]);
             }
         }
+    }
+
+    /**
+     * @throws WhisperDownloadException
+     */
+    private function checkBuildDependencies(): void
+    {
+        $missing = [];
+
+        $commands = [
+            'git' => 'git --version',
+            'cmake' => 'cmake --version',
+            'make' => 'make --version',
+        ];
+
+        foreach ($commands as $tool => $command) {
+            $result = Process::run(explode(' ', $command));
+            if (! $result->successful()) {
+                $missing[] = $tool;
+            }
+        }
+
+        if (! empty($missing)) {
+            $tools = implode(', ', $missing);
+            $installCmd = $this->getInstallCommand($missing);
+
+            throw new WhisperDownloadException(
+                'Missing build dependencies',
+                "Required tools not found: {$tools}. Install with: {$installCmd}"
+            );
+        }
+    }
+
+    /**
+     * @param  array<string>  $missing
+     */
+    private function getInstallCommand(array $missing): string
+    {
+        $os = $this->platform->getOS();
+
+        return match ($os) {
+            'linux' => 'sudo apt install '.implode(' ', $missing).' build-essential',
+            'darwin' => 'brew install '.implode(' ', $missing),
+            default => 'Install: '.implode(', ', $missing),
+        };
+    }
+
+    private function getBuildErrorMessage(string $error): string
+    {
+        if (str_contains($error, 'cmake: No such file')) {
+            $cmd = $this->getInstallCommand(['cmake']);
+
+            return "CMake not found. Install it with: {$cmd}";
+        }
+
+        if (str_contains($error, 'make: No such file')) {
+            $cmd = $this->getInstallCommand(['make']);
+
+            return "Make not found. Install it with: {$cmd}";
+        }
+
+        if (str_contains($error, 'gcc') || str_contains($error, 'g++')) {
+            $os = $this->platform->getOS();
+            $cmd = $os === 'linux' ? 'sudo apt install build-essential' : 'xcode-select --install';
+
+            return "C++ compiler not found. Install it with: {$cmd}";
+        }
+
+        return $error ?: 'Compilation failed. Install build tools: cmake, make, gcc/clang';
+    }
+
+    private function copySharedLibraries(string $sourceDir, string $libDir): void
+    {
+        $libPatterns = $this->platform->isMacOS()
+            ? ['libwhisper*.dylib', 'libggml*.dylib']
+            : ['libwhisper.so*', 'libggml*.so*'];
+
+        $searchDirs = [
+            $sourceDir,
+            "{$sourceDir}/build",
+            "{$sourceDir}/build/src",
+            "{$sourceDir}/build/ggml/src",
+            "{$sourceDir}/src",
+            "{$sourceDir}/ggml/src",
+        ];
+
+        foreach ($searchDirs as $dir) {
+            if (! is_dir($dir)) {
+                continue;
+            }
+
+            foreach ($libPatterns as $pattern) {
+                $files = glob("{$dir}/{$pattern}");
+                if ($files === false) {
+                    continue;
+                }
+
+                foreach ($files as $libPath) {
+                    if (is_link($libPath)) {
+                        continue;
+                    }
+
+                    $targetLib = "{$libDir}/".basename($libPath);
+                    if (! file_exists($targetLib)) {
+                        copy($libPath, $targetLib);
+                        chmod($targetLib, 0755);
+                        Log::info('Whisper shared library installed', [
+                            'source' => $libPath,
+                            'destination' => $targetLib,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $this->createLibrarySymlinks($libDir);
+    }
+
+    private function createLibrarySymlinks(string $libDir): void
+    {
+        if ($this->platform->isWindows()) {
+            return;
+        }
+
+        if ($this->platform->isMacOS()) {
+            $this->createMacOSLibrarySymlinks($libDir);
+
+            return;
+        }
+
+        $this->createLinuxLibrarySymlinks($libDir);
+    }
+
+    private function createLinuxLibrarySymlinks(string $libDir): void
+    {
+        $libs = glob("{$libDir}/*.so.*");
+        if ($libs === false) {
+            return;
+        }
+
+        foreach ($libs as $lib) {
+            if (is_link($lib)) {
+                continue;
+            }
+
+            $basename = basename($lib);
+
+            if (preg_match('/^(.+\.so)\.(\d+)\./', $basename, $matches)) {
+                $baseWithSo = $matches[1];
+                $majorVersion = $matches[2];
+
+                $versionedSymlink = "{$libDir}/{$baseWithSo}.{$majorVersion}";
+                if (! file_exists($versionedSymlink)) {
+                    @symlink($basename, $versionedSymlink);
+                    Log::info('Created library symlink', [
+                        'symlink' => $versionedSymlink,
+                        'target' => $basename,
+                    ]);
+                }
+
+                $baseSymlink = "{$libDir}/{$baseWithSo}";
+                if (! file_exists($baseSymlink)) {
+                    @symlink($basename, $baseSymlink);
+                }
+            }
+        }
+    }
+
+    private function createMacOSLibrarySymlinks(string $libDir): void
+    {
+        $libs = glob("{$libDir}/*.dylib");
+        if ($libs === false) {
+            return;
+        }
+
+        foreach ($libs as $lib) {
+            if (is_link($lib)) {
+                continue;
+            }
+
+            $basename = basename($lib);
+
+            if (preg_match('/^(.+)\.(\d+)\.dylib$/', $basename, $matches)) {
+                $baseName = $matches[1];
+                $majorVersion = $matches[2];
+
+                $versionedSymlink = "{$libDir}/{$baseName}.{$majorVersion}.dylib";
+                if (! file_exists($versionedSymlink) && $versionedSymlink !== $lib) {
+                    @symlink($basename, $versionedSymlink);
+                }
+
+                $baseSymlink = "{$libDir}/{$baseName}.dylib";
+                if (! file_exists($baseSymlink)) {
+                    @symlink($basename, $baseSymlink);
+                    Log::info('Created library symlink', [
+                        'symlink' => $baseSymlink,
+                        'target' => $basename,
+                    ]);
+                }
+            }
+        }
+    }
+
+    public function fixLibrarySymlinks(): void
+    {
+        $binDir = dirname($this->paths->getBinaryPath());
+        $libDir = "{$binDir}/../lib";
+
+        if (! is_dir($libDir)) {
+            return;
+        }
+
+        $this->createLibrarySymlinks($libDir);
+    }
+
+    /**
+     * @throws WhisperDownloadException
+     */
+    public function reinstallBinary(): bool
+    {
+        $binaryPath = $this->paths->getBinaryPath();
+        $binDir = dirname($binaryPath);
+        $libDir = "{$binDir}/../lib";
+
+        foreach (glob("{$binDir}/whisper*") ?: [] as $file) {
+            @unlink($file);
+        }
+        foreach (glob("{$binDir}/main") ?: [] as $file) {
+            @unlink($file);
+        }
+
+        if (is_dir($libDir)) {
+            foreach (glob("{$libDir}/*.so*") ?: [] as $file) {
+                @unlink($file);
+            }
+        }
+
+        return $this->downloadBinary();
     }
 }

@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Setting;
 use App\Services\UpdateService;
+use App\Services\Whisper\WhisperDownloadException;
 use App\Services\WhisperService;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
@@ -418,39 +419,31 @@ class Settings extends Component
             $whisperService = app(WhisperService::class);
             $status = $whisperService->getStatus();
 
-            // Download FFmpeg
             if (! $status['ffmpeg']) {
                 $this->downloadProgress = __('settings.other.downloading_ffmpeg');
                 $this->dispatch('progress-updated');
-
-                if (! $whisperService->downloadFfmpeg()) {
-                    throw new \Exception(__('settings.other.ffmpeg_download_failed'));
-                }
+                $whisperService->downloadFfmpeg();
             }
 
-            // Download Whisper binary
             if (! $status['binary']) {
                 $this->downloadProgress = __('settings.other.downloading_whisper_binary');
                 $this->dispatch('progress-updated');
-
-                if (! $whisperService->downloadBinary()) {
-                    throw new \Exception(__('settings.other.whisper_binary_download_failed'));
-                }
+                $whisperService->downloadBinary();
             }
 
-            // Download model
             if (! $status['model']) {
                 $this->downloadProgress = __('settings.other.downloading_whisper_model');
                 $this->dispatch('progress-updated');
-
-                if (! $whisperService->downloadModel()) {
-                    throw new \Exception(__('settings.other.whisper_model_download_failed'));
-                }
+                $whisperService->downloadModel();
             }
 
             $this->downloadProgress = __('settings.other.download_complete');
             $this->checkWhisperStatus();
             $this->dispatch('whisper-setup-complete');
+        } catch (WhisperDownloadException $e) {
+            $this->downloadError = $e->getFullMessage();
+            $this->downloadProgress = __('settings.other.download_failed');
+            $this->dispatch('whisper-setup-failed', message: $e->getFullMessage());
         } catch (\Exception $e) {
             $this->downloadError = $e->getMessage();
             $this->downloadProgress = __('settings.other.download_failed');

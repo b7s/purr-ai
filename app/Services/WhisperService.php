@@ -80,7 +80,18 @@ final class WhisperService
 
     public function downloadBinary(): bool
     {
-        return $this->downloader->downloadBinary();
+        $result = $this->downloader->downloadBinary();
+
+        if ($result) {
+            $this->downloader->fixLibrarySymlinks();
+        }
+
+        return $result;
+    }
+
+    public function fixLibrarySymlinks(): void
+    {
+        $this->downloader->fixLibrarySymlinks();
     }
 
     public function downloadModel(string $model = 'base.en'): bool

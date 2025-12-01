@@ -30,7 +30,17 @@ final class WhisperPlatformDetector
 
     public function isWindows(): bool
     {
-        return $this->getOS() === 'windows';
+        return is_windows();
+    }
+
+    public function isMacOS(): bool
+    {
+        return is_mac();
+    }
+
+    public function isLinux(): bool
+    {
+        return is_linux();
     }
 
     public function hasGpuSupport(): bool

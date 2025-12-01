@@ -32,9 +32,17 @@ final class SetupWhisperCommand extends Command
         $force = $this->option('force');
 
         if ($status['binary'] && $status['model'] && $status['ffmpeg'] && ! $force) {
-            $this->info('Whisper is already set up and ready to use!');
+            $this->info('Verifying library dependencies...');
+            $whisperService->fixLibrarySymlinks();
 
-            return self::SUCCESS;
+            if ($whisperService->isAvailable()) {
+                $this->info('Whisper is already set up and ready to use!');
+
+                return self::SUCCESS;
+            }
+
+            $this->warn('Library dependencies need to be fixed. Reinstalling...');
+            $force = true;
         }
 
         if (! $status['ffmpeg'] || $force) {
@@ -76,6 +84,16 @@ final class SetupWhisperCommand extends Command
 
                 return self::FAILURE;
             }
+        }
+
+        $this->info('Verifying library dependencies...');
+        $whisperService->fixLibrarySymlinks();
+
+        if (! $whisperService->isAvailable()) {
+            $this->error('✗ Whisper binary has missing library dependencies');
+            $this->warn('Try running: php artisan whisper:setup --force');
+
+            return self::FAILURE;
         }
 
         $this->newLine();

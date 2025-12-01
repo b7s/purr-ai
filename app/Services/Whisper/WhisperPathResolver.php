@@ -27,9 +27,18 @@ final class WhisperPathResolver
             return $customPath;
         }
 
-        $binaryName = $this->platform->isWindows() ? 'whisper.exe' : 'whisper';
+        $possibleNames = $this->platform->isWindows()
+            ? ['whisper-cli.exe', 'main.exe', 'whisper.exe']
+            : ['whisper-cli', 'main', 'whisper'];
 
-        return "{$this->dataDir}/bin/{$binaryName}";
+        foreach ($possibleNames as $name) {
+            $path = "{$this->dataDir}/bin/{$name}";
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return "{$this->dataDir}/bin/main";
     }
 
     public function getModelPath(): string
