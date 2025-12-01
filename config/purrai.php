@@ -80,14 +80,17 @@ return [
 
     /**
      * Whisper.cpp: Local speech-to-text provider.
-     * Available models: 'base', 'small', 'medium', 'large'
+     * Available models: 'tiny', 'base', 'small', 'medium', 'large' (multilingual)
+     * English-only models: 'tiny.en', 'base.en', 'small.en', 'medium.en'
+     * Language: 'auto' for automatic detection, or ISO code like 'en', 'pt', 'es', etc.
      */
     'whisper' => [
         'data_dir' => env('WHISPER_DATA_DIR'),
         'binary_path' => env('WHISPER_BINARY_PATH'),
         'model_path' => env('WHISPER_MODEL_PATH'),
         'ffmpeg_path' => env('FFMPEG_PATH'),
-        'model' => env('WHISPER_MODEL', 'base.en'),
+        'model' => env('WHISPER_MODEL', 'base'),
+        'language' => env('WHISPER_LANGUAGE', 'auto'),
     ],
 
     'ai_providers' => [

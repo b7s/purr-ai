@@ -48,7 +48,9 @@ final class WhisperPathResolver
             return $customPath;
         }
 
-        return "{$this->dataDir}/models/ggml-base.en.bin";
+        $model = config('purrai.whisper.model', 'base');
+
+        return "{$this->dataDir}/models/ggml-{$model}.bin";
     }
 
     public function getFfmpegPath(): string

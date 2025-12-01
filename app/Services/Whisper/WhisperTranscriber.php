@@ -133,11 +133,13 @@ final class WhisperTranscriber
             return '';
         }
 
+        $language = config('purrai.whisper.language', 'auto');
+
         $args = [
             $binaryPath,
             '-m', $modelPath,
             '-f', $wavPath,
-            '-l', 'en',
+            '-l', $language,
             '-nt',
             '--no-timestamps',
         ];
