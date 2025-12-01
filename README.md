@@ -18,7 +18,7 @@
 
 ## 🌟 Overview
 
-**PurrAI** is a lightweight, cross-platform desktop application that brings the power of AI to your fingertips. With a cute black kitten mascot living in your system's, you can instantly access AI assistance for any task—from answering questions to analyzing images and documents.
+**PurrAI** is a lightweight, cross-platform desktop application that brings the power of AI to your fingertips. With a cute black kitten mascot living in your system's, you can instantly access AI assistance for any task - from answering questions to analyzing images and documents.
 
 Built with modern web technologies and packaged as a native application, PurrAI runs seamlessly on **Linux**, **Windows**, and **macOS** while maintaining a minimal footprint.
 
@@ -30,9 +30,10 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 
 - **🔑 Multi-Provider Support** - Configure multiple AI providers (OpenAI, Anthropic, Ollama, etc.)
 - **💬 Intelligent Chat Interface** - Natural conversation with AI powered by PrismPHP
-- **🖼️ Image Analysis** - Paste images for AI processing
 - **📎 Document Attachment** - Upload and analyze documents of any type (past, drag  and drop, etc.)
 - **📝 Text Analysis** - Analyze text from any source.
+- **🖼️ Image Analysis** - Paste images for AI processing
+- **🖥️ System access** - Search or list files and ask about them (or use dangerous commands like delete, move, rename - if you give the right permissions in the "Danger" area in Settings)
 - **💾 Conversation History** - All chats saved locally in SQLite with search
 - **🌓 Dark/Light Mode** - Beautiful interface that adapts to your system theme
 - **🔒 Privacy-Focused** - Local Ollama models and WhisperCPP (for audio) run in your system without exposing your data
