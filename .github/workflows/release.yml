@@ -106,7 +106,15 @@ jobs:
           console.log('✓ Injected deb afterInstall config');
           "
           echo "Modified electron-builder.mjs - deb section:"
-          grep -A 3 "deb:" nativephp/electron/electron-builder.mjs || echo "deb section not found"
+          grep -A 4 "deb:" nativephp/electron/electron-builder.mjs || echo "deb section not found"
+
+      - name: Fix NativePHP package.json version
+        run: |
+          if [ -f "nativephp/electron/package.json" ]; then
+            sed -i 's/"version": "v/"version": "/g' nativephp/electron/package.json
+            echo "Fixed package.json version:"
+            grep '"version"' nativephp/electron/package.json
+          fi
 
       - name: Verify electron-builder.mjs before build
         run: |
@@ -116,7 +124,7 @@ jobs:
           grep -B 2 -A 10 "linux:" nativephp/electron/electron-builder.mjs | head -30
 
       - name: Build Linux application
-        run: php artisan native:publish linux --no-interaction
+        run: php artisan native:build linux --no-interaction
         env:
           APP_ENV: production
           APP_DEBUG: false
