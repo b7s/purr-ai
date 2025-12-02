@@ -6,51 +6,25 @@ namespace App\Services;
 
 use App\Models\Setting;
 use Illuminate\Http\UploadedFile;
-use LaravelWhisper\Config;
 use LaravelWhisper\Exceptions\WhisperException;
-use LaravelWhisper\WhisperService as BaseWhisperService;
+use LaravelWhisper\Whisper;
 
 final class WhisperService
 {
-    private readonly BaseWhisperService $whisper;
+    private readonly Whisper $whisper;
 
     public function __construct()
     {
-        $config = new Config(
-            dataDir: $this->resolveDataDirectory(),
-            binaryPath: config('purrai.whisper.binary_path'),
-            modelPath: config('purrai.whisper.model_path'),
-            ffmpegPath: config('purrai.whisper.ffmpeg_path'),
+        $config = new \LaravelWhisper\Config(
             model: config('purrai.whisper.model', 'base'),
-            language: config('purrai.whisper.language', 'auto'),
         );
 
-        $this->whisper = new BaseWhisperService($config, new LaravelLogger);
-    }
-
-    private function resolveDataDirectory(): ?string
-    {
-        $configDir = config('purrai.whisper.data_dir');
-        if ($configDir) {
-            return $configDir;
-        }
-
-        $home = $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? getenv('HOME') ?: getenv('USERPROFILE');
-
-        if (! $home) {
-            return null;
-        }
-
-        return match (PHP_OS_FAMILY) {
-            'Darwin' => "{$home}/Library/Application Support/PurrAI/whisper",
-            'Windows' => ($_SERVER['LOCALAPPDATA'] ?? $_SERVER['APPDATA'] ?? "{$home}/AppData/Local").'/PurrAI/whisper',
-            default => "{$home}/.local/share/purrai/whisper",
-        };
+        $this->whisper = new Whisper($config, new LaravelLogger);
     }
 
     public function transcribe(UploadedFile $audioFile): string
     {
-        $tempPath = sys_get_temp_dir().'/audio_'.uniqid().'.'.$audioFile->getClientOriginalExtension();
+        $tempPath = sys_get_temp_dir().'/purrai_audio_'.uniqid().'.'.$audioFile->getClientOriginalExtension();
         $audioFile->move(\dirname($tempPath), basename($tempPath));
 
         try {
@@ -92,6 +66,47 @@ final class WhisperService
     }
 
     /**
+     * Run complete Whisper setup using vendor binary
+     *
+     * @throws \Exception
+     */
+    public function runSetup(string $model = 'base', string $language = 'auto', int $timeout = 600): bool
+    {
+        $whisperSetupPath = base_path('vendor/bin/whisper-setup');
+
+        if (! file_exists($whisperSetupPath)) {
+            throw new \Exception("Whisper setup binary not found at: {$whisperSetupPath}");
+        }
+
+        $result = \Illuminate\Support\Facades\Process::timeout($timeout)
+            ->path(base_path())
+            ->run([
+                PHP_BINARY,
+                $whisperSetupPath,
+                "--model={$model}",
+                "--language={$language}",
+            ]);
+
+        if (! $result->successful()) {
+            throw new \Exception($result->errorOutput() ?: 'Whisper setup failed');
+        }
+
+        return true;
+    }
+
+    /**
+     * Remove existing Whisper installation
+     */
+    public function removeInstallation(): bool
+    {
+        $result = \Illuminate\Support\Facades\Process::run([
+            'rm', '-rf', $_SERVER['HOME'].'/.local/share/laravelwhisper',
+        ]);
+
+        return $result->successful();
+    }
+
+    /**
      * @throws WhisperException
      */
     public function downloadFfmpeg(): bool
@@ -115,7 +130,7 @@ final class WhisperService
     /**
      * @throws WhisperException
      */
-    public function downloadModel(string $model = 'base.en'): bool
+    public function downloadModel(string $model = 'base'): bool
     {
         return $this->whisper->downloadModel($model);
     }

@@ -30,6 +30,7 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 
 - **🔑 Multi-Provider Support** - Configure multiple AI providers (OpenAI, Anthropic, Ollama, etc.)
 - **💬 Intelligent Chat Interface** - Natural conversation with AI powered by PrismPHP
+- **🎙️ Audio detection** - Speak by voice, use it completely locally with LaravelWhisper or online service.
 - **📎 Document Attachment** - Upload and analyze documents of any type (past, drag  and drop, etc.)
 - **📝 Text Analysis** - Analyze text from any source.
 - **🖼️ Image Analysis** - Paste images for AI processing
@@ -55,6 +56,7 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 ```bash
 # Clone the repository
 git clone https://github.com/b7s/purrai.git
+
 cd purrai
 
 # Install PHP dependencies
@@ -68,6 +70,7 @@ cp .env.example .env
 
 # Publishing the Electron project
 php artisan native:install --publish
+
 ```
 
 #### Fix Linux Permissions for production
@@ -124,6 +127,7 @@ bash scripts/fix-electron-sandbox.sh
    - Anthropic Claude
    - Google Gemini
    - Or configure local Ollama
+4. Audio detection if you wish
 
 ### Using the Assistant
 

@@ -8,7 +8,6 @@ use App\Models\Setting;
 use App\Services\UpdateService;
 use App\Services\WhisperService;
 use Illuminate\Support\Facades\Cache;
-use LaravelWhisper\Exceptions\WhisperException;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
@@ -416,34 +415,14 @@ class Settings extends Component
         $this->downloadProgress = __('settings.other.download_starting');
 
         try {
-            $whisperService = app(WhisperService::class);
-            $status = $whisperService->getStatus();
+            $this->downloadProgress = __('settings.other.downloading_whisper_binary');
+            $this->dispatch('progress-updated');
 
-            if (! $status['ffmpeg']) {
-                $this->downloadProgress = __('settings.other.downloading_ffmpeg');
-                $this->dispatch('progress-updated');
-                $whisperService->downloadFfmpeg();
-            }
-
-            if (! $status['binary']) {
-                $this->downloadProgress = __('settings.other.downloading_whisper_binary');
-                $this->dispatch('progress-updated');
-                $whisperService->downloadBinary();
-            }
-
-            if (! $status['model']) {
-                $this->downloadProgress = __('settings.other.downloading_whisper_model');
-                $this->dispatch('progress-updated');
-                $whisperService->downloadModel();
-            }
+            app(WhisperService::class)->runSetup();
 
             $this->downloadProgress = __('settings.other.download_complete');
             $this->checkWhisperStatus();
             $this->dispatch('whisper-setup-complete');
-        } catch (WhisperException $e) {
-            $this->downloadError = $e->getFullMessage();
-            $this->downloadProgress = __('settings.other.download_failed');
-            $this->dispatch('whisper-setup-failed', message: $e->getFullMessage());
         } catch (\Exception $e) {
             $this->downloadError = $e->getMessage();
             $this->downloadProgress = __('settings.other.download_failed');

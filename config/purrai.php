@@ -27,6 +27,13 @@ return [
         'blur' => 8,
     ],
 
+    /**
+     * See docs: https://github.com/b7s/laravelwhisper
+     */
+    'whisper' => [
+        'model' => 'base',
+    ],
+
     'response_tones' => [
         [
             'value' => 'normal',
@@ -76,30 +83,6 @@ return [
             'description' => 'settings.tones.cynical_description',
             'icon' => 'emoji-think-left',
         ],
-    ],
-
-    /**
-     * Whisper.cpp: Local speech-to-text provider.
-     *
-     * Available multilingual models (supports 99+ languages):
-     * - 'tiny'   : ~75 MB, fastest, lower accuracy
-     * - 'base'   : ~142 MB, balanced speed/accuracy (recommended)
-     * - 'small'  : ~466 MB, good accuracy
-     * - 'medium' : ~1.5 GB, high accuracy
-     * - 'large'  : ~2.9 GB, best accuracy, slowest
-     *
-     * English-only models (faster for English):
-     * - 'tiny.en', 'base.en', 'small.en', 'medium.en'
-     *
-     * Language: 'auto' for automatic detection, or ISO code like 'en', 'pt', 'es', etc.
-     */
-    'whisper' => [
-        'data_dir' => env('WHISPER_DATA_DIR'),
-        'binary_path' => env('WHISPER_BINARY_PATH'),
-        'model_path' => env('WHISPER_MODEL_PATH'),
-        'ffmpeg_path' => env('FFMPEG_PATH'),
-        'model' => env('WHISPER_MODEL', 'base'),
-        'language' => env('WHISPER_LANGUAGE', 'auto'),
     ],
 
     'ai_providers' => [
