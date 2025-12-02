@@ -108,11 +108,23 @@ jobs:
           echo "Modified electron-builder.mjs - deb section:"
           grep -A 3 "deb:" nativephp/electron/electron-builder.mjs || echo "deb section not found"
 
+      - name: Verify electron-builder.mjs before build
+        run: |
+          echo "=== electron-builder.mjs content (deb section) ==="
+          grep -B 2 -A 5 "deb:" nativephp/electron/electron-builder.mjs || echo "deb section not found"
+          echo "=== Full linux and deb sections ==="
+          grep -B 2 -A 10 "linux:" nativephp/electron/electron-builder.mjs | head -30
+
       - name: Build Linux application
-        run: php artisan native:build linux --no-interaction
+        run: php artisan native:publish linux --no-interaction
         env:
           APP_ENV: production
           APP_DEBUG: false
+
+      - name: Verify electron-builder.mjs after build
+        run: |
+          echo "=== electron-builder.mjs after build (deb section) ==="
+          grep -B 2 -A 5 "deb:" nativephp/electron/electron-builder.mjs || echo "deb section not found after build"
 
       - name: List build artifacts
         run: |
@@ -122,6 +134,7 @@ jobs:
           echo "Checking common build directories:"
           ls -lah dist/ 2>/dev/null || echo "dist/ not found"
           ls -lah build/ 2>/dev/null || echo "build/ not found"
+          ls -lah nativephp/electron/dist/ 2>/dev/null || echo "nativephp/electron/dist/ not found"
           ls -lah vendor/nativephp/electron/dist/ 2>/dev/null || echo "vendor/nativephp/electron/dist/ not found"
 
       - name: Prepare artifacts for upload
@@ -215,7 +228,7 @@ jobs:
           (Get-Content config/nativephp.php) -replace "'version' => env\('NATIVEPHP_APP_VERSION', '1.0.0'\)", "'version' => env('NATIVEPHP_APP_VERSION', '$VERSION')" | Set-Content config/nativephp.php
 
       - name: Build Windows application
-        run: php artisan native:build windows --no-interaction
+        run: php artisan native:publish windows --no-interaction
         env:
           APP_ENV: production
           APP_DEBUG: false
@@ -321,7 +334,7 @@ jobs:
           sed -i '' "s/'version' => env('NATIVEPHP_APP_VERSION', '1.0.0')/'version' => env('NATIVEPHP_APP_VERSION', '$VERSION')/" config/nativephp.php
 
       - name: Build macOS application
-        run: php artisan native:build mac --no-interaction
+        run: php artisan native:publish mac --no-interaction
         env:
           APP_ENV: production
           APP_DEBUG: false
