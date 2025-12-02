@@ -22,7 +22,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.4"
-          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, json, zip
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, json, zip, fileinfo
           coverage: none
 
       - name: Setup Node.js
@@ -31,8 +31,23 @@ jobs:
           node-version: "20"
           cache: "npm"
 
+      - name: Create cache directories
+        run: |
+          mkdir -p bootstrap/cache
+          mkdir -p storage/framework/{sessions,views,cache}
+          chmod -R 775 bootstrap/cache storage
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
       - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts
+
+      - name: Generate application key
+        run: php artisan key:generate --ansi --no-interaction
+
+      - name: Run post-install scripts
+        run: composer dump-autoload --optimize
 
       - name: Install NPM dependencies
         run: npm ci
