@@ -55,7 +55,7 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 
 ```bash
 # Clone the repository
-git clone https://github.com/b7s/purrai.git
+git clone https://github.com/b7s/purr-ai.git
 
 cd purrai
 
@@ -215,6 +215,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ and 🐱 by Bruno**
 
-[Report Bug](https://github.com/b7s/purrai/issues) • [Request Feature](https://github.com/b7s/purrai/issues)
+[Report Bug](https://github.com/b7s/purr-ai/issues) • [Request Feature](https://github.com/b7s/purr-ai/issues)
 
 </div>

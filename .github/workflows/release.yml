@@ -373,21 +373,27 @@ jobs:
         run: |
           mkdir -p release-files
           if [ -d "artifacts" ]; then
-            echo "Filtering files that start with 'PurrAI-' and end with allowed extensions..."
+            echo "Filtering files with allowed patterns..."
             
-            # Only accept files that START with "PurrAI-" AND END with specific extensions
+            # Accept files with specific patterns:
+            # - PurrAI-*.exe (Windows)
+            # - PurrAI-*.AppImage (Linux AppImage)
+            # - purrai_*.deb (Debian package - lowercase with underscore)
+            # - PurrAI-*.dmg (macOS)
             find artifacts -type f -name "PurrAI-*.exe" -exec cp {} release-files/ \; 2>/dev/null || true
-            find artifacts -type f -name "PurrAI-*.deb" -exec cp {} release-files/ \; 2>/dev/null || true
-            find artifacts -type f -name "PurrAI-*.AppImage" -exec cp {} release-files/ \; 2>/dev/null || true
             find artifacts -type f -name "PurrAI-*.dmg" -exec cp {} release-files/ \; 2>/dev/null || true
+            find artifacts -type f -name "PurrAI_*.deb" -exec cp {} release-files/ \; 2>/dev/null || true
+            find artifacts -type f -name "purrai_*.deb" -exec cp {} release-files/ \; 2>/dev/null || true
+            find artifacts -type f -name "PurrAI-*.AppImage" -exec cp {} release-files/ \; 2>/dev/null || true
             
             if [ "$(ls -A release-files 2>/dev/null)" ]; then
               echo "has_files=true" >> $GITHUB_OUTPUT
-              echo "✅ Release files prepared (PurrAI-* with valid extensions):"
+              echo "✅ Release files prepared:"
               ls -lh release-files/
             else
               echo "has_files=false" >> $GITHUB_OUTPUT
-              echo "❌ No valid release files found (must start with 'PurrAI-' and end with .exe, .deb, .AppImage, or .dmg)"
+              echo "❌ No valid release files found"
+              echo "Expected patterns: PurrAI-*.exe, purrai_*.deb, PurrAI-*.AppImage, PurrAI-*.dmg"
               echo "Files found in artifacts:"
               find artifacts -type f 2>/dev/null || echo "No files in artifacts"
             fi
