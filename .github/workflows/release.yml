@@ -81,6 +81,22 @@ jobs:
           echo "NATIVEPHP_APP_VERSION=$VERSION" >> $GITHUB_ENV
           sed -i "s/'version' => env('NATIVEPHP_APP_VERSION', '1.0.0')/'version' => env('NATIVEPHP_APP_VERSION', '$VERSION')/" config/nativephp.php
 
+      - name: Publish NativePHP files
+        run: php artisan native:install --publish --no-interaction
+
+      - name: Inject afterInstall script for deb package
+        run: |
+          # Find the line with "linux:" and inject deb config after it
+          sed -i '/^[[:space:]]*linux: {/,/^[[:space:]]*},/ {
+            /^[[:space:]]*},/ a\
+    deb: {\
+        afterInstall: process.env.APP_PATH + "/scripts/fix-permission-linux-app-after-install.tpl",\
+    },
+          }' nativephp/electron/electron-builder.mjs
+          
+          echo "Modified electron-builder.mjs:"
+          grep -A 5 "linux:" nativephp/electron/electron-builder.mjs || true
+
       - name: Build Linux application
         run: php artisan native:build linux --no-interaction
         env:
@@ -427,7 +443,7 @@ jobs:
 
             **macOS**
             - `.dmg` - Intel Macs
-            - `arm64.dmg` - Apple Silicon (M1/M2/M3)
+            - `arm64.dmg` - Apple Silicon
 
             ### 🚀 Installation
 

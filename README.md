@@ -130,6 +130,24 @@ bash scripts/fix-electron-sandbox.sh
    - Or configure local Ollama
 4. Audio detection if you wish
 
+### Linux Installation from .deb Package
+
+If you're installing PurrAI from a `.deb` package and encounter a sandbox error, run these commands after installation:
+
+```bash
+# Fix chrome-sandbox permissions
+sudo chown root:root /opt/PurrAI/chrome-sandbox
+sudo chmod 4755 /opt/PurrAI/chrome-sandbox
+
+# Verify permissions (should show -rwsr-xr-x)
+ls -la /opt/PurrAI/chrome-sandbox
+
+# Launch PurrAI
+purrai
+```
+
+**Why is this needed?** The Electron chrome-sandbox requires SUID permissions to run securely. Due to build system limitations, these permissions must be set manually after installation.
+
 ### Using the Assistant
 
 1. **Start a conversation** - Type your question in the input box
