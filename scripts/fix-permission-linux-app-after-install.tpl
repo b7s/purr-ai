@@ -2,6 +2,7 @@
 set -e
 
 APP_DIR="/opt/PurrAI"
+EXECUTABLE="$APP_DIR/purrai"
 CACHE_DIR="$APP_DIR/resources/build/app/bootstrap/cache"
 STORAGE_DIR="$APP_DIR/resources/build/app/storage"
 SANDBOX_PATH="$APP_DIR/chrome-sandbox"
@@ -25,6 +26,15 @@ if [[ ! -d "$APP_DIR" ]]; then
     exit 1
 fi
 log "✓ Application directory found"
+
+# Create symlink in /usr/bin
+if [[ -f "$EXECUTABLE" ]]; then
+    log "→ Creating symlink /usr/bin/purrai"
+    ln -sf "$EXECUTABLE" /usr/bin/purrai
+    log "✓ Symlink created"
+else
+    log "WARNING: Executable not found: $EXECUTABLE"
+fi
 
 # Fix cache and storage permissions
 if [[ -d "$CACHE_DIR" ]]; then
