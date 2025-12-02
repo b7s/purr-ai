@@ -1,0 +1,61 @@
+name: Build Linux Binary
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Linux AppImage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, json, zip
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Build Linux application
+        run: php artisan native:build linux --no-interaction
+        env:
+          APP_ENV: production
+          APP_DEBUG: false
+
+      - name: List build artifacts
+        run: |
+          echo "Searching for build artifacts..."
+          find . -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" \) -ls
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: purrai-linux-${{ github.sha }}
+          path: |
+            dist/**/*
+            build/**/*
+          if-no-files-found: warn

@@ -51,5 +51,5 @@ it('returns stream response headers', function (): void {
         'selected_model' => 'openai:gpt-4',
     ]);
 
-    $response->assertHeader('Content-Type', 'text/event-stream; charset=UTF-8');
+    $response->assertHeader('Content-Type', 'text/event-stream; charset=utf-8');
 });

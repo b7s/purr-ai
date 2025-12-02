@@ -25,7 +25,8 @@ class SystemPromptBuilder
 
     public function __construct()
     {
-        $this->mascotName = Setting::get('mascot_name', config('app.name'));
+        $mascotName = Setting::get('mascot_name', '');
+        $this->mascotName = empty($mascotName) ? config('app.name') : $mascotName;
         $this->userName = Setting::get('user_name', '');
         $this->userDescription = Setting::get('user_description', '');
         $this->responseDetail = Setting::get('response_detail', 'detailed');

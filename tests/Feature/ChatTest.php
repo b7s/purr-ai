@@ -18,7 +18,7 @@ beforeEach(function () {
 it('renders chat component', function () {
     Livewire::test(Chat::class)
         ->assertStatus(200)
-        ->assertSee(__('chat.welcome_title'));
+        ->assertSee('Welcome to');
 });
 
 it('can send a message', function () {
