@@ -101,8 +101,8 @@ jobs:
         id: prepare-linux
         run: |
           mkdir -p artifacts-linux
-          # Search for artifacts in multiple possible locations
-          find . -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" \) -exec cp {} artifacts-linux/ \; 2>/dev/null || true
+          # Only include .AppImage and .deb files
+          find . -type f \( -name "*.AppImage" -o -name "*.deb" \) -exec cp {} artifacts-linux/ \; 2>/dev/null || true
           if [ "$(ls -A artifacts-linux 2>/dev/null)" ]; then
             echo "found=true" >> $GITHUB_OUTPUT
             echo "Artifacts prepared for upload:"
@@ -207,7 +207,8 @@ jobs:
         id: prepare-windows
         run: |
           New-Item -ItemType Directory -Force -Path artifacts-windows
-          Get-ChildItem -Path . -Recurse -Include *.exe,*.msi -ErrorAction SilentlyContinue | Copy-Item -Destination artifacts-windows -ErrorAction SilentlyContinue
+          # Only include .exe files (not .msi)
+          Get-ChildItem -Path . -Recurse -Include *.exe -ErrorAction SilentlyContinue | Copy-Item -Destination artifacts-windows -ErrorAction SilentlyContinue
           $files = Get-ChildItem -Path artifacts-windows -ErrorAction SilentlyContinue
           if ($files) {
             echo "found=true" >> $env:GITHUB_OUTPUT
@@ -312,8 +313,8 @@ jobs:
         id: prepare-macos
         run: |
           mkdir -p artifacts-macos
-          # Search for artifacts in multiple possible locations
-          find . -type f \( -name "*.dmg" -o -name "*.zip" \) -exec cp {} artifacts-macos/ \; 2>/dev/null || true
+          # Only include .dmg files (both Intel and ARM64)
+          find . -type f -name "*.dmg" -exec cp {} artifacts-macos/ \; 2>/dev/null || true
           if [ "$(ls -A artifacts-macos 2>/dev/null)" ]; then
             echo "found=true" >> $GITHUB_OUTPUT
             echo "Artifacts prepared for upload:"
@@ -372,14 +373,23 @@ jobs:
         run: |
           mkdir -p release-files
           if [ -d "artifacts" ]; then
-            find artifacts -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" -o -name "*.exe" -o -name "*.msi" -o -name "*.dmg" -o -name "*.zip" \) -exec cp {} release-files/ \;
-            if [ "$(ls -A release-files)" ]; then
+            echo "Filtering files that start with 'PurrAI-' and end with allowed extensions..."
+            
+            # Only accept files that START with "PurrAI-" AND END with specific extensions
+            find artifacts -type f -name "PurrAI-*.exe" -exec cp {} release-files/ \; 2>/dev/null || true
+            find artifacts -type f -name "PurrAI-*.deb" -exec cp {} release-files/ \; 2>/dev/null || true
+            find artifacts -type f -name "PurrAI-*.AppImage" -exec cp {} release-files/ \; 2>/dev/null || true
+            find artifacts -type f -name "PurrAI-*.dmg" -exec cp {} release-files/ \; 2>/dev/null || true
+            
+            if [ "$(ls -A release-files 2>/dev/null)" ]; then
               echo "has_files=true" >> $GITHUB_OUTPUT
-              echo "Release files prepared:"
+              echo "✅ Release files prepared (PurrAI-* with valid extensions):"
               ls -lh release-files/
             else
               echo "has_files=false" >> $GITHUB_OUTPUT
-              echo "No release files found"
+              echo "❌ No valid release files found (must start with 'PurrAI-' and end with .exe, .deb, .AppImage, or .dmg)"
+              echo "Files found in artifacts:"
+              find artifacts -type f 2>/dev/null || echo "No files in artifacts"
             fi
           else
             echo "has_files=false" >> $GITHUB_OUTPUT
@@ -392,23 +402,50 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: PurrAI ${{ steps.version.outputs.version }}
-          draft: true
+          draft: false
           prerelease: false
           generate_release_notes: true
           body: |
-            ## PurrAI ${{ steps.version.outputs.version }}
+            ## 🐱 PurrAI ${{ steps.version.outputs.version }}
 
             Your adorable AI companion living in your machine.
 
-            ### Downloads
-            - **Linux**: AppImage, .deb, .rpm
-            - **Windows**: .exe, .msi
-            - **macOS**: .dmg, .zip
+            ### 📦 Downloads
 
-            ### Installation
-            - **Linux**: Download the AppImage, make it executable, and run
-            - **Windows**: Download and run the installer
-            - **macOS**: Download the .dmg and drag to Applications
+            **Linux**
+            - `.AppImage` - Universal Linux package (recommended)
+            - `.deb` - Debian/Ubuntu package
+
+            **Windows**
+            - `.exe` - Windows installer
+
+            **macOS**
+            - `.dmg` - Intel Macs
+            - `arm64.dmg` - Apple Silicon (M1/M2/M3)
+
+            ### 🚀 Installation
+
+            **Linux (AppImage)**
+            ```bash
+            chmod +x PurrAI-*.AppImage
+            ./PurrAI-*.AppImage
+            ```
+
+            **Linux (Debian/Ubuntu)**
+            ```bash
+            sudo dpkg -i purrai_*.deb
+            ```
+
+            **Windows**
+            - Download and run the `.exe` installer
+
+            **macOS**
+            - Download the appropriate `.dmg` for your Mac
+            - Open the `.dmg` and drag PurrAI to Applications
+            - If you see a security warning, go to System Preferences → Security & Privacy → Open Anyway
+
+            ### 📝 What's Changed
+            See the full changelog below.
           files: release-files/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -419,14 +456,15 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: PurrAI ${{ steps.version.outputs.version }} (Build Failed)
-          draft: true
+          draft: false
           prerelease: false
           generate_release_notes: true
           body: |
-            ## Build Status
+            ## ⚠️ Build Status
 
-            ⚠️ Some or all builds failed. Please check the Actions tab for details.
+            Some or all builds failed. Please check the [Actions tab](https://github.com/${{ github.repository }}/actions) for details.
 
+            **Build Results:**
             - Linux: ${{ needs.build-linux.result }}
             - Windows: ${{ needs.build-windows.result }}
             - macOS: ${{ needs.build-macos.result }}
