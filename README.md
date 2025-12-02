@@ -37,8 +37,8 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 - **🖥️ System access** - Search or list files and ask about them (or use dangerous commands like delete, move, rename - if you give the right permissions in the "Danger" area in Settings)
 - **💾 Conversation History** - All chats saved locally in SQLite with search
 - **🌓 Dark/Light Mode** - Beautiful interface that adapts to your system theme
-- **🔒 Privacy-Focused** - Local Ollama models and WhisperCPP (for audio) run in your system without exposing your data
-- **🌐 i18n Support** - Available in multiple languages
+- **🔒 Privacy-Focused** - Local Ollama models and LaravelWhisper (for audio) run in your system without exposing your data
+- **🌐 i18n Support** - Available in multiple languages (en, pt, es, jp...)
 
 ---
 
