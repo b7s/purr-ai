@@ -111,8 +111,9 @@ jobs:
       - name: Fix NativePHP package.json version
         run: |
           if [ -f "nativephp/electron/package.json" ]; then
-            sed -i 's/"version": "v/"version": "/g' nativephp/electron/package.json
-            echo "Fixed package.json version:"
+            # Replace invalid versions like "v2" or "2" with proper semver
+            sed -i 's/"version": "v\?[0-9]*"/"version": "'"$NATIVEPHP_APP_VERSION"'"/g' nativephp/electron/package.json
+            echo "Fixed package.json version to $NATIVEPHP_APP_VERSION:"
             grep '"version"' nativephp/electron/package.json
           fi
 
