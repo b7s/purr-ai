@@ -86,16 +86,27 @@ jobs:
 
       - name: Inject afterInstall script for deb package
         run: |
-          # Find the line with "linux:" and inject deb config after it
-          sed -i '/^[[:space:]]*linux: {/,/^[[:space:]]*},/ {
-            /^[[:space:]]*},/ a\
-    deb: {\
-        afterInstall: process.env.APP_PATH + "/scripts/fix-permission-linux-app-after-install.tpl",\
-    },
-          }' nativephp/electron/electron-builder.mjs
-          
-          echo "Modified electron-builder.mjs:"
-          grep -A 5 "linux:" nativephp/electron/electron-builder.mjs || true
+          node -e "
+          const fs = require('fs');
+          const path = 'nativephp/electron/electron-builder.mjs';
+          let content = fs.readFileSync(path, 'utf8');
+
+          // Add deb config after linux config
+          const debConfig = \`    deb: {
+              afterInstall: process.env.APP_PATH + '/scripts/fix-permission-linux-app-after-install.tpl',
+          },\`;
+
+          // Find appImage section and insert deb before it
+          content = content.replace(
+            /(\s*appImage:\s*\{)/,
+            debConfig + '\n\$1'
+          );
+
+          fs.writeFileSync(path, content);
+          console.log('✓ Injected deb afterInstall config');
+          "
+          echo "Modified electron-builder.mjs - deb section:"
+          grep -A 3 "deb:" nativephp/electron/electron-builder.mjs || echo "deb section not found"
 
       - name: Build Linux application
         run: php artisan native:build linux --no-interaction
