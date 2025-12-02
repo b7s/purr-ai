@@ -89,20 +89,36 @@ jobs:
 
       - name: List build artifacts
         run: |
-          echo "Build directory contents:"
-          ls -lah dist/ || echo "dist/ not found"
-          find . -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" || echo "No Linux artifacts found"
+          echo "Searching for build artifacts in all directories..."
+          find . -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" \) -ls || echo "No Linux artifacts found"
+          echo ""
+          echo "Checking common build directories:"
+          ls -lah dist/ 2>/dev/null || echo "dist/ not found"
+          ls -lah build/ 2>/dev/null || echo "build/ not found"
+          ls -lah vendor/nativephp/electron/dist/ 2>/dev/null || echo "vendor/nativephp/electron/dist/ not found"
+
+      - name: Prepare artifacts for upload
+        id: prepare-linux
+        run: |
+          mkdir -p artifacts-linux
+          # Search for artifacts in multiple possible locations
+          find . -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" \) -exec cp {} artifacts-linux/ \; 2>/dev/null || true
+          if [ "$(ls -A artifacts-linux 2>/dev/null)" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "Artifacts prepared for upload:"
+            ls -lh artifacts-linux/
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No artifacts found to upload"
+          fi
 
       - name: Upload Linux artifacts
+        if: steps.prepare-linux.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: linux-build
-          path: |
-            dist/*.AppImage
-            dist/*.deb
-            dist/*.rpm
-            dist/*.tar.gz
-          if-no-files-found: warn
+          path: artifacts-linux/*
+          if-no-files-found: error
 
   build-windows:
     name: Build Windows
@@ -179,18 +195,36 @@ jobs:
 
       - name: List build artifacts
         run: |
-          Write-Host "Build directory contents:"
+          Write-Host "Searching for build artifacts..."
+          Get-ChildItem -Path . -Recurse -Include *.exe,*.msi -ErrorAction SilentlyContinue | Format-Table FullName, Length
+          Write-Host ""
+          Write-Host "Checking common build directories:"
           Get-ChildItem -Path dist -Recurse -ErrorAction SilentlyContinue
-          Get-ChildItem -Path . -Recurse -Include *.exe,*.msi -ErrorAction SilentlyContinue
+          Get-ChildItem -Path build -Recurse -ErrorAction SilentlyContinue
+          Get-ChildItem -Path vendor/nativephp/electron/dist -Recurse -ErrorAction SilentlyContinue
+
+      - name: Prepare artifacts for upload
+        id: prepare-windows
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts-windows
+          Get-ChildItem -Path . -Recurse -Include *.exe,*.msi -ErrorAction SilentlyContinue | Copy-Item -Destination artifacts-windows -ErrorAction SilentlyContinue
+          $files = Get-ChildItem -Path artifacts-windows -ErrorAction SilentlyContinue
+          if ($files) {
+            echo "found=true" >> $env:GITHUB_OUTPUT
+            Write-Host "Artifacts prepared for upload:"
+            Get-ChildItem -Path artifacts-windows | Format-Table Name, Length
+          } else {
+            echo "found=false" >> $env:GITHUB_OUTPUT
+            Write-Host "No artifacts found to upload"
+          }
 
       - name: Upload Windows artifacts
+        if: steps.prepare-windows.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: windows-build
-          path: |
-            dist/*.exe
-            dist/*.msi
-          if-no-files-found: warn
+          path: artifacts-windows/*
+          if-no-files-found: error
 
   build-macos:
     name: Build macOS
@@ -266,24 +300,42 @@ jobs:
 
       - name: List build artifacts
         run: |
-          echo "Build directory contents:"
-          ls -lah dist/ || echo "dist/ not found"
-          find . -name "*.dmg" -o -name "*.zip" -o -name "*.app" || echo "No macOS artifacts found"
+          echo "Searching for build artifacts in all directories..."
+          find . -type f \( -name "*.dmg" -o -name "*.zip" \) -ls || echo "No macOS artifacts found"
+          echo ""
+          echo "Checking common build directories:"
+          ls -lah dist/ 2>/dev/null || echo "dist/ not found"
+          ls -lah build/ 2>/dev/null || echo "build/ not found"
+          ls -lah vendor/nativephp/electron/dist/ 2>/dev/null || echo "vendor/nativephp/electron/dist/ not found"
+
+      - name: Prepare artifacts for upload
+        id: prepare-macos
+        run: |
+          mkdir -p artifacts-macos
+          # Search for artifacts in multiple possible locations
+          find . -type f \( -name "*.dmg" -o -name "*.zip" \) -exec cp {} artifacts-macos/ \; 2>/dev/null || true
+          if [ "$(ls -A artifacts-macos 2>/dev/null)" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "Artifacts prepared for upload:"
+            ls -lh artifacts-macos/
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No artifacts found to upload"
+          fi
 
       - name: Upload macOS artifacts
+        if: steps.prepare-macos.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: macos-build
-          path: |
-            dist/*.dmg
-            dist/*.zip
-          if-no-files-found: warn
+          path: artifacts-macos/*
+          if-no-files-found: error
 
   create-release:
     name: Create Release
     needs: [build-linux, build-windows, build-macos]
     runs-on: ubuntu-latest
-    if: always()
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout code
@@ -304,11 +356,38 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+        continue-on-error: true
 
       - name: Display structure of downloaded files
-        run: ls -R artifacts/
+        run: |
+          if [ -d "artifacts" ]; then
+            echo "Artifacts found:"
+            ls -R artifacts/
+          else
+            echo "No artifacts directory found"
+          fi
+
+      - name: Prepare release files
+        id: prepare
+        run: |
+          mkdir -p release-files
+          if [ -d "artifacts" ]; then
+            find artifacts -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" -o -name "*.tar.gz" -o -name "*.exe" -o -name "*.msi" -o -name "*.dmg" -o -name "*.zip" \) -exec cp {} release-files/ \;
+            if [ "$(ls -A release-files)" ]; then
+              echo "has_files=true" >> $GITHUB_OUTPUT
+              echo "Release files prepared:"
+              ls -lh release-files/
+            else
+              echo "has_files=false" >> $GITHUB_OUTPUT
+              echo "No release files found"
+            fi
+          else
+            echo "has_files=false" >> $GITHUB_OUTPUT
+            echo "No artifacts to prepare"
+          fi
 
       - name: Create Release
+        if: steps.prepare.outputs.has_files == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.tag }}
@@ -316,7 +395,40 @@ jobs:
           draft: true
           prerelease: false
           generate_release_notes: true
-          files: |
-            artifacts/**/*
+          body: |
+            ## PurrAI ${{ steps.version.outputs.version }}
+
+            Your adorable AI companion living in your machine.
+
+            ### Downloads
+            - **Linux**: AppImage, .deb, .rpm
+            - **Windows**: .exe, .msi
+            - **macOS**: .dmg, .zip
+
+            ### Installation
+            - **Linux**: Download the AppImage, make it executable, and run
+            - **Windows**: Download and run the installer
+            - **macOS**: Download the .dmg and drag to Applications
+          files: release-files/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release (No Files)
+        if: steps.prepare.outputs.has_files != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: PurrAI ${{ steps.version.outputs.version }} (Build Failed)
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## Build Status
+
+            ⚠️ Some or all builds failed. Please check the Actions tab for details.
+
+            - Linux: ${{ needs.build-linux.result }}
+            - Windows: ${{ needs.build-windows.result }}
+            - macOS: ${{ needs.build-macos.result }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
