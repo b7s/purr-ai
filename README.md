@@ -79,19 +79,20 @@ After run `native:install`, add "afterInstall" to your `nativephp/electron/elect
 
 ```js
    linux: {
-      /*...*/
+   /*...*/
    },
    deb: {
-      afterInstall: "../../scripts/fix-permission-linux-app-after-install.tpl",
+      afterInstall: join(
+         process.env.APP_PATH,
+         "scripts",
+         "fix-permission-linux-app-after-install.tpl",
+      ),
    },
 ```
 
 _It will attempt to correct permission issues when installing the builded app in "/opt"._
 
 > **Attention:** Whenever you update the project (`composer update`), the files in "nativephp" will be overwritten and you will need to add the script again.
-
-
-Make sure to run `sudo chmod +x scripts/fix-permission-linux-app-after-install.tpl` after install.
 
 ---
 
