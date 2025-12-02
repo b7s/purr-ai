@@ -107,7 +107,7 @@ release:
 	fi; \
 	echo ""; \
 	echo "✅ Release v$$VERSION_INPUT created successfully!"; \
-	echo "🔗 View release: https://github.com/b7s/PurrAI/releases/tag/v$$VERSION_INPUT"
+	echo "🔗 View release: https://github.com/b7s/purr-ai/releases/tag/v$$VERSION_INPUT"
 
 # Clean cache and temporary files
 clean:
