@@ -153,7 +153,7 @@ return [
         'audio_device_settings' => 'Audio device Settings',
         'select_audio_device' => 'Select Audio device',
         'select_audio_device_description' => 'Choose which audio device to use for voice input',
-        'select_audio_device_placeholder' => 'Select a audio_device...',
+        'select_audio_device_placeholder' => 'Select a audio device...',
         'default_audio_device' => 'Default Audio device',
         'audio_device' => 'Audio device',
         'loading_devices' => 'Loading devices...',

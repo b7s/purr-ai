@@ -6,9 +6,9 @@ namespace App\Livewire;
 
 use App\Models\Setting;
 use App\Services\UpdateService;
-use App\Services\Whisper\WhisperDownloadException;
 use App\Services\WhisperService;
 use Illuminate\Support\Facades\Cache;
+use LaravelWhisper\Exceptions\WhisperException;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Native\Desktop\Facades\App;
@@ -440,7 +440,7 @@ class Settings extends Component
             $this->downloadProgress = __('settings.other.download_complete');
             $this->checkWhisperStatus();
             $this->dispatch('whisper-setup-complete');
-        } catch (WhisperDownloadException $e) {
+        } catch (WhisperException $e) {
             $this->downloadError = $e->getFullMessage();
             $this->downloadProgress = __('settings.other.download_failed');
             $this->dispatch('whisper-setup-failed', message: $e->getFullMessage());

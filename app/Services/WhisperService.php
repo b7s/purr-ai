@@ -5,48 +5,74 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Setting;
-use App\Services\Whisper\WhisperDownloader;
-use App\Services\Whisper\WhisperPathResolver;
-use App\Services\Whisper\WhisperPlatformDetector;
-use App\Services\Whisper\WhisperTranscriber;
 use Illuminate\Http\UploadedFile;
+use LaravelWhisper\Config;
+use LaravelWhisper\Exceptions\WhisperException;
+use LaravelWhisper\WhisperService as BaseWhisperService;
 
 final class WhisperService
 {
-    private readonly WhisperPlatformDetector $platform;
-
-    private readonly WhisperPathResolver $paths;
-
-    private readonly WhisperDownloader $downloader;
-
-    private readonly WhisperTranscriber $transcriber;
+    private readonly BaseWhisperService $whisper;
 
     public function __construct()
     {
-        $this->platform = new WhisperPlatformDetector;
-        $this->paths = new WhisperPathResolver($this->platform);
-        $this->downloader = new WhisperDownloader($this->platform, $this->paths);
-        $this->transcriber = new WhisperTranscriber($this->platform, $this->paths);
+        $config = new Config(
+            dataDir: $this->resolveDataDirectory(),
+            binaryPath: config('purrai.whisper.binary_path'),
+            modelPath: config('purrai.whisper.model_path'),
+            ffmpegPath: config('purrai.whisper.ffmpeg_path'),
+            model: config('purrai.whisper.model', 'base'),
+            language: config('purrai.whisper.language', 'auto'),
+        );
+
+        $this->whisper = new BaseWhisperService($config, new LaravelLogger);
+    }
+
+    private function resolveDataDirectory(): ?string
+    {
+        $configDir = config('purrai.whisper.data_dir');
+        if ($configDir) {
+            return $configDir;
+        }
+
+        $home = $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? getenv('HOME') ?: getenv('USERPROFILE');
+
+        if (! $home) {
+            return null;
+        }
+
+        return match (PHP_OS_FAMILY) {
+            'Darwin' => "{$home}/Library/Application Support/PurrAI/whisper",
+            'Windows' => ($_SERVER['LOCALAPPDATA'] ?? $_SERVER['APPDATA'] ?? "{$home}/AppData/Local").'/PurrAI/whisper',
+            default => "{$home}/.local/share/purrai/whisper",
+        };
     }
 
     public function transcribe(UploadedFile $audioFile): string
     {
-        return $this->transcriber->transcribe($audioFile);
+        $tempPath = sys_get_temp_dir().'/audio_'.uniqid().'.'.$audioFile->getClientOriginalExtension();
+        $audioFile->move(\dirname($tempPath), basename($tempPath));
+
+        try {
+            return $this->whisper->audio($tempPath)->text();
+        } finally {
+            @unlink($tempPath);
+        }
     }
 
     public function transcribeFromPath(string $audioPath): string
     {
-        return $this->transcriber->transcribeFromPath($audioPath);
+        return $this->whisper->audio($audioPath)->text();
     }
 
     public function isAvailable(): bool
     {
-        return $this->transcriber->isAvailable();
+        return $this->whisper->isAvailable();
     }
 
     public function hasGpuSupport(): bool
     {
-        return $this->platform->hasGpuSupport();
+        return $this->whisper->hasGpuSupport();
     }
 
     /**
@@ -54,54 +80,49 @@ final class WhisperService
      */
     public function getStatus(): array
     {
-        return [
-            'binary' => file_exists($this->paths->getBinaryPath()),
-            'model' => file_exists($this->paths->getModelPath()),
-            'ffmpeg' => $this->downloader->isFfmpegAvailable(),
-            'gpu' => $this->platform->hasGpuSupport(),
-        ];
+        return $this->whisper->getStatus();
     }
 
+    /**
+     * @throws WhisperException
+     */
     public function setup(): bool
     {
-        $this->paths->ensureDirectoriesExist();
-
-        $ffmpegDownloaded = $this->downloader->downloadFfmpeg();
-        $binaryDownloaded = $this->downloader->downloadBinary();
-        $modelDownloaded = $this->downloader->downloadModel();
-
-        return $ffmpegDownloaded && $binaryDownloaded && $modelDownloaded;
+        return $this->whisper->setup();
     }
 
+    /**
+     * @throws WhisperException
+     */
     public function downloadFfmpeg(): bool
     {
-        return $this->downloader->downloadFfmpeg();
+        return $this->whisper->downloadFfmpeg();
     }
 
+    /**
+     * @throws WhisperException
+     */
     public function downloadBinary(): bool
     {
-        $result = $this->downloader->downloadBinary();
-
-        if ($result) {
-            $this->downloader->fixLibrarySymlinks();
-        }
-
-        return $result;
+        return $this->whisper->downloadBinary();
     }
 
     public function fixLibrarySymlinks(): void
     {
-        $this->downloader->fixLibrarySymlinks();
+        $this->whisper->fixLibrarySymlinks();
     }
 
+    /**
+     * @throws WhisperException
+     */
     public function downloadModel(string $model = 'base.en'): bool
     {
-        return $this->downloader->downloadModel($model);
+        return $this->whisper->downloadModel($model);
     }
 
     public function getFfmpegPath(): string
     {
-        return $this->paths->getFfmpegPath();
+        return $this->whisper->getFfmpegPath();
     }
 
     public static function hasPendingConfiguration(): bool

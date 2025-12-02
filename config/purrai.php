@@ -80,8 +80,17 @@ return [
 
     /**
      * Whisper.cpp: Local speech-to-text provider.
-     * Available models: 'tiny', 'base', 'small', 'medium', 'large' (multilingual)
-     * English-only models: 'tiny.en', 'base.en', 'small.en', 'medium.en'
+     *
+     * Available multilingual models (supports 99+ languages):
+     * - 'tiny'   : ~75 MB, fastest, lower accuracy
+     * - 'base'   : ~142 MB, balanced speed/accuracy (recommended)
+     * - 'small'  : ~466 MB, good accuracy
+     * - 'medium' : ~1.5 GB, high accuracy
+     * - 'large'  : ~2.9 GB, best accuracy, slowest
+     *
+     * English-only models (faster for English):
+     * - 'tiny.en', 'base.en', 'small.en', 'medium.en'
+     *
      * Language: 'auto' for automatic detection, or ISO code like 'en', 'pt', 'es', etc.
      */
     'whisper' => [

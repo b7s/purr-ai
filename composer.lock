@@ -4,8 +4,60 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4761a4ba1e415a3c4a9d41e109dc5f29",
+    "content-hash": "7ab521ecf5ede412b47a4d11ac00f8f2",
     "packages": [
+        {
+            "name": "b7s/laravelwhisper",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b7s/laravelwhisper.git",
+                "reference": "0a25475366ed00f98bb4550188db26c53fe9ddb1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b7s/laravelwhisper/zipball/0a25475366ed00f98bb4550188db26c53fe9ddb1",
+                "reference": "0a25475366ed00f98bb4550188db26c53fe9ddb1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2",
+                "symfony/process": "^6.0|^7.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^3.0",
+                "phpstan/phpstan": "^1.10"
+            },
+            "bin": [
+                "bin/whisper-setup",
+                "bin/whisper-status"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "LaravelWhisper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruno",
+                    "email": "b7s@outlook.com"
+                }
+            ],
+            "description": "Transform audio into text with Whisper.cpp AI - directly in PHP",
+            "support": {
+                "issues": "https://github.com/b7s/laravelwhisper/issues",
+                "source": "https://github.com/b7s/laravelwhisper/tree/v1.0.0"
+            },
+            "time": "2025-12-02T02:58:33+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.14.1",
