@@ -57,7 +57,19 @@ final class TranscribeController extends Controller
         }
 
         try {
+            Log::info('TranscribeController: Starting local transcription', [
+                'original_name' => $audioFile->getClientOriginalName(),
+                'mime_type' => $audioFile->getMimeType(),
+                'size' => $audioFile->getSize(),
+                'extension' => $audioFile->getClientOriginalExtension(),
+            ]);
+
             $text = $this->whisperService->transcribe($audioFile);
+
+            Log::info('TranscribeController: Transcription completed', [
+                'text_length' => strlen($text),
+                'text' => $text,
+            ]);
 
             return response()->json([
                 'success' => true,

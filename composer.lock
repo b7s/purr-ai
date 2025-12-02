@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72bbb038a5b2a0eb0a52ea31c9a5bb7b",
+    "content-hash": "dfa482468c7e49ae182f26cca053ad77",
     "packages": [
         {
             "name": "b7s/laravelwhisper",
-            "version": "v1.0.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/b7s/laravelwhisper.git",
-                "reference": "af59ae83007864277006d7acaced5b083994f0cf"
+                "reference": "1917f2f95b807b8a1c6a4062b267c8b78508bcfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/b7s/laravelwhisper/zipball/af59ae83007864277006d7acaced5b083994f0cf",
-                "reference": "af59ae83007864277006d7acaced5b083994f0cf",
+                "url": "https://api.github.com/repos/b7s/laravelwhisper/zipball/1917f2f95b807b8a1c6a4062b267c8b78508bcfb",
+                "reference": "1917f2f95b807b8a1c6a4062b267c8b78508bcfb",
                 "shasum": ""
             },
             "require": {
@@ -54,9 +54,9 @@
             "description": "Transform audio into text with Whisper.cpp AI - directly in PHP",
             "support": {
                 "issues": "https://github.com/b7s/laravelwhisper/issues",
-                "source": "https://github.com/b7s/laravelwhisper/tree/v1.0.0"
+                "source": "https://github.com/b7s/laravelwhisper/tree/v1.1.0"
             },
-            "time": "2025-12-02T12:50:23+00:00"
+            "time": "2025-12-02T17:14:09+00:00"
         },
         {
             "name": "brick/math",

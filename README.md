@@ -38,7 +38,7 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 - **💾 Conversation History** - All chats saved locally in SQLite with search
 - **🌓 Dark/Light Mode** - Beautiful interface that adapts to your system theme
 - **🔒 Privacy-Focused** - Local Ollama models and LaravelWhisper (for audio) run in your system without exposing your data
-- **🌐 i18n Support** - Available in multiple languages (en, pt, es, jp...)
+- **🌐 i18n Support** - Available in multiple languages (en, pt, es,)
 
 ---
 

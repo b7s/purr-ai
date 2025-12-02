@@ -31,7 +31,8 @@ return [
      * See docs: https://github.com/b7s/laravelwhisper
      */
     'whisper' => [
-        'model' => 'base',
+        'model' => 'small', // Use 'small' for better multilingual support
+        'language' => env('PURRAI_WHISPER_LANGUAGE', 'pt'), // 'auto' for auto-detection, or specific like 'pt', 'en', 'es'
     ],
 
     'response_tones' => [

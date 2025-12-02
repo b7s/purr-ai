@@ -13,11 +13,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
-        "b7s/laravelwhisper": "^1.0",
-        "laravel/framework": "^12.0",
+        "b7s/laravelwhisper": "^1.1.0",
+        "laravel/framework": "^12.40",
         "laravel/tinker": "^2.10.1",
-        "laraveljutsu/zap": "^1.8",
-        "livewire/livewire": "*",
+        "laraveljutsu/zap": "^1.9",
+        "livewire/livewire": "3.7",
         "nativephp/desktop": "^2.0",
         "prism-php/prism": "*"
     },

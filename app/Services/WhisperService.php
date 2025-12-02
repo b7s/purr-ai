@@ -5,38 +5,86 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Setting;
+use App\Services\Whisper\WhisperDownloadException;
 use Illuminate\Http\UploadedFile;
-use LaravelWhisper\Exceptions\WhisperException;
+use Illuminate\Support\Facades\Log;
+use LaravelWhisper\Config;
 use LaravelWhisper\Whisper;
 
 final class WhisperService
 {
-    private readonly Whisper $whisper;
+    private Whisper $whisper;
 
     public function __construct()
     {
-        $config = new \LaravelWhisper\Config(
-            model: config('purrai.whisper.model', 'base'),
+        $config = new Config(
+            dataDir: $this->getDataDirectory(),
+            model: 'base',
+            language: 'auto',
         );
 
-        $this->whisper = new Whisper($config, new LaravelLogger);
+        $logger = app(\App\Services\LaravelLogger::class);
+        $this->whisper = new Whisper($config, $logger);
     }
 
     public function transcribe(UploadedFile $audioFile): string
     {
-        $tempPath = sys_get_temp_dir().'/purrai_audio_'.uniqid().'.'.$audioFile->getClientOriginalExtension();
-        $audioFile->move(\dirname($tempPath), basename($tempPath));
+        if (! $this->isAvailable()) {
+            return '';
+        }
+
+        $tempDir = storage_path('app/temp');
+        if (! is_dir($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        $filename = uniqid('audio_', true).'.'.$audioFile->getClientOriginalExtension();
+        $fullPath = $tempDir.'/'.$filename;
+
+        $audioFile->move($tempDir, $filename);
+
+        if (! file_exists($fullPath)) {
+            Log::error('Audio file not found after move', [
+                'full_path' => $fullPath,
+                'temp_dir' => $tempDir,
+                'filename' => $filename,
+            ]);
+
+            return '';
+        }
 
         try {
-            return $this->whisper->audio($tempPath)->text();
+            $result = $this->whisper->audio($fullPath)->toText();
+
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Whisper transcription failed', [
+                'error' => $e->getMessage(),
+                'file' => $fullPath,
+                'exists' => file_exists($fullPath),
+            ]);
+
+            return '';
         } finally {
-            @unlink($tempPath);
+            if (file_exists($fullPath)) {
+                @unlink($fullPath);
+            }
         }
     }
 
     public function transcribeFromPath(string $audioPath): string
     {
-        return $this->whisper->audio($audioPath)->text();
+        if (! $this->isAvailable()) {
+            return '';
+        }
+
+        try {
+            return $this->whisper->audio($audioPath)->toText();
+        } catch (\Exception $e) {
+            Log::error('Whisper transcription failed', ['error' => $e->getMessage()]);
+
+            return '';
+        }
     }
 
     public function isAvailable(): bool
@@ -50,7 +98,7 @@ final class WhisperService
     }
 
     /**
-     * @return array{binary: bool, model: bool, ffmpeg: bool, gpu: bool}
+     * @return array{binary: bool, model: bool, current_model: string, available_models: array<string>, ffmpeg: bool, gpu: bool}
      */
     public function getStatus(): array
     {
@@ -58,86 +106,103 @@ final class WhisperService
     }
 
     /**
-     * @throws WhisperException
+     * @throws WhisperDownloadException
      */
     public function setup(): bool
     {
-        return $this->whisper->setup();
-    }
-
-    /**
-     * Run complete Whisper setup using vendor binary
-     *
-     * @throws \Exception
-     */
-    public function runSetup(string $model = 'base', string $language = 'auto', int $timeout = 600): bool
-    {
-        $whisperSetupPath = base_path('vendor/bin/whisper-setup');
-
-        if (! file_exists($whisperSetupPath)) {
-            throw new \Exception("Whisper setup binary not found at: {$whisperSetupPath}");
+        try {
+            return $this->whisper->setup();
+        } catch (\Exception $e) {
+            throw new WhisperDownloadException($e->getMessage());
         }
-
-        $result = \Illuminate\Support\Facades\Process::timeout($timeout)
-            ->path(base_path())
-            ->run([
-                PHP_BINARY,
-                $whisperSetupPath,
-                "--model={$model}",
-                "--language={$language}",
-            ]);
-
-        if (! $result->successful()) {
-            throw new \Exception($result->errorOutput() ?: 'Whisper setup failed');
-        }
-
-        return true;
     }
 
     /**
-     * Remove existing Whisper installation
-     */
-    public function removeInstallation(): bool
-    {
-        $result = \Illuminate\Support\Facades\Process::run([
-            'rm', '-rf', $_SERVER['HOME'].'/.local/share/laravelwhisper',
-        ]);
-
-        return $result->successful();
-    }
-
-    /**
-     * @throws WhisperException
+     * @throws WhisperDownloadException
      */
     public function downloadFfmpeg(): bool
     {
-        return $this->whisper->downloadFfmpeg();
+        try {
+            return $this->whisper->downloadFfmpeg();
+        } catch (\Exception $e) {
+            throw new WhisperDownloadException('Failed to download FFmpeg', $e->getMessage());
+        }
     }
 
     /**
-     * @throws WhisperException
+     * @throws WhisperDownloadException
      */
     public function downloadBinary(): bool
     {
-        return $this->whisper->downloadBinary();
-    }
-
-    public function fixLibrarySymlinks(): void
-    {
-        $this->whisper->fixLibrarySymlinks();
+        try {
+            return $this->whisper->downloadBinary();
+        } catch (\Exception $e) {
+            throw new WhisperDownloadException('Failed to download Whisper binary', $e->getMessage());
+        }
     }
 
     /**
-     * @throws WhisperException
+     * @throws WhisperDownloadException
      */
     public function downloadModel(string $model = 'base'): bool
     {
-        return $this->whisper->downloadModel($model);
+        try {
+            return $this->whisper->downloadModel($model);
+        } catch (\Exception $e) {
+            throw new WhisperDownloadException('Failed to download Whisper model', $e->getMessage());
+        }
+    }
+
+    public function useModel(string $model): self
+    {
+        $this->whisper->useModel($model);
+
+        return $this;
+    }
+
+    public function getCurrentModel(): string
+    {
+        return $this->whisper->getCurrentModel();
+    }
+
+    /**
+     * @return array<string>
+     */
+    public function getAvailableModels(): array
+    {
+        return $this->whisper->getAvailableModels();
+    }
+
+    public function hasModel(string $model): bool
+    {
+        return $this->whisper->hasModel($model);
     }
 
     public function getFfmpegPath(): string
     {
         return $this->whisper->getFfmpegPath();
+    }
+
+    public function getModelPath(?string $model = null): string
+    {
+        return $this->whisper->getModelPath($model);
+    }
+
+    public function deleteModel(string $model): bool
+    {
+        return $this->whisper->deleteModel($model);
+    }
+
+    /**
+     * @throws WhisperDownloadException
+     */
+    public function redownloadModel(string $model): bool
+    {
+        try {
+            return $this->whisper->redownloadModel($model);
+        } catch (\Exception $e) {
+            throw new WhisperDownloadException('Failed to redownload model', $e->getMessage());
+        }
     }
 
     public static function hasPendingConfiguration(): bool
@@ -164,5 +229,27 @@ final class WhisperService
         } catch (\Throwable) {
             return true;
         }
+    }
+
+    private function getDataDirectory(): string
+    {
+        $customPath = config('purrai.whisper.data_dir');
+        if ($customPath) {
+            return $customPath;
+        }
+
+        $home = $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'] ?? getenv('HOME') ?: getenv('USERPROFILE');
+
+        if (! $home) {
+            return storage_path('whisper');
+        }
+
+        $os = PHP_OS_FAMILY;
+
+        return match ($os) {
+            'Darwin' => "{$home}/Library/Application Support/PurrAI/whisper",
+            'Windows' => ($_SERVER['LOCALAPPDATA'] ?? $_SERVER['APPDATA'] ?? "{$home}/AppData/Local").'/PurrAI/whisper',
+            default => "{$home}/.local/share/purrai/whisper",
+        };
     }
 }

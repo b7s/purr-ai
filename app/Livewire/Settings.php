@@ -6,6 +6,7 @@ namespace App\Livewire;
 
 use App\Models\Setting;
 use App\Services\UpdateService;
+use App\Services\Whisper\WhisperDownloadException;
 use App\Services\WhisperService;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
@@ -415,14 +416,34 @@ class Settings extends Component
         $this->downloadProgress = __('settings.other.download_starting');
 
         try {
-            $this->downloadProgress = __('settings.other.downloading_whisper_binary');
-            $this->dispatch('progress-updated');
+            $whisperService = app(WhisperService::class);
+            $status = $whisperService->getStatus();
 
-            app(WhisperService::class)->runSetup();
+            if (! $status['ffmpeg']) {
+                $this->downloadProgress = __('settings.other.downloading_ffmpeg');
+                $this->dispatch('progress-updated');
+                $whisperService->downloadFfmpeg();
+            }
+
+            if (! $status['binary']) {
+                $this->downloadProgress = __('settings.other.downloading_whisper_binary');
+                $this->dispatch('progress-updated');
+                $whisperService->downloadBinary();
+            }
+
+            if (! $status['model']) {
+                $this->downloadProgress = __('settings.other.downloading_whisper_model');
+                $this->dispatch('progress-updated');
+                $whisperService->downloadModel();
+            }
 
             $this->downloadProgress = __('settings.other.download_complete');
             $this->checkWhisperStatus();
             $this->dispatch('whisper-setup-complete');
+        } catch (WhisperDownloadException $e) {
+            $this->downloadError = $e->getFullMessage();
+            $this->downloadProgress = __('settings.other.download_failed');
+            $this->dispatch('whisper-setup-failed', message: $e->getFullMessage());
         } catch (\Exception $e) {
             $this->downloadError = $e->getMessage();
             $this->downloadProgress = __('settings.other.download_failed');
