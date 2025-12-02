@@ -53,8 +53,8 @@ test-plugin:
 
 # Create a tagged release (auto-commits changes if any)
 release:
-	@if [ -f version ]; then \
-		LAST_VERSION=$$(cat version); \
+	@if [ -f config/nativephp.php ]; then \
+		LAST_VERSION=$$(grep -oP "(?<='version' => ')[^']*" config/nativephp.php | head -1); \
 		echo "📌 Last version: v$$LAST_VERSION"; \
 		echo ""; \
 	fi; \
@@ -74,6 +74,8 @@ release:
 			MESSAGE_INPUT="Release v$$VERSION_INPUT"; \
 		fi; \
 	fi; \
+	echo "📝 Updating version in config/nativephp.php..."; \
+	sed -i "s/'version' => '[^']*'/'version' => '$$VERSION_INPUT'/" config/nativephp.php; \
 	echo "🧪 Running full test suite..."; \
 	if ! composer test; then \
 		echo "❌ Tests failed. Fix issues before releasing."; \
@@ -99,19 +101,13 @@ release:
 	echo "🚀 Pushing tag to origin..."; \
 	if git push origin v$$VERSION_INPUT; then \
 		echo "✅ Tag pushed successfully!"; \
-		echo "📝 Updating version file..."; \
-		echo "$$VERSION_INPUT" > version; \
-		git add version; \
-		git commit -m "Update version to $$VERSION_INPUT" || true; \
-		git push origin HEAD || true; \
 	else \
 		echo "❌ Failed to push tag"; \
 		exit 1; \
 	fi; \
 	echo ""; \
 	echo "✅ Release v$$VERSION_INPUT created successfully!"; \
-	echo "📦 Packagist will automatically detect the new version."; \
-	echo "🔗 View release: https://github.com/b7s/purr-ai/releases/tag/v$$VERSION_INPUT"
+	echo "🔗 View release: https://github.com/b7s/PurrAI/releases/tag/v$$VERSION_INPUT"
 
 # Clean cache and temporary files
 clean:
