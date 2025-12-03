@@ -30,7 +30,7 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 
 - **🔑 Multi-Provider Support** - Configure multiple AI providers (OpenAI, Anthropic, Ollama, etc.)
 - **💬 Intelligent Chat Interface** - Natural conversation with AI powered by PrismPHP
-- **🎙️ Audio detection** - Speak by voice, use it completely locally with LaravelWhisper or online service.
+- **🎙️ Audio detection** - Speak by voice, use it completely locally with [LaravelWhisper](https://github.com/b7s/laravelwhisper) or online service.
 - **📎 Document Attachment** - Upload and analyze documents of any type (past, drag  and drop, etc.)
 - **📝 Text Analysis** - Analyze text from any source.
 - **🖼️ Image Analysis** - Paste images for AI processing
@@ -191,6 +191,7 @@ For privacy-focused users, configure Ollama to run AI models locally:
 - **[Livewire 3](https://livewire.laravel.com)** - Reactive components
 - **[SQLite](https://www.sqlite.org)** - Lightweight database
 - **[PrismPHP](https://prismphp.com)** - Multi-provider AI integration
+- **[LaravelWhisper](https://github.com/b7s/laravelwhisper)** - Audio detection
 
 ### Frontend
 - **[Alpine.js 3](https://alpinejs.dev)** - Minimal JavaScript framework
