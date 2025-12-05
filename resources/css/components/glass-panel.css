@@ -6,7 +6,7 @@
     /* Glass Panel */
     .glass-panel {
         @apply h-full w-full flex flex-col relative overflow-hidden shadow-2xl transition-all duration-500;
-        @apply border border-white/40 dark:border-white/10;
+        @apply border border-slate-100/40 dark:border-white/10;
         background: rgb(255 255 255 / var(--window-opacity));
     }
 
