@@ -57,7 +57,7 @@ Built with modern web technologies and packaged as a native application, PurrAI 
 # Clone the repository
 git clone https://github.com/b7s/purr-ai.git
 
-cd purrai
+cd purr-ai
 
 # Install PHP dependencies
 composer install
