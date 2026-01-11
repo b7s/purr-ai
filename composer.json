@@ -13,7 +13,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
-        "b7s/laravelwhisper": "^1.1.0",
+        "b7s/whisper-php": "^1.2",
         "laravel/framework": "^12.40",
         "laravel/tinker": "^2.10.1",
         "laraveljutsu/zap": "^1.9",

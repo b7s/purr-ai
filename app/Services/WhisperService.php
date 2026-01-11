@@ -8,8 +8,8 @@ use App\Models\Setting;
 use App\Services\Whisper\WhisperDownloadException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use LaravelWhisper\Config;
-use LaravelWhisper\Whisper;
+use WhisperPHP\Config;
+use WhisperPHP\Whisper;
 
 final class WhisperService
 {
