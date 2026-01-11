@@ -19,12 +19,14 @@ it('creates a calendar tool successfully', function () {
 it('creates an appointment successfully', function () {
     $tool = CalendarTool::make();
 
+    $futureDate = now()->addDays(5)->format('Y-m-d');
+
     $result = $tool->handle(
         action: 'create',
         title: 'Team Meeting',
         description: 'Weekly sync meeting',
-        start_date: '2025-12-15T10:00:00',
-        end_date: '2025-12-15T11:00:00',
+        start_date: $futureDate.'T10:00:00',
+        end_date: $futureDate.'T11:00:00',
         type: 'meeting'
     );
 
@@ -113,14 +115,16 @@ it('deletes an appointment', function () {
 it('checks availability for a date', function () {
     $tool = CalendarTool::make();
 
+    $futureDate = now()->addDays(10)->format('Y-m-d');
+
     $result = $tool->handle(
         action: 'check_availability',
-        date: '2025-12-20'
+        date: $futureDate
     );
 
     $data = json_decode($result, true);
 
-    expect($data['date'])->toBe('2025-12-20')
+    expect($data['date'])->toBe($futureDate)
         ->and($data)->toHaveKey('busy_slots')
         ->and($data)->toHaveKey('is_available');
 });
